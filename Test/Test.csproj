@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\lalaRequest1.json" />
+    <None Remove="Resources\lalaRequest12.json" />
+    <None Remove="Resources\lalaRequest2.json" />
+    <None Remove="Resources\lalaRequest\SmartMeterConsumption.json" />
+    <None Remove="Resources\lalaRequest\SmartMeterProduction.json" />
+    <None Remove="Resources\lalaRequest\Time.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\lalaRequest1.json" />
+    <EmbeddedResource Include="Resources\lalaRequest12.json" />
+    <EmbeddedResource Include="Resources\lalaRequest2.json" />
+    <EmbeddedResource Include="Resources\lalaRequest\SmartMeterConsumption.json" />
+    <EmbeddedResource Include="Resources\lalaRequest\SmartMeterProduction.json" />
+    <EmbeddedResource Include="Resources\lalaRequest\Time.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Autofac.DependencyInjection" Version="5.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LocalPublisherWebApp\LocalPublisherWebApp.csproj" />
+    <ProjectReference Include="..\SenecEntitesAdapter\SenecEntitesAdapter.csproj" />
+  </ItemGroup>
+
+</Project>

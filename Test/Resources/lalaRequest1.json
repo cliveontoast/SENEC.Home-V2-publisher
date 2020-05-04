@@ -1,0 +1,23 @@
+{
+  "ENERGY": {
+    "STAT_STATE": "",
+    "STAT_STATE_DECODE": "",
+    "GUI_BAT_DATA_POWER": "",
+    "GUI_INVERTER_POWER": "",
+    "GUI_HOUSE_POW": "",
+    "GUI_GRID_POW": "",
+    "STAT_MAINT_REQUIRED": "",
+    "GUI_BAT_DATA_FUEL_CHARGE": "",
+    "GUI_CHARGING_INFO": "",
+    "GUI_BOOSTING_INFO": ""
+  },
+  "WIZARD": {
+    "CONFIG_LOADED": "",
+    "SETUP_NUMBER_WALLBOXES": "",
+    "SETUP_WALLBOX_SERIAL0": "",
+    "SETUP_WALLBOX_SERIAL1": "",
+    "SETUP_WALLBOX_SERIAL2": "",
+    "SETUP_WALLBOX_SERIAL3": ""
+  },
+  "SYS_UPDATE": { "UPDATE_AVAILABLE": "" }
+}

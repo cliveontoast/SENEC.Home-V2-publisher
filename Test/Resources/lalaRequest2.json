@@ -1,0 +1,16 @@
+{
+  "WIZARD": {
+    "GUI_LANG": "",
+    "FEATURECODE_ENTERED": ""
+  },
+  "LOG": {
+    "USER_LEVEL": "",
+    "USERNAME": ""
+  },
+  "RTC": { "WEB_TIME": "" },
+  "FEATURES": {},
+  "BMS": {
+    "MODULE_COUNT": "",
+    "MODULES_CONFIGURED": ""
+  }
+}
