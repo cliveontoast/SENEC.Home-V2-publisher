@@ -5,5 +5,6 @@
         ILalaRequestBuilder AddGridMeter();
         ILalaRequest Build();
         ILalaRequestBuilder AddTime();
+        ILalaRequestBuilder AddStatistics();
     }
 }

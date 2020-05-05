@@ -15,13 +15,16 @@ namespace SenecSource
     {
         private readonly ITimeProvider _time;
         private readonly ILogger _logger;
+        private readonly ISenecSettings _senecSettings;
 
         public LalaRequest(
             ITimeProvider time,
+            ISenecSettings senecSettings,
             ILogger logger)
         {
             _time = time;
             _logger = logger;
+            _senecSettings = senecSettings;
         }
 
         public string Content { get; set; }
@@ -95,7 +98,7 @@ namespace SenecSource
             var httpContent = new StringContent(Content, Encoding.UTF8, "application/json");
             try
             {
-                return await client.PostAsync("http://192.168.0.199/lala.cgi", httpContent, token);
+                return await client.PostAsync($"http://{_senecSettings.IP}/lala.cgi", httpContent, token);
             }
             catch (HttpRequestException e)
             {

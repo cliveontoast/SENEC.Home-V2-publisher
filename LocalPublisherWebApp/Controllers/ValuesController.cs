@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using LocalPublisherWebApp.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using SenecSource;
 
 namespace LocalPublisherWebApp.Controllers
 {
@@ -10,6 +9,13 @@ namespace LocalPublisherWebApp.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly ISenecSettings _senecSettings;
+
+        public ValuesController(
+            ISenecSettings senecSettings)
+        {
+            _senecSettings = senecSettings;
+        }
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -17,11 +23,13 @@ namespace LocalPublisherWebApp.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        // TODO make this a Post call
+        [HttpGet("ip/{value}")]
+        public ActionResult<string> Get(string value)
         {
-            return "value";
+            _senecSettings.IP = value;
+            AppSettingWriter.SetAppSettingValue("SenecIP", value);
+            return Ok();
         }
 
         // POST api/values

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Repository;
 using SenecEntitiesAdapter;
 using SenecSource;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,13 +37,29 @@ namespace LocalPublisherWebApp
             });
 
             SenecSource(builder);
+            Shared(builder);
         }
 
-        private static void SenecSource(ContainerBuilder builder)
+        private void Shared(ContainerBuilder builder)
         {
-            var senecSourceAssembly = typeof(ILalaRequest).Assembly;
-            builder.RegisterAssemblyTypes(senecSourceAssembly)
+            var assembly = typeof(ITimeProvider).Assembly;
+            builder.RegisterAssemblyTypes(assembly)
                 .AsImplementedInterfaces();
+        }
+
+        private void SenecSource(ContainerBuilder builder)
+        {
+            var assembly = typeof(ILalaRequest).Assembly;
+            builder.RegisterAssemblyTypes(assembly)
+                .Where(a => a != typeof(SenecSettings))
+                .AsImplementedInterfaces();
+            builder.Register((context) =>
+            {
+                return new SenecSettings
+                {
+                    IP = Configuration.GetValue<string>("SenecIP")
+                } as ISenecSettings;
+            }).SingleInstance();
         }
 
         private void Domain(ContainerBuilder builder)
@@ -54,8 +71,8 @@ namespace LocalPublisherWebApp
                 typeof(IRequestHandler<>),
                 typeof(INotificationHandler<>),
             };
-            var domainAssembly = typeof(SenecPollCommand).Assembly;
-            builder.RegisterAssemblyTypes(domainAssembly)
+            var assembly = typeof(SenecPollCommand).Assembly;
+            builder.RegisterAssemblyTypes(assembly)
                 .Where(t => mediatrInterfaces.All(m => !t.IsClosedTypeOf(m)))
                 .AsImplementedInterfaces();
 

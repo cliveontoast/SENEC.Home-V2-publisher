@@ -59,13 +59,26 @@ namespace SenecSourceWebAppTest
         //}
 
         [TestMethod]
-        public void RequestBuilder1()
+        public void RequestBuilder_GridMeter()
         {
             InitScope();
 
             var builder = scope.Resolve<ILalaRequestBuilder>();
             var result = builder
                 .AddGridMeter()
+                .AddTime()
+                .Build();
+            var response = result.Request<LalaResponseContent>(CancellationToken.None).RunWait();
+        }
+
+        [TestMethod]
+        public void RequestBuilder_DailyStats()
+        {
+            InitScope();
+
+            var builder = scope.Resolve<ILalaRequestBuilder>();
+            var result = builder
+                .AddStatistics()
                 .AddTime()
                 .Build();
             var response = result.Request<LalaResponseContent>(CancellationToken.None).RunWait();
@@ -81,6 +94,10 @@ namespace SenecSourceWebAppTest
             startup.ConfigureServices(services);
             cb.RegisterInstance(BuildAppCache());
             startup.ConfigureContainer(cb);
+            cb.RegisterInstance<ISenecSettings>(new SenecSettings
+            {
+                IP = "192.168.0.199"
+            }).SingleInstance();
             return cb;
         }
 
