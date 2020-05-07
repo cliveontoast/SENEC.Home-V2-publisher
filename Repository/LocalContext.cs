@@ -38,7 +38,8 @@ namespace Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultContainer("Items");
+            var config = _configuration();
+            modelBuilder.HasDefaultContainer(config.DefaultContainer);
 
             modelBuilder.Entity<VoltageSummary>()
                 .HasPartitionKey(o => o.Key)

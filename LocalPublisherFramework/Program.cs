@@ -70,6 +70,7 @@ namespace LocalPublisherMono
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", false)
+                .AddEnvironmentVariables("LP_")
                 .Build();
             services.AddSingleton(Configuration);
         }
