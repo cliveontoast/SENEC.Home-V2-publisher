@@ -5,6 +5,7 @@ namespace Repository
 {
     public interface IVoltageSummaryRepository
     {
+        void Add(Entities.VoltageSummary notification);
         Task AddAsync(Entities.VoltageSummary notification);
     }
 
@@ -21,6 +22,11 @@ namespace Repository
         {
             _context.VoltageSummaries.Add(new VoltageSummary(notification));
             await _context.SaveChangesAsync();
+        }
+        public void Add(Entities.VoltageSummary notification)
+        {
+            _context.VoltageSummaries.Add(new VoltageSummary(notification));
+            _context.SaveChanges();
         }
     }
 }

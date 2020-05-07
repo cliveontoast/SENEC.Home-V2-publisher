@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Domain;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Repository;
@@ -10,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LocalPublisherWebApp
+namespace Domain
 {
     public class AutofacModule : Module
     {

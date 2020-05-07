@@ -1,18 +1,16 @@
 ﻿using Autofac;
-using Domain;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Repository;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LocalPublisherWebApp
+namespace Domain
 {
-    internal class TimedHostedService : IHostedService, IDisposable
+    public class TimedHostedService : IHostedService, IDisposable
     {
         private readonly ILogger _logger;
         private readonly ILifetimeScope _scope;
@@ -40,11 +38,18 @@ namespace LocalPublisherWebApp
                 Type command = item.Command;
                 _timers.Add(new Timer(async (state) =>
                 {
-                    using (var scope = _scope.BeginLifetimeScope())
+                    try
                     {
-                        var mediator = scope.Resolve<IMediator>();
-                        var instance = scope.Resolve(command);
-                        await mediator.Send(instance, cancellationToken);
+                        using (var scope = _scope.BeginLifetimeScope())
+                        {
+                            var mediator = scope.Resolve<IMediator>();
+                            var instance = scope.Resolve(command);
+                            await mediator.Send(instance, cancellationToken);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error(e, "Timer {Name} Failed", command.Name);
                     }
                 }, cancellationToken, TimeSpan.Zero, item.Period));
             }
@@ -71,9 +76,12 @@ namespace LocalPublisherWebApp
             return Task.CompletedTask;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
-            Task.WaitAll(_timers.Select(a => a.DisposeAsync().AsTask()).ToArray());
+            foreach (var timer in _timers)
+            {
+                timer.Dispose();
+            }
         }
     }
 }

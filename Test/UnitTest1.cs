@@ -19,7 +19,7 @@ namespace SenecSourceWebAppTest
     [TestClass]
     public class UnitTest1
     {
-        private ILifetimeScope scope;
+        public ILifetimeScope scope;
 
         [TestCleanup]
         public void Cleanup()
@@ -106,7 +106,7 @@ namespace SenecSourceWebAppTest
             return new CachingService(new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions())));
         }
 
-        private void InitScope(Action<ContainerBuilder> extras = null)
+        public void InitScope(Action<ContainerBuilder> extras = null)
         {
             var cb = Builder();
             extras?.Invoke(cb);

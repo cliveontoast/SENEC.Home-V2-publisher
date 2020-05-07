@@ -11,5 +11,6 @@ namespace Repository
         Task SeedAsync();
 
         Task<int> SaveChangesAsync();
+        int SaveChanges();
     }
 }
