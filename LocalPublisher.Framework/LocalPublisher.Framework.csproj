@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BCA9035F-5E33-4E27-8009-ADFE849571CF}</ProjectGuid>
+    <ProjectGuid>{B7E6FF28-EFD6-451B-98FB-B1DD09F47927}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>LocalPublisherMono</RootNamespace>
     <AssemblyName>LocalPublisherMono</AssemblyName>
@@ -262,6 +262,10 @@
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{91D8FED3-770B-4308-B626-2C9D6FE1C05F}</Project>
       <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LocalPublisher.Domain\LocalPublisher.Domain.csproj">
+      <Project>{23FAA132-2654-4C7C-92C6-469BE08E8691}</Project>
+      <Name>LocalPublisher.Domain</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

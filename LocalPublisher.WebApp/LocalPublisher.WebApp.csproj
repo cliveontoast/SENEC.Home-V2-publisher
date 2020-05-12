@@ -18,7 +18,7 @@
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\LocalPublisher.Domain\LocalPublisher.Domain.csproj" />
     <ProjectReference Include="..\Repository\Repository.csproj" />
     <ProjectReference Include="..\SenecEntities\SenecEntities.csproj" />
   </ItemGroup>
