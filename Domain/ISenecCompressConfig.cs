@@ -1,10 +1,4 @@
-﻿using Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-
-namespace Domain
+﻿namespace Domain
 {
     public interface ISenecCompressConfig
     {
@@ -14,5 +8,6 @@ namespace Domain
     public class SenecCompressConfig : ISenecCompressConfig
     {
         public int MinutesPerSummary { get; set; }
+        public int? PersistedVersion { get; set; }
     }
 }

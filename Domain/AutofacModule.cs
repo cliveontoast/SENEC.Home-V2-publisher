@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using ReadRepository;
+using ReadRepository.Repositories;
 using Repository;
 using SenecEntitiesAdapter;
 using SenecSource;
@@ -25,6 +27,23 @@ namespace Domain
             Domain(builder);
 
             builder.RegisterAssemblyTypes(typeof(IAdapter).Assembly).AsImplementedInterfaces();
+            Repository(builder);
+            ReadRepo(builder);
+
+            SenecSource(builder);
+            Shared(builder);
+        }
+
+        private void ReadRepo(ContainerBuilder builder)
+        {
+            builder.RegisterType<VoltageSummaryReadRepository>().As<IVoltageSummaryReadRepository>();
+            builder.RegisterType<ReadContext>()
+                .As<IReadContext>()
+                .InstancePerLifetimeScope();
+        }
+
+        private void Repository(ContainerBuilder builder)
+        {
             builder.RegisterType<VoltageSummaryRepository>().As<IVoltageSummaryRepository>();
             builder.RegisterType<LocalContext>()
                 .As<ILocalContext>()
@@ -34,16 +53,12 @@ namespace Domain
                 var result = Configuration.GetSection("CosmosDB").Get<LocalContextConfiguration>();
                 return result as ILocalContextConfiguration;
             });
-
-            SenecSource(builder);
-            Shared(builder);
         }
 
         private void Shared(ContainerBuilder builder)
         {
-            var assembly = typeof(ITimeProvider).Assembly;
-            builder.RegisterAssemblyTypes(assembly)
-                .AsImplementedInterfaces();
+            builder.RegisterType<TimeProvider>().AsImplementedInterfaces();
+            builder.RegisterType<ApplicationVersion>().AsImplementedInterfaces().SingleInstance();
         }
 
         private void SenecSource(ContainerBuilder builder)

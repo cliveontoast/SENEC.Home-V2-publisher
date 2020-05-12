@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ReadRepository\ReadRepository.csproj" />
     <ProjectReference Include="..\Repository\Repository.csproj" />
     <ProjectReference Include="..\SenecEntitesAdapter\SenecEntitesAdapter.csproj" />
     <ProjectReference Include="..\SenecEntities\SenecEntities.csproj" />

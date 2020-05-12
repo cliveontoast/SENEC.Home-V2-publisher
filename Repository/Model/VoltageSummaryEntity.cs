@@ -10,7 +10,7 @@ namespace Repository.Model
         {
         }
 
-        public VoltageSummary(Entities.VoltageSummary entity)
+        public VoltageSummary(Entities.VoltageSummary entity, int version)
         {
             // automapper
             IntervalEndExcluded = entity.IntervalEndExcluded;
@@ -18,13 +18,17 @@ namespace Repository.Model
             L1 = entity.L1;
             L2 = entity.L2;
             L3 = entity.L3;
+            Version = version;
         }
 
         public string Key
         {
-            get => JsonConvert.SerializeObject(IntervalStartIncluded).Replace(@"""", "");
+            get => this.GetKey();
             set => IntervalStartIncluded = JsonConvert.DeserializeObject<DateTimeOffset>($@"""{value}""");
         }
         public string Partition => IntervalStartIncluded.ToString("yyyymm");
+
+        // TODO APPLICATION VERSION 1
+        public int? Version { get; set; }
     }
 }

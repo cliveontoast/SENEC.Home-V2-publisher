@@ -9,6 +9,7 @@ using SenecEntitesAdapter;
 using Entities;
 using MediatR;
 using System.Threading.Tasks;
+using ReadRepository.Repositories;
 
 namespace Domain
 {
@@ -22,17 +23,20 @@ namespace Domain
         private readonly ISenecCompressConfig _config;
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
+        private readonly Func<IVoltageSummaryReadRepository> _voltageSummaryReadRepo;
         private static object _lock = new object();
 
         public SenecGridMeterSummaryCommandHandler(
             IGridMeterAdapter gridMeterAdapter,
             ISenecCompressConfig config,
             IMediator mediator,
+            Func<IVoltageSummaryReadRepository> voltageSummaryReadRepo,
             IAppCache cache)
         {
             _gridMeterAdapter = gridMeterAdapter;
             _config = config;
             _mediator = mediator;
+            _voltageSummaryReadRepo = voltageSummaryReadRepo;
             _cache = cache;
         }
 
@@ -41,25 +45,35 @@ namespace Domain
             lock (_lock)
             {
                 var collection = _cache.Get<ConcurrentDictionary<long, string>>("gridmeter");
+
                 while (collection != null && collection.Count > 0)
                 {
-                    var firstItem = collection.Keys.Min();
-                    var firstTime = DateTimeOffset.FromUnixTimeSeconds(firstItem);
-                    var lastItem = collection.Keys.Max();
-                    var lastTime = DateTimeOffset.FromUnixTimeSeconds(lastItem);
+                    var interval = GetMinimumInterval(collection);
+                    if (interval.End.AddSeconds(10) >= GetLastTime(collection)) break;
 
-                    var frequency = TimeSpan.FromMinutes(_config.MinutesPerSummary);
-                    var minIntoInterval = firstTime.TimeOfDay.Ticks % frequency.Ticks;
-                    var intervalStart = firstTime.AddTicks(-minIntoInterval);
-                    var intervalEnd = intervalStart + frequency;
-                    if (intervalEnd.AddSeconds(10) >= lastTime) break;
-
-                    var result = CreateVoltageSummary(collection, intervalStart, intervalEnd);
+                    var result = CreateVoltageSummary(collection, interval.Start, interval.End);
 
                     _mediator.Publish(result, cancellationToken);
                 }
                 return Unit.Task;
             }
+        }
+
+        private (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection)
+        {
+            var firstItem = collection.Keys.Min();
+            var firstTime = DateTimeOffset.FromUnixTimeSeconds(firstItem);
+            var frequency = TimeSpan.FromMinutes(_config.MinutesPerSummary);
+            var minIntoInterval = firstTime.TimeOfDay.Ticks % frequency.Ticks;
+            var intervalStart = firstTime.AddTicks(-minIntoInterval);
+            var intervalEnd = intervalStart + frequency;
+            return (intervalStart, intervalEnd);
+        }
+
+        private static DateTimeOffset GetLastTime(ConcurrentDictionary<long, string> collection)
+        {
+            var lastItem = collection.Keys.Max();
+            return DateTimeOffset.FromUnixTimeSeconds(lastItem);
         }
 
         private VoltageSummary CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)

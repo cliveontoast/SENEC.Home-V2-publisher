@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ReadRepository.Repositories;
+using Repository;
 using SenecEntities;
 using SenecEntitiesAdapter;
 using SenecSource;
@@ -87,6 +89,7 @@ namespace SenecSourceWebAppTest
         public static ContainerBuilder Builder()
         {
             Mock<IConfiguration> mockConfiguration = new Mock<IConfiguration>();
+
             IServiceCollection services = new ServiceCollection();
             var cb = AssemblySetup.BuildContainer(services);
 
@@ -98,6 +101,13 @@ namespace SenecSourceWebAppTest
             {
                 IP = "192.168.0.199"
             }).SingleInstance();
+            cb.RegisterInstance(new LocalContextConfiguration
+            {   
+                AccountEndPoint = "https://senec.documents.azure.com:443/",
+                AccountKey = "zxfQSDfj8M5UowZKqlOHkHzrLZhagxdpkyisfTE1hISlp4wZNvhij2V6fLsavhw5a0uaezWRvPfM33xbH3x0sw==",
+                DefaultContainer = "SenecDev",
+                DatabaseName = "ToDoList"
+            } as ILocalContextConfiguration);
             return cb;
         }
 
@@ -139,6 +149,16 @@ namespace SenecSourceWebAppTest
             var s = a.Key;
             a.Key = s;
             Assert.AreEqual(now, a.IntervalStartIncluded);
+        }
+
+        [TestMethod]
+        public void Get()
+        {
+            InitScope();
+
+            var now = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.Now.ToUnixTimeSeconds());
+            var readRepo = scope.Resolve<IVoltageSummaryReadRepository>();
+            var results = readRepo.Get("2020-05-07T16:55:00+00:00");
         }
     }
 }
