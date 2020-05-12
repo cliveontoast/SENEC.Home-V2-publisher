@@ -103,8 +103,8 @@ namespace SenecSourceWebAppTest
             }).SingleInstance();
             cb.RegisterInstance(new LocalContextConfiguration
             {   
-                AccountEndPoint = "https://senec.documents.azure.com:443/",
-                AccountKey = "zxfQSDfj8M5UowZKqlOHkHzrLZhagxdpkyisfTE1hISlp4wZNvhij2V6fLsavhw5a0uaezWRvPfM33xbH3x0sw==",
+                AccountEndPoint = "https://....documents.azure.com:443/",
+                AccountKey = "...",
                 DefaultContainer = "SenecDev",
                 DatabaseName = "ToDoList"
             } as ILocalContextConfiguration);
