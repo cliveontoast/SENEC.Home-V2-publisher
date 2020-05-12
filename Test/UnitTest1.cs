@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ReadRepository.Cosmos;
+using ReadRepository.DocumentDB;
 using ReadRepository.Repositories;
 using Repository;
 using SenecEntities;
@@ -86,7 +88,7 @@ namespace SenecSourceWebAppTest
             var response = result.Request<LalaResponseContent>(CancellationToken.None).RunWait();
         }
 
-        public static ContainerBuilder Builder()
+        public static (ContainerBuilder cb, Mock<IConfiguration> conf) Builder()
         {
             Mock<IConfiguration> mockConfiguration = new Mock<IConfiguration>();
 
@@ -108,7 +110,7 @@ namespace SenecSourceWebAppTest
                 DefaultContainer = "SenecDev",
                 DatabaseName = "ToDoList"
             } as ILocalContextConfiguration);
-            return cb;
+            return (cb, mockConfiguration);
         }
 
         public static IAppCache BuildAppCache()
@@ -116,11 +118,11 @@ namespace SenecSourceWebAppTest
             return new CachingService(new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions())));
         }
 
-        public void InitScope(Action<ContainerBuilder> extras = null)
+        public void InitScope(Action<(ContainerBuilder, Mock<IConfiguration>)> extras = null)
         {
             var cb = Builder();
             extras?.Invoke(cb);
-            var container = cb.Build();
+            var container = cb.cb.Build();
             scope = container.BeginLifetimeScope();
         }
 
@@ -159,6 +161,16 @@ namespace SenecSourceWebAppTest
             var now = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.Now.ToUnixTimeSeconds());
             var readRepo = scope.Resolve<IVoltageSummaryReadRepository>();
             var results = readRepo.Get("2020-05-07T16:55:00+00:00");
+        }
+
+        [TestMethod]
+        public void Fetch()
+        {
+            InitScope(a =>
+                a.Item1.RegisterModule(new ReadRepository.Cosmos.AutofacModule(a.Item2.Object))
+            );
+            var readRepo = scope.Resolve<IVoltageSummaryDocumentReadRepository>();
+            readRepo.Fetch(new DateTime(2020, 05, 11)).RunWait();
         }
     }
 }

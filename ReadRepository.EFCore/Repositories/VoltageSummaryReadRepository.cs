@@ -23,24 +23,6 @@ namespace ReadRepository.Repositories
             _context = context;
         }
 
-        public List<VoltageSummaryReadModel> Fetch(DateTime date)
-        {
-            var dateText = date.ToString("yyyy-mm-dd");
-            var result = _context.VoltageSummaries
-                .Where(a => a.Key.StartsWith(dateText));
-            var result1 = result.Take(2);
-            var result2 = result1
-                .Select(summary => new VoltageSummaryReadModel
-                {
-                    IntervalEndExcluded = summary.IntervalEndExcluded,
-                    IntervalStartIncluded = summary.IntervalStartIncluded,
-                    L1 = summary.L1,
-                    L2 = summary.L2,
-                    L3 = summary.L3,
-                    Version = summary.Version ?? 0
-                }).ToList();
-            return result2;
-        }
 
         public VoltageSummaryReadModel Get(string key)
         {

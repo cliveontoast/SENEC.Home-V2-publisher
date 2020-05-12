@@ -48,17 +48,17 @@ namespace Domain
             builder.RegisterType<LocalContext>()
                 .As<ILocalContext>()
                 .InstancePerLifetimeScope();
-            builder.Register((context) =>
-            {
-                var result = Configuration.GetSection("CosmosDB").Get<LocalContextConfiguration>();
-                return result as ILocalContextConfiguration;
-            });
         }
 
         private void Shared(ContainerBuilder builder)
         {
             builder.RegisterType<TimeProvider>().AsImplementedInterfaces();
             builder.RegisterType<ApplicationVersion>().AsImplementedInterfaces().SingleInstance();
+            builder.Register((context) =>
+            {
+                var result = Configuration.GetSection("CosmosDB").Get<LocalContextConfiguration>();
+                return result as ILocalContextConfiguration;
+            });
         }
 
         private void SenecSource(ContainerBuilder builder)

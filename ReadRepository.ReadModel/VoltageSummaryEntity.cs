@@ -1,5 +1,4 @@
 ﻿using Entities;
-using Newtonsoft.Json;
 using System;
 
 namespace ReadRepository.ReadModel
@@ -11,6 +10,7 @@ namespace ReadRepository.ReadModel
         public Statistic L3 { get; set; }
         public DateTimeOffset IntervalStartIncluded { get; set; }
         public DateTimeOffset IntervalEndExcluded { get; set; }
-        public int Version { get; internal set; }
+        public int Version { get; set; }
+        public string Key { get; set; }
     }
 }

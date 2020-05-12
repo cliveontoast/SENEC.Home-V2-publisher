@@ -39,7 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LocalPublisherWebApp\LocalPublisherWebApp.csproj" />
-    <ProjectReference Include="..\ReadRepository\ReadRepository.csproj" />
+    <ProjectReference Include="..\ReadRepository.Cosmos\ReadRepository.Cosmos.csproj" />
     <ProjectReference Include="..\SenecEntitesAdapter\SenecEntitesAdapter.csproj" />
   </ItemGroup>
 
