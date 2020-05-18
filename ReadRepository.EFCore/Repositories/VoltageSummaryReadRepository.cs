@@ -11,6 +11,7 @@ namespace ReadRepository.Repositories
     public interface IVoltageSummaryReadRepository
     {
         VoltageSummaryReadModel Get(string key);
+        List<VoltageSummaryReadModel> GetDate(string key);
     }
 
     public class VoltageSummaryReadRepository : IVoltageSummaryReadRepository
@@ -36,6 +37,20 @@ namespace ReadRepository.Repositories
                 L3 = summary.L3,
                 Version = summary.Version ?? 0
             };
+        }
+
+        public List<VoltageSummaryReadModel> GetDate(string key)
+        {
+            var summary = _context.VoltageSummaries.Where(a => a.Partition == "202005");
+            return summary.Select(a => new VoltageSummaryReadModel
+            {
+                IntervalEndExcluded = a.IntervalEndExcluded,
+                IntervalStartIncluded = a.IntervalStartIncluded,
+                L1 = a.L1,
+                L2 = a.L2,
+                L3 = a.L3,
+                Version = a.Version ?? 0
+            }).ToList();
         }
     }
 }
