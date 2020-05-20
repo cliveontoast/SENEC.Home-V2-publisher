@@ -1,24 +1,24 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { FindMatchesComponent } from './find-matches.component';
+import { VoltagesComponent } from './voltages.component';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Type } from '@angular/core';
-import { SubtextMatchService } from '../services/subtextMatch.service';
+import { VoltageSummaryService } from '../services/voltageSummary.service';
 
 describe('CounterComponent', () => {
-  let component: FindMatchesComponent;
-  let fixture: ComponentFixture<FindMatchesComponent>;
+  let component: VoltagesComponent;
+  let fixture: ComponentFixture<VoltagesComponent>;
   let httpMock: HttpTestingController;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [FindMatchesComponent],
+      declarations: [VoltagesComponent],
       imports: [
         FormsModule,
         HttpClientTestingModule
       ],
       providers: [
-        SubtextMatchService,
+        VoltageSummaryService,
         { provide: 'BASE_URL', useValue: 'baseUrl/' }
       ]
     })
@@ -26,7 +26,7 @@ describe('CounterComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FindMatchesComponent);
+    fixture = TestBed.createComponent(VoltagesComponent);
     component = fixture.componentInstance;
     httpMock = fixture.debugElement.injector.get<HttpTestingController>(HttpTestingController as Type<HttpTestingController>);
     fixture.detectChanges();

@@ -1,14 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ChartDataSets, ChartOptions } from 'chart.js';
-import { Color, Label } from 'ng2-charts';
-import { SubtextMatchService } from '../services/subtextMatch.service';
+import { VoltageSummaryService } from '../services/voltageSummary.service';
 import * as Highcharts from 'highcharts';
 
 @Component({
-  selector: 'app-find-matches',
-  templateUrl: './find-matches.component.html'
+  selector: 'app-voltages',
+  templateUrl: './voltages.component.html'
 })
-export class FindMatchesComponent {
+export class VoltagesComponent {
 
   Highcharts: typeof Highcharts = Highcharts; // required
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
@@ -113,12 +111,12 @@ export class FindMatchesComponent {
 
 
 
-  constructor(private subtextMatchService: SubtextMatchService) { }
+  constructor(private voltageSummaryService: VoltageSummaryService) { }
 
   ngOnInit() {
-    this.subtextMatchService.get().subscribe(
+    this.voltageSummaryService.get().subscribe(
       value => {
-        this.chartOptions.plotOptions.spline.pointStart = value.date;
+        this.chartOptions.plotOptions.spline.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
         this.chartOptions.series[0]['data'] = value.phases[0].data;
         this.chartOptions.series[1]['data'] = value.phases[1].data;
         this.chartOptions.series[2]['data'] = value.phases[2].data;

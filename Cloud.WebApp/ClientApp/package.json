@@ -1,11 +1,11 @@
 {
-  "name": "nuancewebapp",
+  "name": "cloudwebapp",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:ssr": "ng run NuanceWebApp:server:dev",
+    "build:ssr": "ng run CloudWebApp:server:dev",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -24,12 +24,10 @@
     "@nguniversal/module-map-ngfactory-loader": "8.1.1",
     "aspnet-prerendering": "^3.0.1",
     "bootstrap": "^4.3.1",
-    "chart.js": "^2.9.3",
     "core-js": "^3.3.3",
     "highcharts": "^8.1.0",
     "highcharts-angular": "^2.4.0",
     "jquery": "3.5.0",
-    "ng2-charts": "^2.3.2",
     "oidc-client": "^1.9.1",
     "popper.js": "^1.16.0",
     "rxjs": "^6.5.3",
