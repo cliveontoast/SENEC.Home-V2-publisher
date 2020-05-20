@@ -9,7 +9,7 @@ namespace NuanceWebApp.Dto
     {
         public DailyVoltageSummaryDto(VoltageSummaryDaily result)
         {
-            Date = result.Date;
+            Date = new DateTimeOffset(result.Date, TimeSpan.Zero).ToUnixTimeMilliseconds();
             Phases = new[]
             {
                 new Phase("L1", result.L1),
@@ -19,19 +19,19 @@ namespace NuanceWebApp.Dto
             XLabels = result.L1.PhaseSummary.Select(a => a.TimeOfDay.ToString(@"hh\:mm")).ToArray();
         }
 
-        public DateTime Date { get; private set; }
+        public long Date { get; private set; }
         public IEnumerable<Phase> Phases { get; }
         public IEnumerable<string> XLabels { get; }
 
         public class Phase
         {
             public string Label { get; set; }
-            public IEnumerable<decimal> Data { get; set; }
+            public IEnumerable<decimal?> Data { get; set; }
 
             public Phase(string v, DayVoltageSummary l1)
             {
                 Label = v;
-                Data = l1.PhaseSummary.Select(a => a.Stats.Median).ToList();
+                Data = l1.PhaseSummary.Select(a => a.Stats?.Median).ToList();
             }
         }
     }

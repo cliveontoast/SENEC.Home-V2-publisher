@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { FindMatchesComponent } from './find-matches/find-matches.component';
 import { SubtextMatchService } from './services/subtextMatch.service';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { SubtextMatchService } from './services/subtextMatch.service';
     ChartsModule,
     HttpClientModule,
     FormsModule,
+    HighchartsChartModule,
     RouterModule.forRoot([
       { path: 'find-matches', component: FindMatchesComponent },
       { path: '**', component: FindMatchesComponent }

@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ReadRepository.Cosmos;
-using ReadRepository.DocumentDB;
 using ReadRepository.Repositories;
 using Repository;
 using SenecEntities;

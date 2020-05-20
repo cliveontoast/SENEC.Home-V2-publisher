@@ -14,6 +14,6 @@ namespace Entities
 
     public class DayVoltageSummary
     {
-        public IEnumerable<(TimeSpan TimeOfDay, Statistic Stats)> PhaseSummary { get; set; }
+        public IEnumerable<(TimeSpan TimeOfDay, Statistic? Stats)> PhaseSummary { get; set; }
     }
 }

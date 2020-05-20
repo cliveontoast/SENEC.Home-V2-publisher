@@ -1,7 +1,6 @@
 export interface DailyVoltageSummaryDto {
-  date: Date;
+  date: number;
   phases: PhaseDto[];
-  xLabels: string[];
 }
 
 export interface PhaseDto {

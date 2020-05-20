@@ -54,35 +54,11 @@ namespace Domain.Commands
             };
         }
 
-        private Statistic GetTimeData(TimeSpan timeOfDay, Dictionary<TimeSpan, Statistic> phaseData)
+        private Statistic? GetTimeData(TimeSpan timeOfDay, Dictionary<TimeSpan, Statistic> phaseData)
         {
-            if (phaseData.Count == 0)
-                return new Statistic { Failures = 1 };
-
-            var timeSearch = timeOfDay;
-            var mathOperator = -1;
-            while (!phaseData.ContainsKey(timeSearch))
-            {
-                if (timeSearch <= TimeSpan.Zero)
-                {
-                    mathOperator = 1;
-                    timeSearch = timeOfDay;
-                }
-                if (timeSearch >= TimeSpan.FromDays(1))
-                {
-                    return new Statistic { Failures = 1 };
-                }
-                timeSearch = timeSearch.Add(TimeSpan.FromMinutes(mathOperator * 5));
-            }
-            if (timeSearch == timeOfDay)
-                return phaseData[timeSearch];
-            return new Statistic
-            {
-                Failures = 60 * 5,
-                Maximum = phaseData[timeSearch].Maximum,
-                Median = phaseData[timeSearch].Median,
-                Minimum = phaseData[timeSearch].Minimum,
-            };
+            if (phaseData.TryGetValue(timeOfDay, out Statistic result))
+                return result;
+            return null;
         }
     }
 }
