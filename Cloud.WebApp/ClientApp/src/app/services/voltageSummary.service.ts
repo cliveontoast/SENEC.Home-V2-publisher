@@ -8,12 +8,18 @@ export class VoltageSummaryService {
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
   
-  get(): Observable<DailyVoltageSummaryDto> {
+  get(date: Date): Observable<DailyVoltageSummaryDto> {
     return this.http.get<DailyVoltageSummaryDto>(this.baseUrl + 'api/VoltageSummary',
       {
         params: {
-          date: Date.now().toString(),
+          date: this.getString(date),
         }
       });
+  }
+
+  private getString(date: Date): string {
+    const offset = date.getTimezoneOffset()
+    date = new Date(date.getTime() + (offset*60*1000))
+    return date.toISOString().split('T')[0]
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { VoltageSummaryService } from '../services/voltageSummary.service';
 import * as Highcharts from 'highcharts';
 
@@ -109,18 +109,36 @@ export class VoltagesComponent {
   oneToOneFlag: boolean = true; // optional boolean, defaults to false
   runOutsideAngularFlag: boolean = false; // optional boolean, defaults to false
 
+  displayDate: Date = new Date();
 
 
   constructor(private voltageSummaryService: VoltageSummaryService) { }
 
   ngOnInit() {
-    this.voltageSummaryService.get().subscribe(
-      value => {
-        this.chartOptions.plotOptions.spline.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
-        this.chartOptions.series[0]['data'] = value.phases[0].data;
-        this.chartOptions.series[1]['data'] = value.phases[1].data;
-        this.chartOptions.series[2]['data'] = value.phases[2].data;
-        this.updateFlag = true;
-      });
+    this.getData();
+  }
+
+  private getData() {
+    this.voltageSummaryService.get(this.displayDate).subscribe(value => {
+      this.chartOptions.plotOptions.spline.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
+      this.chartOptions.series[0]['data'] = value.phases[0].data;
+      this.chartOptions.series[1]['data'] = value.phases[1].data;
+      this.chartOptions.series[2]['data'] = value.phases[2].data;
+      this.updateFlag = true;
+    });
+  }
+
+  previousDay() {
+    var dte = new Date(this.displayDate.toUTCString());
+    dte.setDate(dte.getDate()-1);
+    this.displayDate = dte;
+    this.getData();
+  }
+
+  nextDay() {
+    var dte = new Date(this.displayDate.toUTCString());
+    dte.setDate(dte.getDate()+1);
+    this.displayDate = dte;
+    this.getData();
   }
 }

@@ -36,7 +36,7 @@ namespace NuanceWebApp.Controllers
                     date);
                 var result = await _mediator.Send(new DailyVoltageSummaryCommand
                 {
-                    Date = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(date)).ToOffset(TimeSpan.FromHours(8)).Date
+                    Date = DateTime.Parse(date)
                 });
                 var response = new DailyVoltageSummaryDto(result);
                 return Ok(response);
