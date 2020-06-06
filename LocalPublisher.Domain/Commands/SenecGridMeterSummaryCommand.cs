@@ -10,6 +10,7 @@ using Entities;
 using MediatR;
 using System.Threading.Tasks;
 using ReadRepository.Repositories;
+using Serilog;
 
 namespace Domain
 {
@@ -24,6 +25,8 @@ namespace Domain
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
         private readonly Func<IVoltageSummaryReadRepository> _voltageSummaryReadRepo;
+        private readonly ILogger _logger;
+
         private static object _lock = new object();
 
         public SenecGridMeterSummaryCommandHandler(
@@ -31,19 +34,32 @@ namespace Domain
             ISenecCompressConfig config,
             IMediator mediator,
             Func<IVoltageSummaryReadRepository> voltageSummaryReadRepo,
+            ILogger logger,
             IAppCache cache)
         {
             _gridMeterAdapter = gridMeterAdapter;
             _config = config;
             _mediator = mediator;
             _voltageSummaryReadRepo = voltageSummaryReadRepo;
+            _logger = logger;
             _cache = cache;
         }
 
-        public Task<Unit> Handle(SenecGridMeterSummaryCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(SenecGridMeterSummaryCommand request, CancellationToken cancellationToken)
+        {
+            List<VoltageSummary> tasks = GetSummaries();
+            foreach (var voltageSummary in tasks)
+            {
+                await _mediator.Publish(voltageSummary, cancellationToken);
+            }
+            return Unit.Value;
+        }
+
+        private List<VoltageSummary> GetSummaries()
         {
             lock (_lock)
             {
+                var tasks = new List<VoltageSummary>();
                 var collection = _cache.Get<ConcurrentDictionary<long, string>>("gridmeter");
 
                 while (collection != null && collection.Count > 0)
@@ -52,10 +68,10 @@ namespace Domain
                     if (interval.End.AddSeconds(10) >= GetLastTime(collection)) break;
 
                     var result = CreateVoltageSummary(collection, interval.Start, interval.End);
-
-                    _mediator.Publish(result, cancellationToken);
+                    if (result == null) continue;
+                    tasks.Add(result);
                 }
-                return Unit.Task;
+                return tasks;
             }
         }
 
@@ -78,12 +94,27 @@ namespace Domain
 
         private VoltageSummary CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
         {
-            List<Meter> list = new List<Meter>();
+            var removedTexts = new List<string>();
+            try
+            {
+                return BuildVoltageSummary(collection, intervalStart, intervalEnd, removedTexts);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Create voltage summary error {@Values}", removedTexts);
+                return null;
+            }
+        }
+
+        private VoltageSummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
+        {
+            var list = new List<Meter>();
             var lowerBound = intervalStart.ToUnixTimeSeconds();
             var upperBound = intervalEnd.ToUnixTimeSeconds();
             for (long instant = lowerBound; instant < upperBound; instant++)
             {
                 if (!collection.TryRemove(instant, out string textValue)) continue;
+                removedTexts.Add(textValue);
                 var original = JsonConvert.DeserializeObject<SenecEntities.Meter>(textValue);
                 var entity = _gridMeterAdapter.Convert(instant, original);
                 if (entity != null)

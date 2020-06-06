@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Repository.Model;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Repository
@@ -21,10 +22,10 @@ namespace Repository
             return await base.SaveChangesAsync();
         }
 
-        public async Task SeedAsync()
+        public async Task SeedAsync(CancellationToken cancellationToken)
         {
             //await Database.EnsureDeletedAsync();
-            await Database.EnsureCreatedAsync();
+            await Database.EnsureCreatedAsync(cancellationToken);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

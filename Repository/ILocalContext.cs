@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 using Repository.Model;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Repository
@@ -8,9 +10,9 @@ namespace Repository
     {
         DbSet<VoltageSummary> VoltageSummaries { get; set; }
 
-        Task SeedAsync();
+        Task SeedAsync(CancellationToken cancellationToken);
 
-        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         int SaveChanges();
     }
 }

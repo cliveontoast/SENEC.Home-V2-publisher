@@ -31,7 +31,7 @@ namespace Domain
         {
             var time = _adapter.GetDecimal(notification.RTC.WEB_TIME);
             Writefile(notification, time);
-            _logger.Information("Logged {Time}", time.Value);
+            _logger.Debug("Logged {Time}", time.Value);
             return Task.CompletedTask;
         }
 

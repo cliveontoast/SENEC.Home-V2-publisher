@@ -30,7 +30,7 @@ namespace Domain
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await Initialise();
+            await Initialise(cancellationToken);
 
             foreach (var item in _services)
             {
@@ -55,12 +55,12 @@ namespace Domain
             }
         }
 
-        private async Task Initialise()
+        private async Task Initialise(CancellationToken cancellationToken)
         {
             using (var scope = _scope.BeginLifetimeScope())
             {
                 var context = scope.Resolve<ILocalContext>();
-                await context.SeedAsync();
+                await context.SeedAsync(cancellationToken);
             }
         }
 

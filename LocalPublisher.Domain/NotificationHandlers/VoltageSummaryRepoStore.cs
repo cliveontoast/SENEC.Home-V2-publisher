@@ -11,7 +11,9 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class VoltageSummaryRepoStore : INotificationHandler<VoltageSummary>
+    public class VoltageSummaryRepoStore :
+        INotificationHandler<VoltageSummary>,
+        INotificationHandler<VoltageSummaryRetry>
     {
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
@@ -36,22 +38,26 @@ namespace Domain
             _voltageSummaryRepository = voltageSummaryRepository;
         }
 
-        // TODO - runs in MONO - revert to previous and test
-        public Task Handle(VoltageSummary notification, CancellationToken cancellationToken)
+        public async Task Handle(VoltageSummaryRetry notification, CancellationToken cancellationToken)
+        {
+            await Handle(notification as VoltageSummary, cancellationToken);
+        }
+
+        public async Task Handle(VoltageSummary notification, CancellationToken cancellationToken)
         {
             try
             {
                 FetchPersistedVersion(notification);
 
                 if (_versionConfig.PersistedNumber == _versionConfig.Number)
-                    Write(notification);
+                    await WriteAsync(notification, cancellationToken);
                 else
                 {
-                    WaitHandle.WaitAny(new[] { cancellationToken.WaitHandle }, TimeSpan.FromSeconds(30));
+                    await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
                     var persistedRecord = _voltageSummaryReadRepository.Get(notification.GetKey());
                     if (persistedRecord == null)
                     {
-                        Write(notification);
+                        await WriteAsync(notification, cancellationToken);
                         _versionConfig.PersistedNumber = _versionConfig.Number;
                     }
                 }
@@ -59,30 +65,24 @@ namespace Domain
             catch (Microsoft.Azure.Cosmos.CosmosException e) when (e.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
                 _logger.Warning("Conflicted volt summary {Key}", notification.GetKey());
-                return Task.CompletedTask;
+                return; 
             }
             catch (Exception e)
-            {
+            {   
+                _logger.Error(e, "Voltage summary persistence failure");
                 var cosmosEx = e as Microsoft.Azure.Cosmos.CosmosException;
-                _mediator.Send(new PersistErrorCommand<VoltageSummary> 
+                await _mediator.Send(new PersistErrorCommand<VoltageSummary> 
                 { 
                     Entity = notification, 
                     Response = cosmosEx?.StatusCode ?? System.Net.HttpStatusCode.Ambiguous,
                 });
-                _logger.Error(e, "Failure");
             }
-            finally
-            {
-                _logger.Information("Finished handler");
-            }
-
-            return Task.CompletedTask;
         }
 
-        private void Write(VoltageSummary notification)
+        private async Task WriteAsync(VoltageSummary notification, CancellationToken cancellationToken)
         {
             _logger.Information("Writing {Time}", notification.IntervalEndExcluded);
-            _voltageSummaryRepository.Add(notification);
+            await _voltageSummaryRepository.AddAsync(notification, cancellationToken);
             _logger.Information("Written {Time}", notification.IntervalEndExcluded);
         }
 

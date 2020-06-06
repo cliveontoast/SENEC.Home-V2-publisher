@@ -52,7 +52,7 @@ namespace SenecSource
             }
             catch (Exception e)
             {
-                _logger.Information(e, "Cannot deserialise {Content}", response);
+                _logger.Error(e, "Cannot deserialise {Content}", response);
             }
             return null;
         }

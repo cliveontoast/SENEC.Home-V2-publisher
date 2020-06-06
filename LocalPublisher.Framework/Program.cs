@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,9 +24,10 @@ namespace LocalPublisherMono
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
+
             try
             {
-                Log.Information("Starting up");
+                Log.Information("Starting up. Console logged only");
 
                 IServiceCollection services = new ServiceCollection();
                 var cb = BuildContainer(services);
@@ -77,6 +79,9 @@ namespace LocalPublisherMono
 
         public static void ConfigureContainer(ContainerBuilder builder)
         {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
             builder.RegisterInstance(Log.Logger).As<ILogger>();
             builder.AddMediatR(typeof(GridMeterCache).Assembly);
             builder.RegisterModule(new AutofacModule(Configuration));
