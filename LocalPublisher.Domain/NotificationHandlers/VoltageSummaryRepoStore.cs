@@ -47,7 +47,7 @@ namespace Domain
         {
             try
             {
-                FetchPersistedVersion(notification);
+                await FetchPersistedVersionAsync(notification);
 
                 if (_versionConfig.PersistedNumber == _versionConfig.Number)
                     await WriteAsync(notification, cancellationToken);
@@ -86,14 +86,14 @@ namespace Domain
             _logger.Information("Written {Time}", notification.IntervalEndExcluded);
         }
 
-        private void FetchPersistedVersion(VoltageSummary summary)
+        private async Task FetchPersistedVersionAsync(VoltageSummary summary)
         {
             if (_versionConfig.PersistedNumber != null) return;
 
             var previousIntervalStart = summary.IntervalStartIncluded - (summary.IntervalEndExcluded - summary.IntervalStartIncluded);
             var persistedRecord =
-                _voltageSummaryReadRepository.Get(previousIntervalStart.GetIntervalKey())
-                ?? _voltageSummaryReadRepository.Get(summary.GetKey());
+                await _voltageSummaryReadRepository.Get(previousIntervalStart.GetIntervalKey())
+                ?? await _voltageSummaryReadRepository.Get(summary.GetKey());
             if (persistedRecord == null)
             {
                 _versionConfig.PersistedNumber = 0;
