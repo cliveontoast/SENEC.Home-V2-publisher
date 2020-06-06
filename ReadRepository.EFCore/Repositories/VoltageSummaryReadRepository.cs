@@ -1,4 +1,5 @@
-﻿using ReadRepository.ReadModel;
+﻿using Microsoft.EntityFrameworkCore;
+using ReadRepository.ReadModel;
 using Repository;
 using Repository.Model;
 using System;
@@ -10,8 +11,7 @@ namespace ReadRepository.Repositories
 {
     public interface IVoltageSummaryReadRepository
     {
-        VoltageSummaryReadModel Get(string key);
-        List<VoltageSummaryReadModel> GetDate(string key);
+        Task<VoltageSummaryReadModel> Get(string key);
     }
 
     public class VoltageSummaryReadRepository : IVoltageSummaryReadRepository
@@ -24,10 +24,9 @@ namespace ReadRepository.Repositories
             _context = context;
         }
 
-
-        public VoltageSummaryReadModel Get(string key)
+        public async Task<VoltageSummaryReadModel> Get(string key)
         {
-            var summary = _context.VoltageSummaries.Find(key);
+            var summary = await _context.VoltageSummaries.FindAsync(key);
             return summary == null ? null : new VoltageSummaryReadModel
             {
                 IntervalEndExcluded = summary.IntervalEndExcluded,
@@ -37,20 +36,6 @@ namespace ReadRepository.Repositories
                 L3 = summary.L3,
                 Version = summary.Version ?? 0
             };
-        }
-
-        public List<VoltageSummaryReadModel> GetDate(string key)
-        {
-            var summary = _context.VoltageSummaries.Where(a => a.Partition == "202005");
-            return summary.Select(a => new VoltageSummaryReadModel
-            {
-                IntervalEndExcluded = a.IntervalEndExcluded,
-                IntervalStartIncluded = a.IntervalStartIncluded,
-                L1 = a.L1,
-                L2 = a.L2,
-                L3 = a.L3,
-                Version = a.Version ?? 0
-            }).ToList();
         }
     }
 }
