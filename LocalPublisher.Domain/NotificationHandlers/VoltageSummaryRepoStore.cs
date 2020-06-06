@@ -50,14 +50,14 @@ namespace Domain
                 FetchPersistedVersion(notification);
 
                 if (_versionConfig.PersistedNumber == _versionConfig.Number)
-                    await WriteAsync(notification, cancellationToken);
+                    await WriteAndVerifyAsync(notification, cancellationToken);
                 else
                 {
                     await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
                     var persistedRecord = _voltageSummaryReadRepository.Get(notification.GetKey());
                     if (persistedRecord == null)
                     {
-                        await WriteAsync(notification, cancellationToken);
+                        await WriteAndVerifyAsync(notification, cancellationToken);
                         _versionConfig.PersistedNumber = _versionConfig.Number;
                     }
                 }
@@ -79,7 +79,17 @@ namespace Domain
             }
         }
 
-        private async Task WriteAsync(VoltageSummary notification, CancellationToken cancellationToken)
+        private async Task WriteAndVerifyAsync(VoltageSummary notification, CancellationToken cancellationToken)
+        {
+            await Write(notification, cancellationToken);
+            var isPersisted = await IsPersisted(notification, cancellationToken);
+        }
+
+        private Task IsPersisted(VoltageSummary notification, CancellationToken cancellationToken)
+        {
+        }
+
+        private async Task Write(VoltageSummary notification, CancellationToken cancellationToken)
         {
             _logger.Information("Writing {Time}", notification.IntervalEndExcluded);
             await _voltageSummaryRepository.AddAsync(notification, cancellationToken);
