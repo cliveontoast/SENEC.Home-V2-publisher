@@ -35,7 +35,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloud.WebApp", "Cloud.WebAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloud.Domain", "Cloud.Domain\Cloud.Domain.csproj", "{62F5B085-7104-444C-A467-8A9CAAEA6092}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloud.Test", "Cloud.Test\Cloud.Test.csproj", "{1680405D-52FB-445C-B4A2-4867D3C59C74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloud.Test", "Cloud.Test\Cloud.Test.csproj", "{1680405D-52FB-445C-B4A2-4867D3C59C74}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{663D581F-659F-4370-B9C0-2A5783E6B4D6}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

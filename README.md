@@ -21,8 +21,15 @@ Update the raspberry pi
 sudo apt update
 sudo apt upgrade
 sudo apt install mono-complete
+# change the timezone
+sudo dpkg-reconfigure tzdata
 
 sudo apt-get install tmux
 https://iotpoint.wordpress.com/2016/11/15/tmux-terminal-multiplexer-for-raspberry-pi/
+
+## running cloud.webapp
+run `npm install -g @angular/cli`
+from cloud.webapp/clientapp folder run `npm install` then run `ng serve`
+Run the cloud.webapp from visual studio in IIS express
 
 
