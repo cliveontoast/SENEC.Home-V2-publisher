@@ -1,11 +1,8 @@
-﻿using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Cosmos.Linq;
+﻿using Microsoft.Azure.Cosmos.Linq;
 using ReadRepository.ReadModel;
-using Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using System.Threading;

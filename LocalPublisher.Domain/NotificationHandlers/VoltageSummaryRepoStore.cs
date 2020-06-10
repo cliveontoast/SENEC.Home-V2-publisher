@@ -1,23 +1,20 @@
 ﻿using Entities;
 using LazyCache;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using ReadRepository.Cosmos;
-using ReadRepository.Repositories;
 using Repository;
 using Serilog;
 using Shared;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Domain
 {
     public class VoltageSummaryRepoStore :
-        INotificationHandler<VoltageSummaryRepoStore.PersistenceInfo>, // TOTO this should be a command, not publish
+        INotificationHandler<VoltageSummaryRepoStore.PersistenceInfo>, // TODO this should be a command, not publish
         INotificationHandler<VoltageSummary>
     {
         private readonly ILogger _logger;

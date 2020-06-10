@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ namespace LocalPublisherMono
 
             try
             {
-                Log.Information("Starting up. Console logged only");
+                Log.Information("Starting up. This logged line only appears on the console.");
 
                 IServiceCollection services = new ServiceCollection();
                 var cb = BuildContainer(services);

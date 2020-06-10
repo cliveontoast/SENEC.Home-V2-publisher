@@ -9,7 +9,6 @@ using SenecEntitesAdapter;
 using Entities;
 using MediatR;
 using System.Threading.Tasks;
-using ReadRepository.Repositories;
 using Serilog;
 
 namespace Domain
@@ -24,23 +23,21 @@ namespace Domain
         private readonly ISenecCompressConfig _config;
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
-        private readonly Func<IVoltageSummaryReadRepository> _voltageSummaryReadRepo;
         private readonly ILogger _logger;
 
+        // TODO make a DI singleton
         private static object _lock = new object();
 
         public SenecGridMeterSummaryCommandHandler(
             IGridMeterAdapter gridMeterAdapter,
             ISenecCompressConfig config,
             IMediator mediator,
-            Func<IVoltageSummaryReadRepository> voltageSummaryReadRepo,
             ILogger logger,
             IAppCache cache)
         {
             _gridMeterAdapter = gridMeterAdapter;
             _config = config;
             _mediator = mediator;
-            _voltageSummaryReadRepo = voltageSummaryReadRepo;
             _logger = logger;
             _cache = cache;
         }

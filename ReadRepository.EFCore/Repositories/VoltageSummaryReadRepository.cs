@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ReadRepository.ReadModel;
-using Repository;
-using Repository.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ReadRepository.ReadModel;
 using System.Threading;
 using System.Threading.Tasks;
 

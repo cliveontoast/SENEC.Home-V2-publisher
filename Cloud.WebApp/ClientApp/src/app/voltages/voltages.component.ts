@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { VoltageSummaryService } from '../services/voltageSummary.service';
 import * as Highcharts from 'highcharts';
 
