@@ -17,6 +17,8 @@
             L3 = entity.L3;
             Version = version;
             Key = entity.GetKey();
+            // TODO this MM is minutes. not months, the partition cannot be changed, ever. without destroying the document and re-creating it.
+            // TODO stop using the EF Core to connect to cosmosDB, it seems to be... not optimal, i.e. right now I can't read via EF core.. so inserts only :/
             Partition = IntervalStartIncluded.ToString("yyyyMM");
         }
 
