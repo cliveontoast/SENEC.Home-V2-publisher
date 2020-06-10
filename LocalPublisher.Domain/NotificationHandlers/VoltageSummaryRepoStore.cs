@@ -161,7 +161,8 @@ namespace Domain
                 (isPersisted, isRemoved) = await VerifyAsync(notification, cancellationToken);
             }
             var logMethod = isPersisted ? (Action<string, object[]>)_logger.Information : _logger.Error;
-            logMethod("Written {Written} Persisted {isPersisted} Removed {Removed} Voltage summary {@Summary} ", new object[] { written, isPersisted, isRemoved, notification.GetKey() });
+            logMethod("Written {Written} Persisted {isPersisted} Removed {Removed} Voltage summary {Summary} ", new object[] { written, isPersisted, isRemoved,
+                Newtonsoft.Json.JsonConvert.SerializeObject(notification) });
         }
 
         private async Task<(bool isPersisted, bool isRemoved)> VerifyAsync(VoltageSummary summary, CancellationToken cancellationToken)
