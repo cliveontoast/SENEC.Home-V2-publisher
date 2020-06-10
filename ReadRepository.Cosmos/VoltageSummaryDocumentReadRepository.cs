@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using System.Threading;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ReadRepository.Cosmos
 {

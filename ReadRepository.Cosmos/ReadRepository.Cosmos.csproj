@@ -8,12 +8,12 @@
     <PackageReference Include="Autofac" Version="5.1.2" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.8.0" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.10.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ReadRepository.ReadModel\ReadRepository.ReadModel.csproj" />
     <ProjectReference Include="..\Repository.Model\Repository.Model.csproj" />
-    <ProjectReference Include="..\Repository\Repository.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 

@@ -1,6 +1,5 @@
 ﻿using Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Internal;
 using ReadRepository.Cosmos;
 using ReadRepository.ReadModel;
 using System;
