@@ -159,7 +159,7 @@ namespace SenecSourceWebAppTest
 
             var now = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.Now.ToUnixTimeSeconds());
             var readRepo = scope.Resolve<IVoltageSummaryReadRepository>();
-            var results = readRepo.Get("2020-05-07T16:55:00+00:00");
+            var results = readRepo.Get("2020-05-07T16:55:00+00:00", CancellationToken.None);
         }
 
         [TestMethod]

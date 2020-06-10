@@ -85,6 +85,7 @@ namespace LocalPublisherMono
             builder.RegisterInstance(Log.Logger).As<ILogger>();
             builder.AddMediatR(typeof(GridMeterCache).Assembly);
             builder.RegisterModule(new AutofacModule(Configuration));
+            builder.RegisterModule(new ReadRepository.Cosmos.AutofacModule(Configuration));
             builder.RegisterInstance(BuildAppCache());
             builder.RegisterType<TimedHostedService>().AsSelf();
         }

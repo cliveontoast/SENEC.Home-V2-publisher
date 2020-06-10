@@ -8,7 +8,7 @@ namespace Repository
 {
     public interface IVoltageSummaryRepository
     {
-        Task AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken);
+        Task<int> AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken);
     }
 
     public class VoltageSummaryRepository : IVoltageSummaryRepository
@@ -23,11 +23,11 @@ namespace Repository
             _version = version;
             _context = context;
         }
-        public async Task AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken)
+        public async Task<int> AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken)
         {
             var c = _context;
             await c.VoltageSummaries.AddAsync(new VoltageSummary(notification, _version.Number), cancellationToken);
-            await c.SaveChangesAsync(cancellationToken);
+            return await c.SaveChangesAsync(cancellationToken);
         }
     }
 }

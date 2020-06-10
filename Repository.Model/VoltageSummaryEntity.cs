@@ -17,7 +17,7 @@
             L3 = entity.L3;
             Version = version;
             Key = entity.GetKey();
-            Partition = IntervalStartIncluded.ToString("yyyymm");
+            Partition = IntervalStartIncluded.ToString("yyyyMM");
         }
 
         public string Key { get; set; }

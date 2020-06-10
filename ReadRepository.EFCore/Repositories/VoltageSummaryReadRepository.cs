@@ -5,13 +5,14 @@ using Repository.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReadRepository.Repositories
 {
     public interface IVoltageSummaryReadRepository
     {
-        Task<VoltageSummaryReadModel> Get(string key);
+        Task<VoltageSummaryReadModel> Get(string key, CancellationToken cancellationToken);
     }
 
     public class VoltageSummaryReadRepository : IVoltageSummaryReadRepository
@@ -24,9 +25,9 @@ namespace ReadRepository.Repositories
             _context = context;
         }
 
-        public async Task<VoltageSummaryReadModel> Get(string key)
+        public async Task<VoltageSummaryReadModel> Get(string key, CancellationToken cancellationToken)
         {
-            var summary = await _context.VoltageSummaries.FindAsync(key);
+            var summary = await _context.VoltageSummaries.FindAsync(key, cancellationToken);
             return summary == null ? null : new VoltageSummaryReadModel
             {
                 IntervalEndExcluded = summary.IntervalEndExcluded,
