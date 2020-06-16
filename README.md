@@ -12,7 +12,7 @@ Does not run most recent version via LocalPublisher.WebApp on hardware that supp
 Polls local network senec battery webserver and publishes to the cloud.
 
 Cloud.WebApp can be published to Azure App Service to run an Angular app to display the following
-![Senec personal portal](https://raw.githubusercontent.com/cliveontoast/SENEC.Home-V2-publisher/feature/publisher-v1/current-development.png)
+![Senec personal portal](https://raw.githubusercontent.com/cliveontoast/SENEC.Home-V2-publisher/master/current-development.png)
 
 ## What would it cost you to run?
 The services try to use only free services from Azure as much as possible.
