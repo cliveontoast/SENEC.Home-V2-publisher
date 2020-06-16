@@ -1,9 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Repository.Model;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ReadRepository.Cosmos
 {

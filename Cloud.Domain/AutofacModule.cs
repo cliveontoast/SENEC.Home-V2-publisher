@@ -2,7 +2,6 @@
 using Domain.Commands;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using ReadRepository;
 using Repository;
 using Shared;
 using System;

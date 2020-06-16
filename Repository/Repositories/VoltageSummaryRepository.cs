@@ -1,14 +1,14 @@
 ﻿using Repository.Model;
 using Shared;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Repository
 {
     public interface IVoltageSummaryRepository
     {
-        void Add(Entities.VoltageSummary notification);
-        Task AddAsync(Entities.VoltageSummary notification);
+        Task<int> AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken);
     }
 
     public class VoltageSummaryRepository : IVoltageSummaryRepository
@@ -23,16 +23,11 @@ namespace Repository
             _version = version;
             _context = context;
         }
-        public async Task AddAsync(Entities.VoltageSummary notification)
+        public async Task<int> AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken)
         {
             var c = _context;
-            c.VoltageSummaries.Add(new VoltageSummary(notification, _version.Number));
-            await c.SaveChangesAsync();
-        }
-        public void Add(Entities.VoltageSummary notification)
-        {
-            _context.VoltageSummaries.Add(new VoltageSummary(notification, _version.Number));
-            _context.SaveChanges();
+            await c.VoltageSummaries.AddAsync(new VoltageSummary(notification, _version.Number), cancellationToken);
+            return await c.SaveChangesAsync(cancellationToken);
         }
     }
 }

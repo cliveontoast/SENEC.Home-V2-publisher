@@ -23,9 +23,10 @@ namespace LocalPublisherMono
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
+
             try
             {
-                Log.Information("Starting up");
+                Log.Information("Starting up. This logged line only appears on the console.");
 
                 IServiceCollection services = new ServiceCollection();
                 var cb = BuildContainer(services);
@@ -77,9 +78,13 @@ namespace LocalPublisherMono
 
         public static void ConfigureContainer(ContainerBuilder builder)
         {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
             builder.RegisterInstance(Log.Logger).As<ILogger>();
             builder.AddMediatR(typeof(GridMeterCache).Assembly);
             builder.RegisterModule(new AutofacModule(Configuration));
+            builder.RegisterModule(new ReadRepository.Cosmos.AutofacModule(Configuration));
             builder.RegisterInstance(BuildAppCache());
             builder.RegisterType<TimedHostedService>().AsSelf();
         }

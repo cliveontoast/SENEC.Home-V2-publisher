@@ -1,14 +1,7 @@
 ﻿using Autofac;
-using MediatR;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
-using ReadRepository;
-using ReadRepository.Cosmos;
 using Repository;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ReadRepository.Cosmos
 {

@@ -152,15 +152,7 @@ namespace SenecSourceWebAppTest
             Assert.AreEqual(now, a.IntervalStartIncluded);
         }
 
-        [TestMethod]
-        public void Get()
-        {
-            InitScope();
 
-            var now = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.Now.ToUnixTimeSeconds());
-            var readRepo = scope.Resolve<IVoltageSummaryReadRepository>();
-            var results = readRepo.Get("2020-05-07T16:55:00+00:00");
-        }
 
         [TestMethod]
         public void Fetch()

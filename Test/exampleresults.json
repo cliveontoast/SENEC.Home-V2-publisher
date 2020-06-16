@@ -1,99 +1,100 @@
 {
-  "a":
-  {
-    "ENERGY": {
-      "STAT_STATE": "u8_0E",
-      "STAT_STATE_DECODE": "u8_0E",
-      "GUI_BAT_DATA_POWER": "fl_44932B2B",
-      "GUI_INVERTER_POWER": "fl_80000000",
-      "GUI_HOUSE_POW": "fl_00000000",
-      "GUI_GRID_POW": "fl_C20E851F",
-      "STAT_MAINT_REQUIRED": "u8_00",
-      "GUI_BAT_DATA_FUEL_CHARGE": "fl_42B04FB8",
-      "GUI_CHARGING_INFO": "u8_01",
-      "GUI_BOOSTING_INFO": "u8_00"
+  "a": [
+    {
+      "ENERGY": {
+        "STAT_STATE": "u8_0E",
+        "STAT_STATE_DECODE": "u8_0E",
+        "GUI_BAT_DATA_POWER": "fl_44932B2B",
+        "GUI_INVERTER_POWER": "fl_80000000",
+        "GUI_HOUSE_POW": "fl_00000000",
+        "GUI_GRID_POW": "fl_C20E851F",
+        "STAT_MAINT_REQUIRED": "u8_00",
+        "GUI_BAT_DATA_FUEL_CHARGE": "fl_42B04FB8",
+        "GUI_CHARGING_INFO": "u8_01",
+        "GUI_BOOSTING_INFO": "u8_00"
+      },
+      "WIZARD": {
+        "CONFIG_LOADED": "u8_01",
+        "SETUP_NUMBER_WALLBOXES": "u8_00",
+        "SETUP_WALLBOX_SERIAL0": "st_",
+        "SETUP_WALLBOX_SERIAL1": "st_",
+        "SETUP_WALLBOX_SERIAL2": "st_",
+        "SETUP_WALLBOX_SERIAL3": "st_"
+      },
+      "SYS_UPDATE": { "UPDATE_AVAILABLE": "u8_00" }
     },
-    "WIZARD": {
-      "CONFIG_LOADED": "u8_01",
-      "SETUP_NUMBER_WALLBOXES": "u8_00",
-      "SETUP_WALLBOX_SERIAL0": "st_",
-      "SETUP_WALLBOX_SERIAL1": "st_",
-      "SETUP_WALLBOX_SERIAL2": "st_",
-      "SETUP_WALLBOX_SERIAL3": "st_"
+    {
+      "WIZARD": {
+        "GUI_LANG": "u8_01",
+        "FEATURECODE_ENTERED": "u8_00",
+        "CONFIG_LOADED": "u8_01",
+        "SETUP_NUMBER_WALLBOXES": "u8_00",
+        "SETUP_WALLBOX_SERIAL0": "st_",
+        "SETUP_WALLBOX_SERIAL1": "st_",
+        "SETUP_WALLBOX_SERIAL2": "st_",
+        "SETUP_WALLBOX_SERIAL3": "st_"
+      },
+      "LOG": {
+        "USER_LEVEL": "u8_00",
+        "USERNAME": "st_"
+      },
+      "RTC": { "WEB_TIME": "u3_5E9EF195" },
+      "FEATURES": {
+        "CAR": "u8_00",
+        "CLOUDREADY": "u8_00",
+        "ECOGRIDREADY": "u8_00",
+        "HEAT": "u8_00",
+        "ISLAND": "u8_00",
+        "ISLAND_PRO": "u8_00",
+        "PEAKSHAVING": "u8_00",
+        "SGREADY": "u8_00",
+        "SHKW": "u8_00",
+        "SOCKETS": "u8_00"
+      },
+      "BMS": {
+        "MODULE_COUNT": "u8_00",
+        "MODULES_CONFIGURED": "u8_00"
+      },
+      "ENERGY": {
+        "STAT_STATE": "u8_0E",
+        "STAT_STATE_DECODE": "u8_0E",
+        "GUI_BAT_DATA_POWER": "fl_44932B2B",
+        "GUI_INVERTER_POWER": "fl_80000000",
+        "GUI_HOUSE_POW": "fl_00000000",
+        "GUI_GRID_POW": "fl_C20F3D70",
+        "STAT_MAINT_REQUIRED": "u8_00",
+        "GUI_BAT_DATA_FUEL_CHARGE": "fl_42B04FB8",
+        "GUI_CHARGING_INFO": "u8_01",
+        "GUI_BOOSTING_INFO": "u8_00"
+      },
+      "SYS_UPDATE": { "UPDATE_AVAILABLE": "u8_00" }
     },
-    "SYS_UPDATE": { "UPDATE_AVAILABLE": "u8_00" }
-  },
-  {
-    "WIZARD": {
-      "GUI_LANG": "u8_01",
-      "FEATURECODE_ENTERED": "u8_00",
-      "CONFIG_LOADED": "u8_01",
-      "SETUP_NUMBER_WALLBOXES": "u8_00",
-      "SETUP_WALLBOX_SERIAL0": "st_",
-      "SETUP_WALLBOX_SERIAL1": "st_",
-      "SETUP_WALLBOX_SERIAL2": "st_",
-      "SETUP_WALLBOX_SERIAL3": "st_"
-    },
-    "LOG": {
-      "USER_LEVEL": "u8_00",
-      "USERNAME": "st_"
-    },
-    "RTC": { "WEB_TIME": "u3_5E9EF195" },
-    "FEATURES": {
-      "CAR": "u8_00",
-      "CLOUDREADY": "u8_00",
-      "ECOGRIDREADY": "u8_00",
-      "HEAT": "u8_00",
-      "ISLAND": "u8_00",
-      "ISLAND_PRO": "u8_00",
-      "PEAKSHAVING": "u8_00",
-      "SGREADY": "u8_00",
-      "SHKW": "u8_00",
-      "SOCKETS": "u8_00"
-    },
-    "BMS": {
-      "MODULE_COUNT": "u8_00",
-      "MODULES_CONFIGURED": "u8_00"
-    },
-    "ENERGY": {
-      "STAT_STATE": "u8_0E",
-      "STAT_STATE_DECODE": "u8_0E",
-      "GUI_BAT_DATA_POWER": "fl_44932B2B",
-      "GUI_INVERTER_POWER": "fl_80000000",
-      "GUI_HOUSE_POW": "fl_00000000",
-      "GUI_GRID_POW": "fl_C20F3D70",
-      "STAT_MAINT_REQUIRED": "u8_00",
-      "GUI_BAT_DATA_FUEL_CHARGE": "fl_42B04FB8",
-      "GUI_CHARGING_INFO": "u8_01",
-      "GUI_BOOSTING_INFO": "u8_00"
-    },
-    "SYS_UPDATE": { "UPDATE_AVAILABLE": "u8_00" }
-  },
-  {
-    "WIZARD": {
-      "GUI_LANG": "u8_01",
-      "FEATURECODE_ENTERED": "u8_00"
-    },
-    "LOG": {
-      "USER_LEVEL": "u8_00",
-      "USERNAME": "st_"
-    },
-    "RTC": { "WEB_TIME": "u3_5E9EF195" },
-    "FEATURES": {
-      "CAR": "u8_00",
-      "CLOUDREADY": "u8_00",
-      "ECOGRIDREADY": "u8_00",
-      "HEAT": "u8_00",
-      "ISLAND": "u8_00",
-      "ISLAND_PRO": "u8_00",
-      "PEAKSHAVING": "u8_00",
-      "SGREADY": "u8_00",
-      "SHKW": "u8_00",
-      "SOCKETS": "u8_00"
-    },
-    "BMS": {
-      "MODULE_COUNT": "u8_00",
-      "MODULES_CONFIGURED": "u8_00"
+    {
+      "WIZARD": {
+        "GUI_LANG": "u8_01",
+        "FEATURECODE_ENTERED": "u8_00"
+      },
+      "LOG": {
+        "USER_LEVEL": "u8_00",
+        "USERNAME": "st_"
+      },
+      "RTC": { "WEB_TIME": "u3_5E9EF195" },
+      "FEATURES": {
+        "CAR": "u8_00",
+        "CLOUDREADY": "u8_00",
+        "ECOGRIDREADY": "u8_00",
+        "HEAT": "u8_00",
+        "ISLAND": "u8_00",
+        "ISLAND_PRO": "u8_00",
+        "PEAKSHAVING": "u8_00",
+        "SGREADY": "u8_00",
+        "SHKW": "u8_00",
+        "SOCKETS": "u8_00"
+      },
+      "BMS": {
+        "MODULE_COUNT": "u8_00",
+        "MODULES_CONFIGURED": "u8_00"
+      }
     }
-  }
+  ]
 }
