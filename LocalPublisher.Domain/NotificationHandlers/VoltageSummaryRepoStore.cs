@@ -1,6 +1,7 @@
 ﻿using Entities;
 using LazyCache;
 using MediatR;
+using Newtonsoft.Json;
 using ReadRepository.Cosmos;
 using Repository;
 using Serilog;
@@ -62,39 +63,59 @@ namespace Domain
 
         public async Task Handle(VoltageSummary notification, CancellationToken cancellationToken)
         {
-            var inMemoryCollection = GetCollection();
-            var key = notification.GetKey();
-            var added = inMemoryCollection.TryAdd(key, new PersistenceInfo { Summary = notification });
-            if (!added)
+            try
             {
-                _logger.Error("Summary {Key} already added to collection", key);
+                _logger.Verbose("Handling {VoltageSummary}", JsonConvert.SerializeObject(notification));
+                var inMemoryCollection = GetCollection();
+                var key = notification.GetKey();
+                var added = inMemoryCollection.TryAdd(key, new PersistenceInfo { Summary = notification });
+                if (!added)
+                {
+                    _logger.Error("Summary {Key} already added to collection", key);
+                }
+                await PersistAsync(key, cancellationToken);
+                await PublishWaitingSummariesAsync(cancellationToken);
+                _logger.Verbose("Handled {VoltageSummary}", notification.GetKey());
             }
-            await PersistAsync(key, cancellationToken);
-            await PublishWaitingSummariesAsync(cancellationToken);
+            catch (Exception e)
+            {
+                _logger.Verbose(e, "This shouldn't be necessary, something higher should capture and log this message");
+                throw;
+            }
         }
 
         public async Task Handle(PersistenceInfo notification, CancellationToken cancellationToken)
         {
-            var summary = notification.Summary;
-            var verifyResult = await VerifyAsync(summary, cancellationToken);
-            if (!verifyResult.isPersisted)
+            try
             {
-                notification.Increment();
-                var delay = TimeSpan.FromSeconds(Math.Min((int)Math.Pow(2, notification.GetRetryCount()), 60));
-                _logger.Error("Waiting {Seconds} before publishing {@Summary}", delay.TotalSeconds, summary);
-                await Task.Delay(delay, cancellationToken);
-                if (cancellationToken.IsCancellationRequested) return;
-                await PersistAsync(summary.GetKey(), cancellationToken);
+                _logger.Verbose("Persistence error. Handling voltage summary {VoltageSummary}", JsonConvert.SerializeObject(notification));
+                var summary = notification.Summary;
+                var verifyResult = await VerifyAsync(summary, cancellationToken);
+                if (!verifyResult.isPersisted)
+                {
+                    notification.Increment();
+                    var delay = TimeSpan.FromSeconds(Math.Min((int)Math.Pow(2, notification.GetRetryCount()), 60));
+                    _logger.Error("Waiting {Seconds} before publishing {@Summary}", delay.TotalSeconds, summary);
+                    await Task.Delay(delay, cancellationToken);
+                    if (cancellationToken.IsCancellationRequested) return;
+                    await PersistAsync(summary.GetKey(), cancellationToken);
+                }
+                else
+                {
+                    _logger.Warning("Rehandled voltage summary has been persisted {Key} and removed {Removed}", notification.Summary.GetKey(), verifyResult.isRemoved);
+                }
+                _logger.Verbose("Persistence error. Handled voltage summary {VoltageSummary}", notification.Summary.GetKey());
             }
-            else
+            catch (Exception e)
             {
-                _logger.Warning("Rehandled voltage summary has been persisted {Key} and removed {Removed}", notification.Summary.GetKey(), verifyResult.isRemoved);
+                _logger.Verbose(e, "This shouldn't be necessary, something else should capture and log this message");
+                throw;
             }
         }
 
         private ConcurrentDictionary<string, PersistenceInfo> GetCollection()
         {
-            return _cache.GetOrAdd("persistVoltageSummaryList", () => new ConcurrentDictionary<string, PersistenceInfo>());
+            return _cache.GetOrAdd("persistVoltageSummaryList", () => new ConcurrentDictionary<string, PersistenceInfo>(), DateTimeOffset.MaxValue);
         }
 
         private async Task PersistAsync(string key, CancellationToken cancellationToken)
@@ -123,17 +144,12 @@ namespace Domain
             catch (Microsoft.Azure.Cosmos.CosmosException e) when (e.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
                 _logger.Warning("Conflicted volt summary {Key}", key);
-                if ((await VerifyAsync(item.Summary, cancellationToken)).isPersisted)
-                    return;
-                else
-                    await PublishWaitingSummariesAsync(cancellationToken);
-
+                await VerifyAsync(item.Summary, cancellationToken);
             }
+            // timeout 408 received
             catch (Exception e)
             {
                 _logger.Error(e, "Voltage summary persistence failure");
-                var cosmosEx = e as Microsoft.Azure.Cosmos.CosmosException;
-                await PublishWaitingSummariesAsync(cancellationToken);
             }
             finally
             {
@@ -144,12 +160,16 @@ namespace Domain
         private async Task PublishWaitingSummariesAsync(CancellationToken cancellationToken)
         {
             var inMemoryCollection = GetCollection();
+            _logger.Verbose("Inmemory voltage summary count {Count}", inMemoryCollection.Keys.Count);
             var inMemoryKey = inMemoryCollection.Keys.FirstOrDefault();
             PersistenceInfo summary;
             if (inMemoryKey != null)
                 if (inMemoryCollection.TryGetValue(inMemoryKey, out summary))
+                {
+                    _logger.Information("Found an unprocessed count {Count} for item {Item}", summary.GetRetryCount(), JsonConvert.SerializeObject(summary));
                     if (!summary.IsProcessing)
                         await _mediator.Publish(summary, cancellationToken);
+                }
         }
 
         private async Task WriteAndVerifyAsync(VoltageSummary notification, CancellationToken cancellationToken)

@@ -1,11 +1,14 @@
 ﻿using Entities;
 using LazyCache;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using SenecEntities;
 using SenecEntitiesAdapter;
 using Serilog;
+using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,15 +33,20 @@ namespace Domain
         public Task Handle(GridMeter notification, CancellationToken cancellationToken)
         {
             var time = _adapter.GetDecimal(notification.RTC.WEB_TIME);
-            Writefile(notification, time);
-            _logger.Debug("Logged {Time}", time.Value);
+            if (time?.Value.HasValue == true)
+                Writefile(notification, time);
+            else
+                _logger.Error("Grid meter has no time value - {@GridMeter}", notification);
             return Task.CompletedTask;
         }
 
         private void Writefile(GridMeter notification, SenecDecimal time)
         {
-            var collection = _cache.GetOrAdd("gridmeter", () => new ConcurrentDictionary<long, string>());
-            collection.TryAdd((long)time.Value.Value, JsonConvert.SerializeObject(notification.PM1OBJ1));
+            var collection = _cache.GetOrAdd("gridmeter", () => new ConcurrentDictionary<long, string>(), DateTimeOffset.MaxValue);
+            if (collection.TryAdd((long)time.Value.Value, JsonConvert.SerializeObject(notification.PM1OBJ1)))
+                _logger.Verbose("Logged {UnixTime} {Time} Cache count {Count}", time.Value, DateTimeOffset.FromUnixTimeSeconds((long)time.Value.Value), collection.Count);
+            else
+                _logger.Error("Could not add grid meter value to memory collection. Count {Count}", collection.Count);
         }
     }
 }

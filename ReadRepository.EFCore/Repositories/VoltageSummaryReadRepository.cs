@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 
 namespace ReadRepository.Repositories
 {
-    public interface IVoltageSummaryReadRepository
+    // todo delete
+    internal interface IVoltageSummaryReadRepository
     {
         Task<VoltageSummaryReadModel> Get(string key, CancellationToken cancellationToken);
     }
-
-    public class VoltageSummaryReadRepository : IVoltageSummaryReadRepository
+    // todo delete
+    internal class VoltageSummaryReadRepository : IVoltageSummaryReadRepository
     {
         private readonly IReadContext _context;
 

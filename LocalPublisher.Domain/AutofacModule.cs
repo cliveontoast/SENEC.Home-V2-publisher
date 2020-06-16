@@ -28,26 +28,16 @@ namespace Domain
 
             builder.RegisterAssemblyTypes(typeof(IAdapter).Assembly).AsImplementedInterfaces();
             Repository(builder);
-            ReadRepo(builder);
 
             SenecSource(builder);
             Shared(builder);
         }
 
-        private void ReadRepo(ContainerBuilder builder)
-        {
-            builder.RegisterType<VoltageSummaryReadRepository>().As<IVoltageSummaryReadRepository>();
-            builder.RegisterType<ReadContext>()
-                .As<IReadContext>()
-                .InstancePerLifetimeScope();
-        }
 
         private void Repository(ContainerBuilder builder)
         {
             builder.RegisterType<VoltageSummaryRepository>().As<IVoltageSummaryRepository>();
-            builder.RegisterType<LocalContext>()
-                .As<ILocalContext>()
-                .InstancePerLifetimeScope();
+            builder.RegisterType<LocalContext>().As<ILocalContext>();
         }
 
         private void Shared(ContainerBuilder builder)
