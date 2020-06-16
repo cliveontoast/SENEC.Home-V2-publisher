@@ -128,16 +128,29 @@ namespace Domain
                 item.IsProcessing = true;
                 await FetchPersistedVersionAsync(item.Summary, cancellationToken);
 
-                if (_versionConfig.PersistedNumber == _versionConfig.Number)
+                if (_versionConfig.PersistedNumber == _versionConfig.Number && _versionConfig.ThisProcessWrittenRecord)
                     await WriteAndVerifyAsync(item.Summary, cancellationToken);
                 else
                 {
                     await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
                     if (cancellationToken.IsCancellationRequested) return;
-                    if (!await IsPersisted(item.Summary, cancellationToken))
+                    var verifyResult = await VerifyAsync(item.Summary, cancellationToken);
+                    if (verifyResult.isPersisted)
                     {
+                        await FetchPersistedVersionAsync(item.Summary, cancellationToken);
+                        if (_versionConfig.PersistedNumber == _versionConfig.Number)
+                        {
+                            _logger.Warning("Persisted number is equal, however another process has persisted this record {Key}. Item removed {Removed}", key, verifyResult.isRemoved);
+                        }
+                        else
+                        {
+                            _logger.Information("Previous version is running and has persisted this record {Key}. Item removed {Removed}", key, verifyResult.isRemoved);
+                        }
+                    }
+                    else
+                    {
+                        _logger.Information("This record {Key} has not been persisted. Attempting to write.", key, verifyResult.isRemoved);
                         await WriteAndVerifyAsync(item.Summary, cancellationToken);
-                        _versionConfig.PersistedNumber = _versionConfig.Number;
                     }
                 }
             }
@@ -179,6 +192,11 @@ namespace Domain
             if (written)
             {
                 (isPersisted, isRemoved) = await VerifyAsync(notification, cancellationToken);
+                if (written && isPersisted)
+                {
+                    _versionConfig.ThisProcessWrittenRecord = true;
+                    _logger.Information("This process written the record {Key}", notification.GetKey());
+                }
             }
             var logMethod = isPersisted ? (Action<string, object[]>)_logger.Information : _logger.Error;
             logMethod("Written {Written} Persisted {isPersisted} Removed {Removed} Voltage summary {Summary} ", new object[] { written, isPersisted, isRemoved,
@@ -217,9 +235,8 @@ namespace Domain
             if (_versionConfig.PersistedNumber != null) return;
 
             var previousIntervalStart = summary.IntervalStartIncluded - (summary.IntervalEndExcluded - summary.IntervalStartIncluded);
-            var persistedRecord =
-                await _voltageSummaryReadRepository.Get(previousIntervalStart.GetIntervalKey(), cancellationToken)
-                ?? await _voltageSummaryReadRepository.Get(summary.GetKey(), cancellationToken);
+            var persistedRecord = await _voltageSummaryReadRepository.Get(summary.GetKey(), cancellationToken)
+                ?? await _voltageSummaryReadRepository.Get(previousIntervalStart.GetIntervalKey(), cancellationToken);
             if (persistedRecord == null)
             {
                 _versionConfig.PersistedNumber = 0;

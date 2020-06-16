@@ -46,7 +46,7 @@ namespace Domain
             if (collection.TryAdd((long)time.Value.Value, JsonConvert.SerializeObject(notification.PM1OBJ1)))
                 _logger.Verbose("Logged {UnixTime} {Time} Cache count {Count}", time.Value, DateTimeOffset.FromUnixTimeSeconds((long)time.Value.Value), collection.Count);
             else
-                _logger.Error("Could not add grid meter value to memory collection. Count {Count}", collection.Count);
+                _logger.Error("Logged {UnixTime} could not add grid meter value to memory collection. Count {Count}", time.Value, collection.Count);
         }
     }
 }
