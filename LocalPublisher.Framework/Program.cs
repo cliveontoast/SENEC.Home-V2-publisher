@@ -37,16 +37,15 @@ namespace LocalPublisherMono
                 using (var scope = container.BeginLifetimeScope())
                 {
                     var service = scope.Resolve<TimedHostedService>();
-                    var hostTask = service.StartAsync(tokenSource.Token);
+                    service.StartAsync(tokenSource.Token).Wait();
                     var cancelTask = Task.Factory.StartNew(() =>
                     {
                         Log.Information("Press ENTER to quit");
                         Console.ReadLine();
                         tokenSource.Cancel();
                     });
-                    Task.WaitAll(hostTask, cancelTask);
-                    if (hostTask.Exception != null)
-                        Log.Fatal(hostTask.Exception, "Application failed.");
+                    Task.WaitAll(cancelTask);
+                    Log.Information("Exiting");
                 }
             }
             catch (Exception ex)
