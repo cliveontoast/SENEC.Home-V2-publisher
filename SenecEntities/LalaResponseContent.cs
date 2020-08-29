@@ -69,7 +69,7 @@
 
     public class Energy
     {
-        public string STAT_LICENSCE_IS_OK { get; set; }
+        public string STAT_LICENSCE_IS_OK { get; set; } // variable not available
         public string STAT_STATE { get; set; }
         public string STAT_STATE_DECODE { get; set; }
         public string GUI_BAT_DATA_POWER { get; set; } // in Watts, stored in kW --> negative = draining - Battery load current
@@ -77,7 +77,7 @@
         public string GUI_HOUSE_POW { get; set; } // Power usage house current
         public string GUI_GRID_POW { get; set; } // value in Watts, stored in kW) --> negative = export into net - Power grid current
         public string STAT_MAINT_REQUIRED { get; set; }
-        public string MAINT_FILTER_REQUIRED { get; set; }
+        public string MAINT_FILTER_REQUIRED { get; set; } // variable not available
         public string GUI_BAT_DATA_FUEL_CHARGE { get; set; } // percentage - Battery Level
         public string GUI_CHARGING_INFO { get; set; }
         public string GUI_BOOSTING_INFO { get; set; }

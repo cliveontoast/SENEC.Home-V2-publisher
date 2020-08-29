@@ -46,6 +46,12 @@ namespace SenecSource
             return this;
         }
 
+        public ILalaRequestBuilder AddEnergy()
+        {
+            result.Add(nameof(LalaResponseContent.ENERGY), JObject.FromObject(new Energy()));
+            return this;
+        }
+
         //public async Task<LalaRequestBuilder> AddConsumption()
         //{
         //    return await AddResource("lalaRequest.SmartMeterConsumption.json");

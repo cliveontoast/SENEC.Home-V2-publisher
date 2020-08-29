@@ -11,6 +11,7 @@ using Moq;
 using ReadRepository.Cosmos;
 using ReadRepository.Repositories;
 using Repository;
+using SenecEntitesAdapter;
 using SenecEntities;
 using SenecEntitiesAdapter;
 using SenecSource;
@@ -81,10 +82,20 @@ namespace SenecSourceWebAppTest
 
             var builder = scope.Resolve<ILalaRequestBuilder>();
             var result = builder
+                // returns variable not found
                 .AddStatistics()
+
+                .AddEnergy()
                 .AddTime()
                 .Build();
             var response = result.Request<LalaResponseContent>(CancellationToken.None).RunWait();
+
+            var senecAdapter = new Adapter();
+            var time = senecAdapter.GetDecimal(response.RTC.WEB_TIME);
+            var adapter = new EnergyAdapter(new Adapter());
+
+            var energy = adapter.Convert((long)time.Value.Value, response.ENERGY);
+            var ename = energy.SystemState.EnglishName;
         }
 
         public static (ContainerBuilder cb, Mock<IConfiguration> conf) Builder()
@@ -132,6 +143,7 @@ namespace SenecSourceWebAppTest
 
             var builder = scope.Resolve<ILalaRequestBuilder>();
             var result = builder
+                .AddEnergy()
                 .AddGridMeter()
                 .AddTime()
                 .Build();

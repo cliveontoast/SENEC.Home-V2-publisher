@@ -6,5 +6,6 @@
         ILalaRequest Build();
         ILalaRequestBuilder AddTime();
         ILalaRequestBuilder AddStatistics();
+        ILalaRequestBuilder AddEnergy();
     }
 }
