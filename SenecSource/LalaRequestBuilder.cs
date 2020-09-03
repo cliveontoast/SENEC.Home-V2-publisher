@@ -36,7 +36,7 @@ namespace SenecSource
 
         public ILalaRequestBuilder AddTime()
         {
-            result.Add(nameof(LalaResponseContent.RTC), JObject.FromObject(new WebTime()));
+            result.Add(nameof(LalaResponseContent.RTC), JObject.FromObject(new RealTimeClock()));
             return this;
         }
 

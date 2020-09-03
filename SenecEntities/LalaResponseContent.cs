@@ -10,7 +10,7 @@
         /// Production
         /// </summary>
         public Meter PM1OBJ2 { get; set; }
-        public WebTime RTC { get; set; }
+        public RealTimeClock RTC { get; set; }
         public Statistic STATISTIC { get; set; }
         public Energy ENERGY { get; set; }
         public Wizard WIZARD { get; set; }

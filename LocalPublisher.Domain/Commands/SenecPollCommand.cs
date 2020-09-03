@@ -27,6 +27,7 @@ namespace Domain
         {
             var lalaRequest = _builder
                 .AddGridMeter()
+                .AddEnergy()
                 .AddTime()
                 .Build();
 
@@ -40,6 +41,15 @@ namespace Domain
                 Sent = response.Sent,
                 Received = response.Received,
             }, cancellationToken);
+
+            await _mediator.Publish(new SmartMeterEnergy
+            {
+                ENERGY = response.ENERGY,
+                RTC = response.RTC,
+                Sent = response.Sent,
+                Received = response.Received,
+            }, cancellationToken);
+
             return Unit.Value;
         }
     }
