@@ -60,12 +60,13 @@ namespace SenecSource
                 }
                 result.Sent = response.start.ToUnixTimeMilliseconds();
                 result.Received = response.end.ToUnixTimeMilliseconds();
+                return result;
             }
             catch (Exception e)
             {
                 _logger.Error(e, "Cannot deserialise {Content}", response);
+                return null;
             }
-            return null;
         }
 
         public async Task<TResponse> RequestDirectToObject<TResponse>(CancellationToken token) where TResponse : WebResponse
