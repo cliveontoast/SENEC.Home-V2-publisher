@@ -34,21 +34,21 @@ namespace Domain
             var response = await lalaRequest.Request<LalaResponseContent>(cancellationToken);
             if (response == null) return Unit.Value;
 
-            await _mediator.Publish(new GridMeter
-            {
-                PM1OBJ1 = response.PM1OBJ1,
-                RTC = response.RTC,
-                Sent = response.Sent,
-                Received = response.Received,
-            }, cancellationToken);
+            await _mediator.Publish(
+                new GridMeter(
+                    pM1OBJ1: response.PM1OBJ1,
+                    rTC: response.RTC,
+                    sent: response.Sent,
+                    received: response.Received),
+                cancellationToken);
 
-            await _mediator.Publish(new SmartMeterEnergy
-            {
-                ENERGY = response.ENERGY,
-                RTC = response.RTC,
-                Sent = response.Sent,
-                Received = response.Received,
-            }, cancellationToken);
+            await _mediator.Publish(
+                new SmartMeterEnergy(
+                    eNERGY: response.ENERGY,
+                    rTC: response.RTC,
+                    sent: response.Sent,
+                    received: response.Received),
+                cancellationToken);
 
             return Unit.Value;
         }
