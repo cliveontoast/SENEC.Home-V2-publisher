@@ -137,20 +137,18 @@ namespace Domain
             }
 
             var maximumValues = (int)(intervalEnd - intervalStart).TotalSeconds;
-            var stats = new VoltageSummary()
-            {
-                IntervalStartIncluded = intervalStart,
-                IntervalEndExcluded = intervalEnd,
-                L1 = CreateStatistics(list, a => a.L1.Voltage, maximumValues),
-                L2 = CreateStatistics(list, a => a.L2.Voltage, maximumValues),
-                L3 = CreateStatistics(list, a => a.L3.Voltage, maximumValues),
-            };
+            var stats = new VoltageSummary(
+                intervalStartIncluded: intervalStart,
+                intervalEndExcluded: intervalEnd,
+                l1: CreateStatistics(list, a => a.L1.Voltage, maximumValues),
+                l2: CreateStatistics(list, a => a.L2.Voltage, maximumValues),
+                l3: CreateStatistics(list, a => a.L3.Voltage, maximumValues)
+                );
             return stats;
         }
 
         private Statistic CreateStatistics(List<Meter> list, Func<Meter, SenecDecimal> property, int maximumValues)
         {
-            var result = new Statistic();
             var values = (
                 from a in list
                 let p = property(a)
@@ -159,18 +157,18 @@ namespace Domain
                 orderby value
                 select value
                 ).ToList();
-            result.Failures = maximumValues - values.Count;
+            var failures = maximumValues - values.Count;
             if (values.Count > 0)
             {
-                result.Minimum = values.First();
-                result.Maximum = values.Last();
+                var minimum = values.First();
+                var maximum = values.Last();
                 var midPoint = values.Count % 2 == 0
                     ? values.Count / 2 - 1
                     : values.Count / 2;
-                result.Median = values[midPoint];
+                var median = values[midPoint];
+                return new Statistic(minimum, maximum, median, failures);
             }
-
-            return result;
+            return new Statistic(failures);
         }
     }
 }

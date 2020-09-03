@@ -1,20 +1,22 @@
-﻿namespace Repository.Model
+﻿using System;
+
+namespace Repository.Model
 {
     public class VoltageSummary : Entities.VoltageSummary, IRepositoryEntity
     {
         // EF
-        public VoltageSummary()
+        public VoltageSummary(): base(default, default, default, default, default)
         {
         }
 
-        public VoltageSummary(Entities.VoltageSummary entity, int version)
+        public VoltageSummary(Entities.VoltageSummary entity, int version): base(
+            entity.IntervalEndExcluded,
+            entity.IntervalStartIncluded,
+            entity.L3,
+            entity.L2,
+            entity.L1
+            )
         {
-            // automapper
-            IntervalEndExcluded = entity.IntervalEndExcluded;
-            IntervalStartIncluded = entity.IntervalStartIncluded;
-            L1 = entity.L1;
-            L2 = entity.L2;
-            L3 = entity.L3;
             Version = version;
             Key = entity.GetKey();
             // TODO All documents written with version 0 used partition of yyyyMM i.e. capital MM == month.

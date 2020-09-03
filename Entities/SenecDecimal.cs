@@ -26,18 +26,18 @@
         {
             get
             {
-                switch (Type)
+                return Type switch
                 {
-                    case Float: return nameof(Float);
-                    case Unsigned1: return nameof(Unsigned1);
-                    case Unsigned3: return nameof(Unsigned3);
-                    case Unsigned6: return nameof(Unsigned6);
-                    case Unsigned8: return nameof(Unsigned8);
-                    case Integer1: return nameof(Integer1);
-                    case Integer3: return nameof(Integer3);
-                    case Integer8: return nameof(Integer8);
-                    default: return "Damn programmers not doing their job";
-                }
+                    Float => nameof(Float),
+                    Unsigned1 => nameof(Unsigned1),
+                    Unsigned3 => nameof(Unsigned3),
+                    Unsigned6 => nameof(Unsigned6),
+                    Unsigned8 => nameof(Unsigned8),
+                    Integer1 => nameof(Integer1),
+                    Integer3 => nameof(Integer3),
+                    Integer8 => nameof(Integer8),
+                    _ => "Damn programmers not doing their job",
+                };
             }
         }
 

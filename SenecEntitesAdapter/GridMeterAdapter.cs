@@ -19,23 +19,24 @@ namespace SenecEntitesAdapter
         public Meter Convert(long instant, SenecMeter meter)
         {
             if (meter == null) return null;
-            var result = new Meter() { Instant = DateTimeOffset.FromUnixTimeSeconds(instant) };
-            result.TotalPower = _adapter.GetDecimal(meter.P_TOTAL);
-            result.Frequency = _adapter.GetDecimal(meter.FREQ);
-            result.L1 = Convert(meter, 0);
-            result.L2 = Convert(meter, 1);
-            result.L3 = Convert(meter, 2);
+            var result = new Meter(
+                instant: DateTimeOffset.FromUnixTimeSeconds(instant),
+                totalPower: _adapter.GetDecimal(meter.P_TOTAL),
+                frequency: _adapter.GetDecimal(meter.FREQ),
+                l1: Convert(meter, 0),
+                l2: Convert(meter, 1),
+                l3: Convert(meter, 2)
+                );
             return result;
         }
 
         private MeterPhase Convert(SenecMeter meter, int phase)
         {
-            return new MeterPhase
-            {
-                Current = _adapter.GetDecimal(meter.I_AC[phase]),
-                Voltage = _adapter.GetDecimal(meter.U_AC[phase]),
-                Power = _adapter.GetDecimal(meter.P_AC[phase]),
-            };
+            return new MeterPhase(
+                current: _adapter.GetDecimal(meter.I_AC[phase]),
+                voltage: _adapter.GetDecimal(meter.U_AC[phase]),
+                power: _adapter.GetDecimal(meter.P_AC[phase])
+            );
         }
     }
 

@@ -29,13 +29,12 @@ namespace Domain.Commands
         {
             var dayData = await _voltageSummaryDocumentReadRepository.Fetch(request.Date);
 
-            var results = new VoltageSummaryDaily
-            {
-                Date = request.Date,
-                L1 = GetPhase(request.Date, dayData, a => a.L1),
-                L2 = GetPhase(request.Date, dayData, a => a.L2),
-                L3 = GetPhase(request.Date, dayData, a => a.L3),
-            };
+            var results = new VoltageSummaryDaily(
+                date: request.Date,
+                l1: GetPhase(request.Date, dayData, a => a.L1),
+                l2: GetPhase(request.Date, dayData, a => a.L2),
+                l3: GetPhase(request.Date, dayData, a => a.L3)
+                );
             return results;
         }
 
@@ -46,10 +45,9 @@ namespace Domain.Commands
             var phaseData = dayData
                 .Where(a => a.IntervalStartIncluded.Date == date)
                 .ToDictionary(a => a.IntervalStartIncluded.TimeOfDay, a => p(a));
-            return new DayVoltageSummary
-            {
-                PhaseSummary = times.Select(timeOfDay => (timeOfDay, GetTimeData(timeOfDay, phaseData))).ToList(),
-            };
+            return new DayVoltageSummary(
+                phaseSummary: times.Select(timeOfDay => (timeOfDay, GetTimeData(timeOfDay, phaseData))).ToList()
+                );
         }
 
         private Statistic? GetTimeData(TimeSpan timeOfDay, Dictionary<TimeSpan, Statistic> phaseData)

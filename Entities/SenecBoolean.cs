@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+﻿using System.Diagnostics;
 
 namespace Entities
 {
@@ -15,8 +12,8 @@ namespace Entities
         {
         }
 
-        public bool IsTrue { get => Value.HasValue && Value.Value > 0; }
-        public bool IsFalse { get => Value.HasValue && Value.Value == 0; }
-        public bool IsNull { get => !Value.HasValue; }
+        public bool IsTrue => Value.HasValue && Value.Value > 0;
+        public bool IsFalse => Value.HasValue && Value.Value == 0;
+        public bool IsNull => !Value.HasValue;
     }
 }
