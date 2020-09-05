@@ -52,6 +52,7 @@ namespace SenecSourceWebAppTest
             var result1 = adapter.GetValue(freq);
             var result2 = adapter.GetValue(volt);
             var result3 = adapter.GetValue("u8_0E");
+            var result4 = adapter.GetValue(null);
         }
 
         //[TestMethod]
@@ -94,6 +95,8 @@ namespace SenecSourceWebAppTest
             var time = senecAdapter.GetDecimal(response.RTC.WEB_TIME);
             var adapter = new EnergyAdapter(new Adapter());
 
+            if (response.ENERGY == null || !time.Value.HasValue)
+                return;
             var energy = adapter.Convert((long)time.Value.Value, response.ENERGY);
             var ename = energy.SystemState.EnglishName;
         }

@@ -39,13 +39,15 @@ namespace LocalPublisher.Domain.Functions
                 _logger.Error("{TypeName} has no time value - {@Notification}", notification.GetType().Name, notification);
         }
 
-        private void Writefile(IRealTimeNotification notification, SenecDecimal time, string cacheKey)
+        private void Writefile(IRealTimeNotification notification, SenecDecimal senecMoment, string cacheKey)
         {
+            var unixMoment = (long)senecMoment.Value.Value;
+            var moment = DateTimeOffset.FromUnixTimeSeconds(unixMoment);
             var collection = _cache.GetOrAdd(cacheKey, () => new ConcurrentDictionary<long, string>(), DateTimeOffset.MaxValue);
-            if (collection.TryAdd((long)time.Value.Value, JsonConvert.SerializeObject(notification.SerializableEntity)))
-                _logger.Verbose("Logged {UnixTime} {Time} Cache count {Count}", time.Value, DateTimeOffset.FromUnixTimeSeconds((long)time.Value.Value), collection.Count);
+            if (collection.TryAdd(unixMoment, JsonConvert.SerializeObject(notification.SerializableEntity)))
+                _logger.Verbose("Logged {UnixTime} {Time} Cache count {Count}", senecMoment.Value, moment, collection.Count);
             else
-                _logger.Warning("Logged {UnixTime} could not add {TypeName} value to memory collection. Count {Count}", time.Value, notification.GetType().Name, collection.Count);
+                _logger.Information("Logged {UnixTime} could not add {TypeName} value to memory collection. Count {Count}", senecMoment.Value, notification.GetType().Name, collection.Count);
         }
     }
 }

@@ -18,7 +18,6 @@ namespace SenecEntitesAdapter
 
         public Energy Convert(long instant, SenecEnergy meter)
         {
-            if (meter == null) return null;
             var result = new Energy(
                 instant: DateTimeOffset.FromUnixTimeSeconds(instant),
                 batteryPercentageFull: _adapter.GetDecimal(meter.GUI_BAT_DATA_FUEL_CHARGE),
@@ -39,6 +38,6 @@ namespace SenecEntitesAdapter
 
     public interface IEvergyAdapter
     {
-        Entities.Energy Convert(long instant, SenecEnergy meter);
+        Energy Convert(long instant, SenecEnergy meter);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Entities;
 using SenecEntitiesAdapter;
 using System;
+using System.Linq;
 using SenecMeter = SenecEntities.Meter;
 
 namespace SenecEntitesAdapter
@@ -18,7 +19,6 @@ namespace SenecEntitesAdapter
 
         public Meter Convert(long instant, SenecMeter meter)
         {
-            if (meter == null) return null;
             var result = new Meter(
                 instant: DateTimeOffset.FromUnixTimeSeconds(instant),
                 totalPower: _adapter.GetDecimal(meter.P_TOTAL),
@@ -33,9 +33,9 @@ namespace SenecEntitesAdapter
         private MeterPhase Convert(SenecMeter meter, int phase)
         {
             return new MeterPhase(
-                current: _adapter.GetDecimal(meter.I_AC[phase]),
-                voltage: _adapter.GetDecimal(meter.U_AC[phase]),
-                power: _adapter.GetDecimal(meter.P_AC[phase])
+                current: _adapter.GetDecimal(meter.I_AC?.Skip(phase)?.FirstOrDefault()),
+                voltage: _adapter.GetDecimal(meter.U_AC?.Skip(phase)?.FirstOrDefault()),
+                power: _adapter.GetDecimal(meter.P_AC?.Skip(phase)?.FirstOrDefault())
             );
         }
     }

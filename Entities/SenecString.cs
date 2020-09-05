@@ -16,8 +16,8 @@
             Type = type;
         }
 
-        public string Value { get; private set; }
-        public int Type { get; set; }
+        public string Value { get; }
+        public override int Type { get; }
 
         private string TypeString
         {

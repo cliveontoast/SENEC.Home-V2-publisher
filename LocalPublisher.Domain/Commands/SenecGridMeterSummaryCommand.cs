@@ -131,9 +131,9 @@ namespace Domain
                 if (!collection.TryRemove(instant, out string textValue)) continue;
                 removedTexts.Add(textValue);
                 var original = JsonConvert.DeserializeObject<SenecEntities.Meter>(textValue);
+                if (original == null) continue; // no way the programmer serialised nothing
                 var entity = _gridMeterAdapter.Convert(instant, original);
-                if (entity != null)
-                    list.Add(entity);
+                list.Add(entity);
             }
 
             var maximumValues = (int)(intervalEnd - intervalStart).TotalSeconds;

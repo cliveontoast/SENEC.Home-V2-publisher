@@ -20,7 +20,7 @@
         }
 
         public decimal? Value { get; set; }
-        public int Type { get; }
+        public override int Type { get; }
 
         private string TypeString
         {

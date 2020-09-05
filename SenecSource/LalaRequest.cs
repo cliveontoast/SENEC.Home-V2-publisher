@@ -38,7 +38,12 @@ namespace SenecSource
                 using (var response = await GetResponse(client, token))
                 {
                     if (IsOk(response.response))
-                        return (await response.response.Content.ReadAsStringAsync(), response.start, response.end);
+                    {
+                        var result = await response.response.Content.ReadAsStringAsync();
+                        if (string.IsNullOrWhiteSpace(result))
+                            _logger.Error("SENEC returned success status code, but {IsNull} data '{result}'", result == null, result);
+                        return (result, response.start, response.end);
+                    }
                     return (null, response.start, response.end);
                 }
             }
@@ -47,26 +52,26 @@ namespace SenecSource
         public async Task<TResponse> Request<TResponse>(CancellationToken token) where TResponse : WebResponse
         {
             var response = await Request(token);
-            try
-            {
                 var result = default(TResponse);// TODO how in non-null land?
-                if (response.response == null)
+                result.Sent = response.start.ToUnixTimeMilliseconds();
+                result.Received = response.end.ToUnixTimeMilliseconds();
+                if (string.IsNullOrWhiteSpace(response.response))
                 {
+                    _logger.Warning("SENEC bad response {Response} {Start} {End}", response.response, response.start, response.end);
                     result = Activator.CreateInstance<TResponse>();
                 }
                 else
                 {
-                    result = JsonConvert.DeserializeObject<TResponse>(response.response);
+                    try
+                    {    
+                        result = JsonConvert.DeserializeObject<TResponse>(response.response);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error(e, "Cannot deserialise {Content} {Start} {End}", response.response, response.start, response.end);
+                    }
                 }
-                result.Sent = response.start.ToUnixTimeMilliseconds();
-                result.Received = response.end.ToUnixTimeMilliseconds();
                 return result;
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e, "Cannot deserialise {Content}", response);
-                return null;
-            }
         }
 
         public async Task<TResponse> RequestDirectToObject<TResponse>(CancellationToken token) where TResponse : WebResponse
@@ -95,9 +100,13 @@ namespace SenecSource
             return default;
         }
 
-        private static bool IsOk(HttpResponseMessage response)
+        private bool IsOk(HttpResponseMessage response)
         {
-            return response.Content != null && response.StatusCode == System.Net.HttpStatusCode.OK;
+            if (response.Content != null && response.IsSuccessStatusCode)
+                return true;
+
+            _logger.Warning("SENEC response was not ok {StatusCode} {@Response}", response.StatusCode, response);
+            return false;
         }
 
         private async Task<ResponseTime> GetResponse(HttpClient client, CancellationToken token)
