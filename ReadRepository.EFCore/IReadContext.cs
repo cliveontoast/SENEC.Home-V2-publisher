@@ -7,7 +7,7 @@ namespace ReadRepository
 {
     public interface IReadContext
     {
-        DbSet<VoltageSummary> VoltageSummaries { get; set; }
+        DbSet<VoltageSummary> VoltageSummaries { get; }
     }
 
     public class ReadContext : LocalContext, IReadContext

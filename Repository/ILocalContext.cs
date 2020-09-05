@@ -8,7 +8,7 @@ namespace Repository
 {
     public interface ILocalContext
     {
-        DbSet<VoltageSummary> VoltageSummaries { get; set; }
+        DbSet<VoltageSummary> VoltageSummaries { get; }
 
         Task SeedAsync(CancellationToken cancellationToken);
 
