@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "Entities\Entiti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SenecEntitesAdapter", "SenecEntitesAdapter\SenecEntitesAdapter.csproj", "{3067FCAC-C0C7-4989-B07F-7A4B18239E36}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{051CD5E4-6193-4FF4-87CE-73980D62C7F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.EFCore", "Repository.EFCore\Repository.EFCore.csproj", "{051CD5E4-6193-4FF4-87CE-73980D62C7F0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SenecSource", "SenecSource\SenecSource.csproj", "{6A8205A6-8DB4-44F2-AEAE-941B054D8735}"
 EndProject
@@ -20,8 +20,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.Model", "Repository.Model\Repository.Model.csproj", "{A9175441-436D-4FC6-8723-6D42FA3911DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadRepository.Cosmos", "ReadRepository.Cosmos\ReadRepository.Cosmos.csproj", "{E2C8A709-E506-4CCD-9374-8AA767587F1F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadRepository.EFCore", "ReadRepository.EFCore\ReadRepository.EFCore.csproj", "{BF57BD54-4367-40DA-A89A-EF48D82ABDCC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadRepository.ReadModel", "ReadRepository.ReadModel\ReadRepository.ReadModel.csproj", "{932C77D2-A24D-4983-A0B3-60B2C106D1B4}"
 EndProject
@@ -84,10 +82,6 @@ Global
 		{E2C8A709-E506-4CCD-9374-8AA767587F1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2C8A709-E506-4CCD-9374-8AA767587F1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2C8A709-E506-4CCD-9374-8AA767587F1F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF57BD54-4367-40DA-A89A-EF48D82ABDCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF57BD54-4367-40DA-A89A-EF48D82ABDCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF57BD54-4367-40DA-A89A-EF48D82ABDCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF57BD54-4367-40DA-A89A-EF48D82ABDCC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{932C77D2-A24D-4983-A0B3-60B2C106D1B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{932C77D2-A24D-4983-A0B3-60B2C106D1B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{932C77D2-A24D-4983-A0B3-60B2C106D1B4}.Release|Any CPU.ActiveCfg = Release|Any CPU

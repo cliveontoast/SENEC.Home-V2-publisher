@@ -18,8 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ReadRepository.Cosmos\ReadRepository.Cosmos.csproj" />
-    <ProjectReference Include="..\ReadRepository.EFCore\ReadRepository.EFCore.csproj" />
-    <ProjectReference Include="..\Repository\Repository.csproj" />
+    <ProjectReference Include="..\Repository.EFCore\Repository.EFCore.csproj" />
     <ProjectReference Include="..\SenecEntitesAdapter\SenecEntitesAdapter.csproj" />
     <ProjectReference Include="..\SenecEntities\SenecEntities.csproj" />
     <ProjectReference Include="..\SenecSource\SenecSource.csproj" />

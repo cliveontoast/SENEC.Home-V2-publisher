@@ -19,7 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LocalPublisher.Domain\LocalPublisher.Domain.csproj" />
-    <ProjectReference Include="..\Repository\Repository.csproj" />
+    <ProjectReference Include="..\Repository.EFCore\Repository.EFCore.csproj" />
     <ProjectReference Include="..\SenecEntities\SenecEntities.csproj" />
   </ItemGroup>
 </Project>
