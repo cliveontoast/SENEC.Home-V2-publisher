@@ -39,7 +39,7 @@ namespace SenecEntitiesAdapter
         public SenecValue GetValue(string? data)
         {
             if (data == null)
-                return new SenecString(SenecString.Unknown, "");
+                return new SenecString(SenecString.Unknown);
             var valueArray = data.Split('_');
             if (valueArray.Length != 2)
                 return new SenecString(SenecString.Unknown, data);

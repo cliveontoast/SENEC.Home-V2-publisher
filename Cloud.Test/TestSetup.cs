@@ -23,15 +23,11 @@ namespace Cloud.Test
             var containerBuilder = BuildContainer(services);
 
             // TODO don't register here
-            containerBuilder.RegisterInstance(new LocalContextConfiguration
-            {
-                AccountEndPoint = "https://abc.documents.azure.com:443/",
-                AccountKey = "...",
-                DefaultContainer = "Items",
-                DatabaseName = "ToDoList"
-            } as ILocalContextConfiguration);
-
-
+            containerBuilder.RegisterInstance<ILocalContextConfiguration>(new LocalContextConfiguration(
+                accountEndPoint: "https://abc.documents.azure.com:443/",
+                accountKey: "...",
+                defaultContainer: "Items",
+                databaseName: "ToDoList"));
 
             var startup = new Startup(configuration);
             startup.ConfigureServices(services);

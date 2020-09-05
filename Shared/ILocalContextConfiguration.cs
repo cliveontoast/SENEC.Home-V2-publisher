@@ -14,5 +14,13 @@
         public string AccountKey { get; set; }
         public string DatabaseName { get; set; }
         public string DefaultContainer { get; set; }
+
+        public LocalContextConfiguration(string accountEndPoint, string accountKey, string databaseName, string defaultContainer)
+        {
+            AccountEndPoint = accountEndPoint;
+            AccountKey = accountKey;
+            DatabaseName = databaseName;
+            DefaultContainer = defaultContainer;
+        }
     }
 }

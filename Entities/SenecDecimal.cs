@@ -19,6 +19,7 @@
             Type = type;
         }
 
+        public override bool HasValue => Value.HasValue;
         public decimal? Value { get; set; }
         public override int Type { get; }
 
