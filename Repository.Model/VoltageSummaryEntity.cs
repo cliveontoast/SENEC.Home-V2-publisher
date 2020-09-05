@@ -7,6 +7,8 @@ namespace Repository.Model
         // EF
         public VoltageSummary(): base(default, default, default, default, default)
         {
+            Partition = GetPartition();
+            Key = this.GetKey();
         }
 
         public VoltageSummary(Entities.VoltageSummary entity, int version): base(
@@ -24,7 +26,12 @@ namespace Repository.Model
             // records up to and including June 16th 2020 require re-writing.
             // stop using the EF Core 3.1 to connect to cosmosDB, it seems to be... not optimal, i.e. right now I can't read via EF core.. so inserts only :/
             // either try EF Core 5 preview, or move to cosmosDB client.
-            Partition = IntervalStartIncluded.ToString("yyyyMM");
+            Partition = GetPartition();
+        }
+
+        private string GetPartition()
+        {
+            return IntervalStartIncluded.ToString("yyyyMM");
         }
 
         public string Key { get; set; }
