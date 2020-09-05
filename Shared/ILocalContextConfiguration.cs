@@ -15,6 +15,13 @@
         public string DatabaseName { get; set; }
         public string DefaultContainer { get; set; }
 
+        public LocalContextConfiguration()
+        {
+            AccountEndPoint = "undefined";
+            AccountKey = "undefined";
+            DatabaseName = "undefined";
+            DefaultContainer = "undefined";
+        }   
         public LocalContextConfiguration(string accountEndPoint, string accountKey, string databaseName, string defaultContainer)
         {
             AccountEndPoint = accountEndPoint;
