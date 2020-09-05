@@ -52,26 +52,25 @@ namespace SenecSource
         public async Task<TResponse> Request<TResponse>(CancellationToken token) where TResponse : WebResponse
         {
             var response = await Request(token);
-                var result = default(TResponse);// TODO how in non-null land?
-                result.Sent = response.start.ToUnixTimeMilliseconds();
-                result.Received = response.end.ToUnixTimeMilliseconds();
-                if (string.IsNullOrWhiteSpace(response.response))
-                {
-                    _logger.Warning("SENEC bad response {Response} {Start} {End}", response.response, response.start, response.end);
-                    result = Activator.CreateInstance<TResponse>();
+            var result = Activator.CreateInstance<TResponse>();
+            if (string.IsNullOrWhiteSpace(response.response))
+            {
+                _logger.Warning("SENEC bad response {Response} {Start} {End}", response.response, response.start, response.end);
+            }
+            else
+            {
+                try
+                {    
+                    result = JsonConvert.DeserializeObject<TResponse>(response.response);
                 }
-                else
+                catch (Exception e)
                 {
-                    try
-                    {    
-                        result = JsonConvert.DeserializeObject<TResponse>(response.response);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Error(e, "Cannot deserialise {Content} {Start} {End}", response.response, response.start, response.end);
-                    }
+                    _logger.Error(e, "Cannot deserialise {Content} {Start} {End}", response.response, response.start, response.end);
                 }
-                return result;
+            }
+            result.Sent = response.start.ToUnixTimeMilliseconds();
+            result.Received = response.end.ToUnixTimeMilliseconds();
+            return result;
         }
 
         public async Task<TResponse> RequestDirectToObject<TResponse>(CancellationToken token) where TResponse : WebResponse

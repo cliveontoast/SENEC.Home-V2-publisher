@@ -12,5 +12,16 @@ namespace ReadRepository.ReadModel
         public DateTimeOffset IntervalEndExcluded { get; set; }
         public int Version { get; set; }
         public string Key { get; set; }
+
+        public VoltageSummaryReadModel(DateTimeOffset intervalEndExcluded, DateTimeOffset intervalStartIncluded, string key, Statistic l1, Statistic l2, Statistic l3, int version)
+        {
+            Key = key;
+            IntervalStartIncluded = intervalStartIncluded;
+            IntervalEndExcluded = intervalEndExcluded;
+            L1 = l1;
+            L2 = l2;
+            L3 = l3;
+            Version = version;
+        }
     }
 }

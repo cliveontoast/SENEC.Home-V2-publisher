@@ -107,7 +107,7 @@ namespace Domain
             return DateTimeOffset.FromUnixTimeSeconds(lastItem);
         }
 
-        private VoltageSummary CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        private VoltageSummary? CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
         {
             var removedTexts = new List<string>();
             try
@@ -152,8 +152,8 @@ namespace Domain
             var values = (
                 from a in list
                 let p = property(a)
-                where p?.Value.HasValue == true
-                let value = p.Value.Value
+                where p.Value.HasValue == true
+                let value = p.Value!.Value
                 orderby value
                 select value
                 ).ToList();

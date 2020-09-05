@@ -23,15 +23,14 @@ namespace ReadRepository.Repositories
         public async Task<VoltageSummaryReadModel> Get(string key, CancellationToken cancellationToken)
         {
             var summary = await _context.VoltageSummaries.FindAsync(key, cancellationToken);
-            return summary == null ? null : new VoltageSummaryReadModel
-            {
-                IntervalEndExcluded = summary.IntervalEndExcluded,
-                IntervalStartIncluded = summary.IntervalStartIncluded,
-                L1 = summary.L1,
-                L2 = summary.L2,
-                L3 = summary.L3,
-                Version = summary.Version ?? 0
-            };
+            return summary == null ? null : new VoltageSummaryReadModel(
+                intervalEndExcluded: summary.IntervalEndExcluded,
+                intervalStartIncluded: summary.IntervalStartIncluded,
+                key: summary.Key,
+                l1: summary.L1,
+                l2: summary.L2,
+                l3: summary.L3,
+                version: summary.Version ?? 0);
         }
     }
 }

@@ -15,5 +15,6 @@ namespace SenecEntities
         }
 
         public object SerializableEntity => PM1OBJ1;
+        public bool IsValid => RTC != null && PM1OBJ1 != null;
     }
 }

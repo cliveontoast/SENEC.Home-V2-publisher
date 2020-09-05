@@ -1,4 +1,6 @@
-﻿namespace Entities
+﻿using System.Runtime.CompilerServices;
+
+namespace Entities
 {
     [System.Diagnostics.DebuggerDisplay("{ToString()} {TypeString}")]
     public class SenecDecimal : SenecValue
@@ -57,5 +59,8 @@
                     return Value.ToString();
             }
         }
+
+        public bool IsInteger => Type >= Unsigned1 && Type < Integer8 && Value.HasValue;
+        public long AsInteger => (long)Value!.Value;
     }
 }

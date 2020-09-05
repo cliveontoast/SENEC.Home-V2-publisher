@@ -6,5 +6,6 @@ namespace SenecEntities
     {
         RealTimeClock RTC { get; set; }
         object SerializableEntity { get; }
+        bool IsValid { get; }
     }
 }

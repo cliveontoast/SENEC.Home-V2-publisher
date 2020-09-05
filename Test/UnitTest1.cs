@@ -97,7 +97,7 @@ namespace SenecSourceWebAppTest
 
             if (response?.ENERGY == null || !time.Value.HasValue)
                 return;
-            var energy = adapter.Convert((long)time.Value.Value, response.ENERGY);
+            var energy = adapter.Convert(time.AsInteger, response.ENERGY);
             var ename = energy.SystemState.EnglishName;
         }
 

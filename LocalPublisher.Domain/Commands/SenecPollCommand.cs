@@ -39,23 +39,27 @@ namespace Domain
                     .Build();
 
                 var response = await lalaRequest.Request<LalaResponseContent>(cancellationToken);
-                if (response == null) return Unit.Value;
-
-                await _mediator.Publish(
-                    new GridMeter(
-                        pM1OBJ1: response.PM1OBJ1,
-                        rTC: response.RTC,
-                        sent: response.Sent,
-                        received: response.Received),
-                    cancellationToken);
-
-                await _mediator.Publish(
-                    new SmartMeterEnergy(
-                        eNERGY: response.ENERGY,
-                        rTC: response.RTC,
-                        sent: response.Sent,
-                        received: response.Received),
-                    cancellationToken);
+                if (response.RTC == null) return Unit.Value;
+                if (response.PM1OBJ1 != null)
+                {
+                    await _mediator.Publish(
+                        new GridMeter(
+                            pM1OBJ1: response.PM1OBJ1,
+                            rTC: response.RTC,
+                            sent: response.Sent,
+                            received: response.Received),
+                        cancellationToken);
+                }
+                if (response.ENERGY != null)
+                {
+                    await _mediator.Publish(
+                        new SmartMeterEnergy(
+                            eNERGY: response.ENERGY,
+                            rTC: response.RTC,
+                            sent: response.Sent,
+                            received: response.Received),
+                        cancellationToken);
+                }
             }
             catch (Exception e)
             {
