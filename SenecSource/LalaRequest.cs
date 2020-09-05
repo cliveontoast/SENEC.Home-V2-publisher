@@ -29,9 +29,9 @@ namespace SenecSource
             _senecSettings = senecSettings;
         }
 
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
-        public async Task<(string response, DateTimeOffset start, DateTimeOffset end)> Request(CancellationToken token)
+        public async Task<(string? response, DateTimeOffset start, DateTimeOffset end)> Request(CancellationToken token)
         {
             using (var client = new HttpClient())
             {
@@ -53,9 +53,9 @@ namespace SenecSource
         {
             var response = await Request(token);
             var result = Activator.CreateInstance<TResponse>();
-            if (string.IsNullOrWhiteSpace(response.response))
+            if (response.response == null || string.IsNullOrWhiteSpace(response.response))
             {
-                _logger.Warning("SENEC bad response {Response} {Start} {End}", response.response, response.start, response.end);
+                _logger.Warning("SENEC bad response {Response} {Start} {End}", response.response ?? "<nulL>", response.start, response.end);
             }
             else
             {
@@ -73,6 +73,7 @@ namespace SenecSource
             return result;
         }
 
+        // TODO delete
         public async Task<TResponse> RequestDirectToObject<TResponse>(CancellationToken token) where TResponse : WebResponse
         {
             using (var client = new HttpClient())
@@ -80,23 +81,23 @@ namespace SenecSource
                 var timeSent = _time.Now;
                 using (var response = await GetResponse(client, token))
                 {
+                    var timeReceived = _time.Now;
+                    var result = Activator.CreateInstance<TResponse>();
                     if (IsOk(response.response))
                     {
-                        var timeReceived = _time.Now;
                         using (var stream = await response.response.Content.ReadAsStreamAsync())
                         using (var sr = new StreamReader(stream))
                         using (var reader = new JsonTextReader(sr))
                         {
                             var serializer = new JsonSerializer();
-                            var result = serializer.Deserialize<TResponse>(reader);
-                            result.Received = timeReceived.ToUnixTimeMilliseconds();
-                            result.Sent = timeSent.ToUnixTimeMilliseconds();
-                            return result;
+                            result = serializer.Deserialize<TResponse>(reader) ?? result;
                         }
                     }
+                    result.Received = timeReceived.ToUnixTimeMilliseconds();
+                    result.Sent = timeSent.ToUnixTimeMilliseconds();
+                    return result;
                 }
             }
-            return default;
         }
 
         private bool IsOk(HttpResponseMessage response)
@@ -117,23 +118,27 @@ namespace SenecSource
             client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
             var httpContent = new StringContent(Content, Encoding.UTF8, "application/json");
             var start = DateTimeOffset.Now;
-            HttpResponseMessage result = null;
-            DateTimeOffset end;
+            var lalaResponse = await TryGet(client, httpContent, token);
+            return (lalaResponse.value, start, lalaResponse.end);
+        }
+
+        private async Task<(HttpResponseMessage value, DateTimeOffset end)> TryGet(HttpClient client, HttpContent httpContent, CancellationToken token)
+        {
             try
             {
-                result = await client.PostAsync($"http://{_senecSettings.IP}/lala.cgi", httpContent, token);
+                if (string.IsNullOrWhiteSpace(_senecSettings.IP))
+                {
+                    var txt = $"Senec setting is unspecified '{_senecSettings.IP}'";
+                    _logger.Fatal(txt);
+                    throw new Exception(txt);
+                }
+                return (await client.PostAsync($"http://{_senecSettings.IP}/lala.cgi", httpContent, token), DateTimeOffset.Now);
             }
             catch (HttpRequestException e)
             {
-                // todo remove ?
                 _logger.Warning(e, "Couldn't fetch from SENEC");
-                result = new HttpResponseMessage();
+                return (new HttpResponseMessage(), DateTimeOffset.Now);
             }
-            finally
-            {
-                end = DateTimeOffset.Now;
-            }
-            return (result, start, end);
         }
     }
 

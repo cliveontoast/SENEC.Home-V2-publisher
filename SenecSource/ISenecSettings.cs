@@ -4,6 +4,6 @@ namespace SenecSource
 {
     public interface ISenecSettings
     {
-        string IP { get; set; }
+        string? IP { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace SenecSource
 
         public LalaRequestBuilder(Func<ILalaRequest> buildRequest)
         {
+            result = new JObject();
             Restart();
             _buildRequest = buildRequest;
         }
