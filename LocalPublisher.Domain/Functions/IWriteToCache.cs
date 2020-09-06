@@ -44,9 +44,9 @@ namespace LocalPublisher.Domain.Functions
             var moment = DateTimeOffset.FromUnixTimeSeconds(unixMoment);
             var collection = _cache.GetOrAdd(cacheKey, () => new ConcurrentDictionary<long, string>(), DateTimeOffset.MaxValue);
             if (collection.TryAdd(unixMoment, JsonConvert.SerializeObject(notification.SerializableEntity)))
-                _logger.Verbose("Logged {UnixTime} {Time} Cache count {Count}", unixMoment, moment, collection.Count);
+                _logger.Verbose("Cached {UnixTime} {Time} - Cache count {Count}", unixMoment, moment, collection.Count);
             else
-                _logger.Information("Logged {UnixTime} could not add {TypeName} value to memory collection. Count {Count}", unixMoment, notification.GetType().Name, collection.Count);
+                _logger.Information("Cached {UnixTime} already exists for {TypeName} - Cache count {Count}", unixMoment, notification.GetType().Name, collection.Count);
         }
     }
 }
