@@ -30,6 +30,7 @@ namespace Domain
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            _logger.Information("Init timed host service");
             await Initialise(cancellationToken);
 
             foreach (var item in _services)
@@ -49,7 +50,8 @@ namespace Domain
                     }
                     catch (Exception e)
                     {
-                        _logger.Error(e, "Timer {Name} Failed", command.Name);
+                        if (!cancellationToken.IsCancellationRequested)
+                            _logger.Error(e, "Timer {Name} Failed", command.Name);
                     }
                 }, cancellationToken, TimeSpan.Zero, item.Period));
             }

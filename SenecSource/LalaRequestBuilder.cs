@@ -11,6 +11,7 @@ namespace SenecSource
 
         public LalaRequestBuilder(Func<ILalaRequest> buildRequest)
         {
+            result = new JObject();
             Restart();
             _buildRequest = buildRequest;
         }
@@ -36,13 +37,19 @@ namespace SenecSource
 
         public ILalaRequestBuilder AddTime()
         {
-            result.Add(nameof(LalaResponseContent.RTC), JObject.FromObject(new WebTime()));
+            result.Add(nameof(LalaResponseContent.RTC), JObject.FromObject(new RealTimeClock()));
             return this;
         }
 
         public ILalaRequestBuilder AddStatistics()
         {
             result.Add(nameof(LalaResponseContent.STATISTIC), JObject.FromObject(new Statistic()));
+            return this;
+        }
+
+        public ILalaRequestBuilder AddEnergy()
+        {
+            result.Add(nameof(LalaResponseContent.ENERGY), JObject.FromObject(new Energy()));
             return this;
         }
 

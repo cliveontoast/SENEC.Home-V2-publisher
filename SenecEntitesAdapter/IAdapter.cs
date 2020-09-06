@@ -4,7 +4,7 @@ namespace SenecEntitiesAdapter
 {
     public interface IAdapter
     {
-        SenecDecimal GetDecimal(string data);
-        SenecValue GetValue(string data);
+        SenecDecimal GetDecimal(string? data);
+        SenecValue GetValue(string? data);
     }
 }

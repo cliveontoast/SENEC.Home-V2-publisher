@@ -107,7 +107,7 @@ namespace Domain
             return DateTimeOffset.FromUnixTimeSeconds(lastItem);
         }
 
-        private VoltageSummary CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        private VoltageSummary? CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
         {
             var removedTexts = new List<string>();
             try
@@ -131,46 +131,44 @@ namespace Domain
                 if (!collection.TryRemove(instant, out string textValue)) continue;
                 removedTexts.Add(textValue);
                 var original = JsonConvert.DeserializeObject<SenecEntities.Meter>(textValue);
+                if (original == null) continue; // no way the programmer serialised nothing
                 var entity = _gridMeterAdapter.Convert(instant, original);
-                if (entity != null)
-                    list.Add(entity);
+                list.Add(entity);
             }
 
             var maximumValues = (int)(intervalEnd - intervalStart).TotalSeconds;
-            var stats = new VoltageSummary()
-            {
-                IntervalStartIncluded = intervalStart,
-                IntervalEndExcluded = intervalEnd,
-                L1 = CreateStatistics(list, a => a.L1.Voltage, maximumValues),
-                L2 = CreateStatistics(list, a => a.L2.Voltage, maximumValues),
-                L3 = CreateStatistics(list, a => a.L3.Voltage, maximumValues),
-            };
+            var stats = new VoltageSummary(
+                intervalStartIncluded: intervalStart,
+                intervalEndExcluded: intervalEnd,
+                l1: CreateStatistics(list, a => a.L1.Voltage, maximumValues),
+                l2: CreateStatistics(list, a => a.L2.Voltage, maximumValues),
+                l3: CreateStatistics(list, a => a.L3.Voltage, maximumValues)
+                );
             return stats;
         }
 
         private Statistic CreateStatistics(List<Meter> list, Func<Meter, SenecDecimal> property, int maximumValues)
         {
-            var result = new Statistic();
             var values = (
                 from a in list
                 let p = property(a)
-                where p?.Value.HasValue == true
-                let value = p.Value.Value
+                where p.Value.HasValue == true
+                let value = p.Value!.Value
                 orderby value
                 select value
                 ).ToList();
-            result.Failures = maximumValues - values.Count;
+            var failures = maximumValues - values.Count;
             if (values.Count > 0)
             {
-                result.Minimum = values.First();
-                result.Maximum = values.Last();
+                var minimum = values.First();
+                var maximum = values.Last();
                 var midPoint = values.Count % 2 == 0
                     ? values.Count / 2 - 1
                     : values.Count / 2;
-                result.Median = values[midPoint];
+                var median = values[midPoint];
+                return new Statistic(minimum, maximum, median, failures);
             }
-
-            return result;
+            return new Statistic(failures);
         }
     }
 }

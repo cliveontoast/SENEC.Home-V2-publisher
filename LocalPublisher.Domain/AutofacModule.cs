@@ -1,8 +1,6 @@
 ﻿using Autofac;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using ReadRepository;
-using ReadRepository.Repositories;
 using Repository;
 using SenecEntitiesAdapter;
 using SenecSource;
@@ -61,7 +59,7 @@ namespace Domain
             {
                 return new SenecSettings
                 {
-                    IP = Configuration.GetValue<string>("SenecIP")
+                    IP = Configuration.GetValue<string?>("SenecIP")
                 } as ISenecSettings;
             }).SingleInstance();
         }

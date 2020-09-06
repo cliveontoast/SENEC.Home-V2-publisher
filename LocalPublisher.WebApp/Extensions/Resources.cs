@@ -5,16 +5,16 @@ namespace LocalPublisherWebApp
 {
     public static class Resources
     {
-        public static Task<string> GetEmbeddedResource(this string name)
+        public async static Task<string?> GetEmbeddedResource(this string name)
         {
             var resourceName = $"{typeof(Resources).FullName}.{name}";
             using (var resourceStream = typeof(Resources).Assembly.GetManifestResourceStream(resourceName))
             {
                 if (resourceStream == null)
-                    return null;
+                    return await Task.FromResult<string?>(null);
 
                 using (var reader = new StreamReader(resourceStream))
-                    return reader.ReadToEndAsync();
+                    return await reader.ReadToEndAsync();
             }
         }
     }

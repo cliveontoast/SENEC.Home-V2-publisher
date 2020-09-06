@@ -15,19 +15,19 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class GridMeterCache : INotificationHandler<GridMeter>
+    public class SmartMeterEnergyCache : INotificationHandler<SmartMeterEnergy>
     {
-        private IWriteToCache _writeToCache;
+        private readonly IWriteToCache _writeToCache;
 
-        public GridMeterCache(
+        public SmartMeterEnergyCache(
             IWriteToCache writeToCache)
         {
             _writeToCache = writeToCache;
         }
 
-        public Task Handle(GridMeter notification, CancellationToken cancellationToken)
+        public Task Handle(SmartMeterEnergy notification, CancellationToken cancellationToken)
         {
-            _writeToCache.Add(notification, "gridmeter");
+            _writeToCache.Add(notification, "smartMeter");
             return Task.CompletedTask;
         }
     }

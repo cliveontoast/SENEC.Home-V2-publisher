@@ -12,11 +12,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+#nullable enable
 namespace LocalPublisherMono
 {
     class Program
     {
-        static IConfigurationRoot Configuration;
         static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
@@ -30,24 +30,11 @@ namespace LocalPublisherMono
 
                 IServiceCollection services = new ServiceCollection();
                 var cb = BuildContainer(services);
-                ConfigureServices(services);
-                ConfigureContainer(cb);
-                var container = cb.Build();
-                using (var tokenSource = new CancellationTokenSource())
-                using (var scope = container.BeginLifetimeScope())
-                {
-                    var service = scope.Resolve<TimedHostedService>();
-                    var hostTask = service.StartAsync(tokenSource.Token);
-                    var cancelTask = Task.Factory.StartNew(() =>
-                    {
-                        Log.Information("Press ENTER to quit");
-                        Console.ReadLine();
-                        tokenSource.Cancel();
-                    });
-                    Task.WaitAll(hostTask, cancelTask);
-                    if (hostTask.Exception != null)
-                        Log.Fatal(hostTask.Exception, "Application failed.");
-                }
+                var startup = new Startup();
+                startup.ConfigureServices(services);
+                startup.ConfigureContainer(cb);
+
+                Go(cb.Build());
             }
             catch (Exception ex)
             {
@@ -59,39 +46,29 @@ namespace LocalPublisherMono
             }
         }
 
+        private static void Go(IContainer container)
+        {
+            using var scope = container.BeginLifetimeScope();
+            using var tokenSource = new CancellationTokenSource();
+
+            var service = scope.Resolve<TimedHostedService>();
+            service.StartAsync(tokenSource.Token).Wait();
+            var cancelTask = Task.Factory.StartNew(() =>
+            {
+                Log.Information("Press ENTER to quit");
+                Console.ReadLine();
+                tokenSource.Cancel();
+            });
+            Task.WaitAll(cancelTask);
+            Log.Information("Exiting");
+        }
+
         public static ContainerBuilder BuildContainer(IServiceCollection services)
         {
             var factory = new AutofacServiceProviderFactory();
             var cb = factory.CreateBuilder(services);
             return cb;
         }
-
-        public static void ConfigureServices(IServiceCollection services)
-        {
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", false)
-                .AddEnvironmentVariables("LP_")
-                .Build();
-            services.AddSingleton(Configuration);
-        }
-
-        public static void ConfigureContainer(ContainerBuilder builder)
-        {
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration)
-                .CreateLogger();
-            builder.RegisterInstance(Log.Logger).As<ILogger>();
-            builder.AddMediatR(typeof(GridMeterCache).Assembly);
-            builder.RegisterModule(new AutofacModule(Configuration));
-            builder.RegisterModule(new ReadRepository.Cosmos.AutofacModule(Configuration));
-            builder.RegisterInstance(BuildAppCache());
-            builder.RegisterType<TimedHostedService>().AsSelf();
-        }
-
-        public static IAppCache BuildAppCache()
-        {
-            return new CachingService(new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions())));
-        }
     }
 }
+#nullable disable

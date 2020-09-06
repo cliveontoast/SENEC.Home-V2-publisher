@@ -10,14 +10,21 @@
 
         public static implicit operator string(SenecString s) => s.Value;
 
+        public SenecString(int type)
+        {
+            Value = "";
+            Type = type;
+        }
+
         public SenecString(int type, string value)
         {
             Value = value;
             Type = type;
         }
 
-        public string Value { get; private set; }
-        public int Type { get; set; }
+        public override bool HasValue => !string.IsNullOrWhiteSpace(Value);
+        public string Value { get; }
+        public override int Type { get; }
 
         private string TypeString
         {

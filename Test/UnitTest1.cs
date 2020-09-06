@@ -9,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ReadRepository.Cosmos;
-using ReadRepository.Repositories;
 using Repository;
+using SenecEntitesAdapter;
 using SenecEntities;
 using SenecEntitiesAdapter;
 using SenecSource;
@@ -22,7 +22,7 @@ namespace SenecSourceWebAppTest
     [TestClass]
     public class UnitTest1
     {
-        public ILifetimeScope scope;
+        public ILifetimeScope scope = Mock.Of<ILifetimeScope>();
 
         [TestCleanup]
         public void Cleanup()
@@ -51,6 +51,7 @@ namespace SenecSourceWebAppTest
             var result1 = adapter.GetValue(freq);
             var result2 = adapter.GetValue(volt);
             var result3 = adapter.GetValue("u8_0E");
+            var result4 = adapter.GetValue(null);
         }
 
         //[TestMethod]
@@ -81,10 +82,22 @@ namespace SenecSourceWebAppTest
 
             var builder = scope.Resolve<ILalaRequestBuilder>();
             var result = builder
+                // returns variable not found
                 .AddStatistics()
+
+                .AddEnergy()
                 .AddTime()
                 .Build();
             var response = result.Request<LalaResponseContent>(CancellationToken.None).RunWait();
+
+            var senecAdapter = new Adapter();
+            var time = senecAdapter.GetDecimal(response?.RTC?.WEB_TIME);
+            var adapter = new EnergyAdapter(new Adapter());
+
+            if (response?.ENERGY == null || !time.Value.HasValue)
+                return;
+            var energy = adapter.Convert(time.AsInteger, response.ENERGY);
+            var ename = energy.SystemState.EnglishName;
         }
 
         public static (ContainerBuilder cb, Mock<IConfiguration> conf) Builder()
@@ -102,13 +115,11 @@ namespace SenecSourceWebAppTest
             {
                 IP = "192.168.0.199"
             }).SingleInstance();
-            cb.RegisterInstance(new LocalContextConfiguration
-            {   
-                AccountEndPoint = "https://....documents.azure.com:443/",
-                AccountKey = "...",
-                DefaultContainer = "SenecDev",
-                DatabaseName = "ToDoList"
-            } as ILocalContextConfiguration);
+            cb.RegisterInstance<ILocalContextConfiguration>(new LocalContextConfiguration(
+                accountEndPoint: "https://....documents.azure.com:443/",
+                accountKey: "...",
+                defaultContainer: "SenecDev",
+                databaseName: "ToDoList"));
             return (cb, mockConfiguration);
         }
 
@@ -117,7 +128,7 @@ namespace SenecSourceWebAppTest
             return new CachingService(new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions())));
         }
 
-        public void InitScope(Action<(ContainerBuilder, Mock<IConfiguration>)> extras = null)
+        public void InitScope(Action<(ContainerBuilder, Mock<IConfiguration>)>? extras = null)
         {
             var cb = Builder();
             extras?.Invoke(cb);
@@ -132,6 +143,7 @@ namespace SenecSourceWebAppTest
 
             var builder = scope.Resolve<ILalaRequestBuilder>();
             var result = builder
+                .AddEnergy()
                 .AddGridMeter()
                 .AddTime()
                 .Build();

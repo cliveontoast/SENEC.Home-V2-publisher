@@ -30,6 +30,12 @@ namespace Domain
         {
             private int _retryCount;
             public VoltageSummary Summary { get; set; }
+
+            public PersistenceInfo(VoltageSummary summary)
+            {
+                Summary = summary;
+            }
+
             public bool IsProcessing { get; set; }
 
             public int GetRetryCount()
@@ -68,7 +74,7 @@ namespace Domain
                 _logger.Verbose("Handling {VoltageSummary}", JsonConvert.SerializeObject(notification));
                 var inMemoryCollection = GetCollection();
                 var key = notification.GetKey();
-                var added = inMemoryCollection.TryAdd(key, new PersistenceInfo { Summary = notification });
+                var added = inMemoryCollection.TryAdd(key, new PersistenceInfo(notification));
                 if (!added)
                 {
                     _logger.Error("Summary {Key} already added to collection", key);

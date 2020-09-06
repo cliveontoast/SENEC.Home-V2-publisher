@@ -28,44 +28,38 @@ namespace SenecEntitiesAdapter
             return null;
         }
 
-        public SenecDecimal GetDecimal(string data)
+        public SenecDecimal GetDecimal(string? data)
         {
-            return GetValue(data) as SenecDecimal;
+            var value = GetValue(data);
+            if (value is SenecDecimal decimalValue)
+                return decimalValue;
+            return new SenecDecimal(value.Type, null);
         }
 
-        public SenecValue GetValue(string data)
+        public SenecValue GetValue(string? data)
         {
-            var tmp = data.Split('_');
-            var value = new SenecString(SenecString.Unknown, tmp[1]);
-            switch (tmp[0])
+            if (data == null)
+                return new SenecString(SenecString.Unknown);
+            var valueArray = data.Split('_');
+            if (valueArray.Length != 2)
+                return new SenecString(SenecString.Unknown, data);
+
+            var value = valueArray[1];
+            return (valueArray[0]) switch
             {
-                case "fl":
-                    return ToFloat(tmp[1]);
-                case "u8":
-                    return ToInteger(SenecDecimal.Unsigned8, value);
-                case "u1":
-                    return ToInteger(SenecDecimal.Unsigned1, value);
-                case "u3":
-                    return ToInteger(SenecDecimal.Unsigned3, value);
-                case "u6":
-                    return ToInteger(SenecDecimal.Unsigned6, value);
-                case "i1":
-                    return ToInteger(SenecDecimal.Integer1, value, 0x8000, 0x10000);
-                case "i3":
-                    return ToInteger(SenecDecimal.Integer3, value, 0x80000000, 0x100000000);
-                case "i8":
-                    return ToInteger(SenecDecimal.Integer8, value, 0x80, 0x100);
-                case "ch":
-                    value.Type = SenecString.Character;
-                    break;
-                case "st":
-                    value.Type = SenecString.String;
-                    break;
-                case "er":
-                    value.Type = SenecString.Error;
-                    break;
-            }
-            return value;
+                "fl" => ToFloat(valueArray[1]),
+                "u8" => ToInteger(SenecDecimal.Unsigned8, value),
+                "u1" => ToInteger(SenecDecimal.Unsigned1, value),
+                "u3" => ToInteger(SenecDecimal.Unsigned3, value),
+                "u6" => ToInteger(SenecDecimal.Unsigned6, value),
+                "i1" => ToInteger(SenecDecimal.Integer1, value, 0x8000, 0x10000),
+                "i3" => ToInteger(SenecDecimal.Integer3, value, 0x80000000, 0x100000000),
+                "i8" => ToInteger(SenecDecimal.Integer8, value, 0x80, 0x100),
+                "ch" => new SenecString(SenecString.Character, value),
+                "st" => new SenecString(SenecString.String, value),
+                "er" => new SenecString(SenecString.Error, value),
+                _ => new SenecString(SenecString.Unknown, data),
+            };
         }
 
         private SenecValue ToInteger(int type, string valueText)

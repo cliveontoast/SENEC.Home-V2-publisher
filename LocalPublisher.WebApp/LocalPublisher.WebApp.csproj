@@ -2,6 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
     <UserSecretsId>3cb2bdd1-0362-4d3a-b417-134f4f4c7439</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
@@ -19,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LocalPublisher.Domain\LocalPublisher.Domain.csproj" />
-    <ProjectReference Include="..\Repository\Repository.csproj" />
+    <ProjectReference Include="..\Repository.EFCore\Repository.EFCore.csproj" />
     <ProjectReference Include="..\SenecEntities\SenecEntities.csproj" />
   </ItemGroup>
 </Project>

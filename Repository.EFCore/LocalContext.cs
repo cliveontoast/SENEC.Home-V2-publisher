@@ -9,7 +9,7 @@ namespace Repository
     public class LocalContext : DbContext, ILocalContext
     {
         private readonly Func<ILocalContextConfiguration> _configuration;
-        public DbSet<VoltageSummary> VoltageSummaries { get; set; }
+        public DbSet<VoltageSummary> VoltageSummaries => Set<VoltageSummary>();
 
         public LocalContext(
             Func<ILocalContextConfiguration> configuration)

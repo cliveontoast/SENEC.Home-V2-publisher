@@ -2,6 +2,7 @@ using Autofac;
 using Domain.Commands;
 using Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 
 namespace Cloud.Test
@@ -9,7 +10,7 @@ namespace Cloud.Test
     [TestClass]
     public class UnitTest1
     {
-        public ILifetimeScope scope;
+        public ILifetimeScope scope = Mock.Of<ILifetimeScope>();
 
         [TestCleanup]
         public void Cleanup()
