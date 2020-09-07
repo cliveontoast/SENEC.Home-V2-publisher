@@ -17,6 +17,7 @@ namespace Domain
 {
     public class SmartMeterEnergyCache : INotificationHandler<SmartMeterEnergy>
     {
+        public const string CacheKey = "smartMeter";
         private readonly IWriteToCache _writeToCache;
 
         public SmartMeterEnergyCache(
@@ -27,7 +28,7 @@ namespace Domain
 
         public Task Handle(SmartMeterEnergy notification, CancellationToken cancellationToken)
         {
-            _writeToCache.Add(notification, "smartMeter");
+            _writeToCache.Add(notification, CacheKey);
             return Task.CompletedTask;
         }
     }

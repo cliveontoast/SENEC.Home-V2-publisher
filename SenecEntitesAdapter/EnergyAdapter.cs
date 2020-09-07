@@ -6,7 +6,7 @@ using SenecEnergy = SenecEntities.Energy;
 
 namespace SenecEntitesAdapter
 {
-    public class EnergyAdapter : IEvergyAdapter
+    public class EnergyAdapter : IEnergyAdapter
     {
         private readonly IAdapter _adapter;
 
@@ -27,7 +27,7 @@ namespace SenecEntitesAdapter
                 isBatteryCharging: new SenecBoolean(_adapter.GetDecimal(meter.GUI_CHARGING_INFO)),
                 isBatteryDischarging: new SenecBoolean(_adapter.GetDecimal(meter.GUI_BOOSTING_INFO)),
                 gridImportWatts: _adapter.GetDecimal(meter.GUI_GRID_POW),
-                batteryCharge: _adapter.GetDecimal(meter.GUI_BAT_DATA_POWER),
+                batteryChargeWatts: _adapter.GetDecimal(meter.GUI_BAT_DATA_POWER),
                 sTAT_MAINT_REQUIRED: _adapter.GetDecimal(meter.STAT_MAINT_REQUIRED),
                 sTAT_STATE_DECODE: _adapter.GetDecimal(meter.STAT_STATE_DECODE)
                 );
@@ -36,7 +36,7 @@ namespace SenecEntitesAdapter
         }
     }
 
-    public interface IEvergyAdapter
+    public interface IEnergyAdapter
     {
         Energy Convert(long instant, SenecEnergy meter);
     }

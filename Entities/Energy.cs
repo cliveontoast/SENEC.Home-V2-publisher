@@ -6,7 +6,7 @@ namespace Entities
 {
     public class Energy
     {
-        public Energy(DateTimeOffset instant, SenecDecimal batteryPercentageFull, SenecDecimal homeInstantPowerConsumption, SenecDecimal solarPowerGeneration, SenecSystemState systemState, SenecBoolean isBatteryDischarging, SenecBoolean isBatteryCharging, SenecDecimal gridImportWatts, SenecDecimal batteryCharge, SenecDecimal sTAT_STATE_DECODE, SenecDecimal sTAT_MAINT_REQUIRED)
+        public Energy(DateTimeOffset instant, SenecDecimal batteryPercentageFull, SenecDecimal homeInstantPowerConsumption, SenecDecimal solarPowerGeneration, SenecSystemState systemState, SenecBoolean isBatteryDischarging, SenecBoolean isBatteryCharging, SenecDecimal gridImportWatts, SenecDecimal batteryChargeWatts, SenecDecimal sTAT_STATE_DECODE, SenecDecimal sTAT_MAINT_REQUIRED)
         {
             Instant = instant;
             BatteryPercentageFull = batteryPercentageFull;
@@ -18,9 +18,9 @@ namespace Entities
             GridImportWatts = gridImportWatts;
             GridExportWatts = new SenecDecimal(GridImportWatts.Type, GridImportWatts.Value);
             MutualExclusive(GridImportWatts, GridExportWatts);
-            BatteryCharge = batteryCharge;
-            BatteryDischarge = new SenecDecimal(BatteryCharge.Type, BatteryCharge.Value);
-            MutualExclusive(BatteryCharge, BatteryDischarge);
+            BatteryChargeWatts = batteryChargeWatts;
+            BatteryDischargeWatts = new SenecDecimal(BatteryChargeWatts.Type, BatteryChargeWatts.Value);
+            MutualExclusive(BatteryChargeWatts, BatteryDischargeWatts);
             STAT_STATE_DECODE = sTAT_STATE_DECODE;
             STAT_MAINT_REQUIRED = sTAT_MAINT_REQUIRED;
         }
@@ -38,11 +38,39 @@ namespace Entities
         public SenecDecimal GridExportWatts { get; set; }
         public SenecDecimal GridImportWatts { get; set; }
 
-        public SenecDecimal BatteryDischarge { get; set; }
-        public SenecDecimal BatteryCharge { get; set; }
+        public SenecDecimal BatteryDischargeWatts { get; set; }
+        public SenecDecimal BatteryChargeWatts { get; set; }
         public SenecDecimal SolarPowerGeneration { get; set; }
         public SenecBoolean IsBatteryDischarging { get; set; }
         public SenecBoolean IsBatteryCharging { get; set; }
+
+        public MomentEnergy GetMomentEnergy()
+        {
+            if (BatteryPercentageFull.Value.HasValue
+                && SystemState.HasValue
+                && GridExportWatts.Value.HasValue
+                && GridImportWatts.Value.HasValue
+                && BatteryDischargeWatts.Value.HasValue
+                && BatteryChargeWatts.Value.HasValue
+                && IsBatteryDischarging.Value.HasValue
+                && IsBatteryCharging.Value.HasValue)
+            {
+                return new MomentEnergy(
+                    instant: Instant,
+                    BatteryPercentageFull: BatteryPercentageFull.Value.Value,
+                    SystemState: SystemState.EnglishName,
+                    GridExportWatts: GridExportWatts.Value.Value,
+                    GridImportWatts: GridImportWatts.Value.Value,
+                    BatteryDischarge: BatteryDischargeWatts.Value.Value,
+                    BatteryCharge: BatteryChargeWatts.Value.Value,
+                    IsBatteryCharging: IsBatteryCharging.Value.Value,
+                    IsBatteryDischarging: IsBatteryDischarging.Value.Value,
+                    HomeInstantPowerConsumption: HomeInstantPowerConsumption.Value,
+                    SolarPowerGeneration: SolarPowerGeneration.Value
+                    );
+            }
+            return new MomentEnergy(Instant, SystemState.EnglishName);
+        }
 
         private static void MutualExclusive(SenecDecimal leftItem, SenecDecimal rightItem)
         {

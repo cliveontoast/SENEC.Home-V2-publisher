@@ -13,13 +13,13 @@ using Serilog;
 
 namespace Domain
 {
-    public class SenecGridMeterSummaryCommand : IRequest<Unit>
+    public class SenecEnergySummaryCommand : IRequest<Unit>
     {
     }
 
-    public class SenecGridMeterSummaryCommandHandler : IRequestHandler<SenecGridMeterSummaryCommand, Unit>
+    public class SenecEnergySummaryCommandHandler : IRequestHandler<SenecEnergySummaryCommand, Unit>
     {
-        private readonly IGridMeterAdapter _gridMeterAdapter;
+        private readonly IEnergyAdapter _gridMeterAdapter;
         private readonly ISenecCompressConfig _config;
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
@@ -28,8 +28,8 @@ namespace Domain
         // TODO make a DI singleton
         private static object _lock = new object();
 
-        public SenecGridMeterSummaryCommandHandler(
-            IGridMeterAdapter gridMeterAdapter,
+        public SenecEnergySummaryCommandHandler(
+            IEnergyAdapter gridMeterAdapter,
             ISenecCompressConfig config,
             IMediator mediator,
             ILogger logger,
@@ -42,11 +42,11 @@ namespace Domain
             _cache = cache;
         }
 
-        public async Task<Unit> Handle(SenecGridMeterSummaryCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(SenecEnergySummaryCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                List<VoltageSummary> tasks = GetSummaries();
+                List<EnergySummary> tasks = GetSummaries();
                 foreach (var voltageSummary in tasks)
                 {
                     _logger.Verbose("Publishing {StartTime}", voltageSummary.IntervalStartIncluded);
@@ -60,14 +60,14 @@ namespace Domain
             return Unit.Value;
         }
 
-        private List<VoltageSummary> GetSummaries()
+        private List<EnergySummary> GetSummaries()
         {
             _logger.Verbose("Getting summaries");
             lock (_lock)
             {
                 _logger.Verbose("Getting summaries - inside lock");
-                var tasks = new List<VoltageSummary>();
-                var collection = _cache.Get<ConcurrentDictionary<long, string>>(GridMeterCache.CacheKey);
+                var tasks = new List<EnergySummary>();
+                var collection = _cache.Get<ConcurrentDictionary<long, string>>(SmartMeterEnergyCache.CacheKey);
                 while (collection != null && collection.Count > 0)
                 {
                     _logger.Verbose("grid meter loop count {Count}", collection.Count);
@@ -107,7 +107,7 @@ namespace Domain
             return DateTimeOffset.FromUnixTimeSeconds(lastItem);
         }
 
-        private VoltageSummary? CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        private EnergySummary? CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
         {
             var removedTexts = new List<string>();
             try
@@ -121,30 +121,37 @@ namespace Domain
             }
         }
 
-        private VoltageSummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
+        private EnergySummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
         {
-            var list = new List<MomentVoltage>();
+            var list = new List<MomentEnergy>();
             var lowerBound = intervalStart.ToUnixTimeSeconds();
             var upperBound = intervalEnd.ToUnixTimeSeconds();
             for (long instant = lowerBound; instant < upperBound; instant++)
             {
                 if (!collection.TryRemove(instant, out string textValue)) continue;
                 removedTexts.Add(textValue);
-                var original = JsonConvert.DeserializeObject<SenecEntities.Meter>(textValue);
+                var original = JsonConvert.DeserializeObject<SenecEntities.SmartMeterEnergy>(textValue);
                 if (original == null) continue; // no way the programmer serialised nothing
-                var entity = _gridMeterAdapter.Convert(instant, original);
-                var voltages = entity.GetVoltageMoment();
+                var entity = _gridMeterAdapter.Convert(instant, original.ENERGY);
+                var voltages = entity.GetMomentEnergy();
                 if (voltages.IsValid)
                     list.Add(voltages);
             }
 
             var maximumValues = (int)(intervalEnd - intervalStart).TotalSeconds;
-            var stats = new VoltageSummary(
+            var stats = new EnergySummary(
                 intervalStartIncluded: intervalStart,
                 intervalEndExcluded: intervalEnd,
-                l1: CreateStatistics(list, a => a.L1, maximumValues),
-                l2: CreateStatistics(list, a => a.L2, maximumValues),
-                l3: CreateStatistics(list, a => a.L3, maximumValues)
+                batteryPercentageFull: new decimal?().Value,
+                gridExportWattHours: new decimal ?().Value,
+                gridImportWattHours: new decimal ?().Value,
+                consumptionWattHours: new decimal ?().Value,
+                solarPowerGenerationWattHours: new decimal ?().Value,
+                batteryChargeWattHours: new decimal ?().Value,
+                batteryDischargeWattHours: new decimal ?().Value,
+                new int?().Value,
+                new int?().Value,
+                new int?().Value
                 );
             return stats;
         }

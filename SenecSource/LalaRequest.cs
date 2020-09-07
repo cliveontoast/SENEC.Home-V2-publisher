@@ -41,7 +41,7 @@ namespace SenecSource
                     {
                         var result = await response.response.Content.ReadAsStringAsync();
                         if (string.IsNullOrWhiteSpace(result))
-                            _logger.Error("SENEC returned success status code, but {IsNull} data '{result}'", result == null, result);
+                            _logger.Error("SENEC returned success status code. Result was {IsNull} value of '{Result}'", result == null ? "null" : "not null", result);
                         return (result, response.start, response.end);
                     }
                     return (null, response.start, response.end);
