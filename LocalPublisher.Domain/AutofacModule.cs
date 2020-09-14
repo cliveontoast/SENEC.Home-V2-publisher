@@ -81,10 +81,17 @@ namespace Domain
             builder.Register((context) =>
             {
                 var result = Configuration.GetSection("VoltSummary").Get<SenecCompressConfig>();
-                return result as ISenecCompressConfig;
+                return result as ISenecVoltCompressConfig;
+            });
+            builder.Register((context) =>
+            {
+                var result = Configuration.GetSection("EnergySummary").Get<SenecCompressConfig>();
+                return result as ISenecEnergyCompressConfig;
             });
             builder.RegisterType<SenecPollCommand>().AsSelf();
             builder.RegisterType<SenecGridMeterSummaryCommand>().AsSelf();
+            // TODO 
+            builder.RegisterType<SenecEnergySummaryCommand>().AsSelf();
         }
     }
 }

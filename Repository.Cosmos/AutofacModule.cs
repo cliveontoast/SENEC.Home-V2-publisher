@@ -2,8 +2,10 @@
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Repository;
+using Repository.Cosmos;
+using Repository.Cosmos.Repositories;
 
-namespace ReadRepository.Cosmos
+namespace Repository.Cosmos
 {
     public class AutofacModule : Module
     {
@@ -29,10 +31,9 @@ namespace ReadRepository.Cosmos
                 var client = context.Resolve<CosmosClient>();
                 var db = client.GetDatabase(configuration.DatabaseName);
                 var container = db.GetContainer(configuration.DefaultContainer);
-                return new ReadContainer(container) as IReadContext;
+                return new WriteContext(container) as IContext;
             }).InstancePerLifetimeScope();
-            builder.RegisterType<VoltageSummaryDocumentReadRepository>().AsImplementedInterfaces();
-            builder.RegisterType<EnergySummaryDocumentReadRepository>().AsImplementedInterfaces();
+            builder.RegisterType<EnergySummaryRepository>().AsImplementedInterfaces();
         }
     }
 }

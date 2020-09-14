@@ -284,6 +284,10 @@
       <Project>{e2c8a709-e506-4ccd-9374-8aa767587f1f}</Project>
       <Name>ReadRepository.Cosmos</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Repository.Cosmos\Repository.Cosmos.csproj">
+      <Project>{7ad46165-20be-47b2-836a-ed1e84c3e94f}</Project>
+      <Name>Repository.Cosmos</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

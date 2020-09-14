@@ -50,16 +50,16 @@ namespace Domain
                             received: response.Received),
                         cancellationToken);
                 }
-                //if (response.ENERGY != null)
-                //{
-                //    await _mediator.Publish(
-                //        new SmartMeterEnergy(
-                //            eNERGY: response.ENERGY,
-                //            rTC: response.RTC,
-                //            sent: response.Sent,
-                //            received: response.Received),
-                //        cancellationToken);
-                //}
+                if (response.ENERGY != null)
+                {
+                    await _mediator.Publish(
+                        new SmartMeterEnergy(
+                            eNERGY: response.ENERGY,
+                            rTC: response.RTC,
+                            sent: response.Sent,
+                            received: response.Received),
+                        cancellationToken);
+                }
             }
             catch (Exception e)
             {

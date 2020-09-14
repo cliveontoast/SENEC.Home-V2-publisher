@@ -11,7 +11,7 @@ namespace Entities
             SystemState = systemState ?? "";
         }
 
-        public MomentEnergy(DateTimeOffset instant, decimal BatteryPercentageFull, string SystemState, decimal GridExportWatts, decimal GridImportWatts, decimal BatteryDischarge, decimal BatteryCharge, decimal IsBatteryCharging, decimal IsBatteryDischarging, decimal? HomeInstantPowerConsumption, decimal? SolarPowerGeneration)
+        public MomentEnergy(DateTimeOffset instant, decimal BatteryPercentageFull, string SystemState, decimal GridExportWatts, decimal GridImportWatts, decimal BatteryDischarge, decimal BatteryCharge, bool IsBatteryCharging, bool IsBatteryDischarging, decimal? HomeInstantPowerConsumption, decimal? SolarPowerGeneration)
             : this(instant, SystemState)
         {
             this.BatteryPercentageFull = BatteryPercentageFull;
@@ -34,8 +34,8 @@ namespace Entities
         public decimal GridImportWatts { get; }
         public decimal BatteryDischarge { get; }
         public decimal BatteryCharge { get; }
-        public decimal IsBatteryCharging { get; }
-        public decimal IsBatteryDischarging { get; }
+        public bool IsBatteryCharging { get; }
+        public bool IsBatteryDischarging { get; }
         public decimal? HomeInstantPowerConsumption { get; }
         public decimal? SolarPowerGeneration { get; }
         public DateTimeOffset Instant { get; }

@@ -32,6 +32,10 @@ namespace LocalPublisherMono
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            // lives in configure services - as asp host
+            builder.RegisterType<TimedHostedService>().AsSelf();
+            builder.RegisterInstance(BuildAppCache());
+
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
@@ -39,8 +43,7 @@ namespace LocalPublisherMono
             builder.AddMediatR(typeof(GridMeterCache).Assembly);
             builder.RegisterModule(new AutofacModule(Configuration));
             builder.RegisterModule(new ReadRepository.Cosmos.AutofacModule(Configuration));
-            builder.RegisterInstance(BuildAppCache());
-            builder.RegisterType<TimedHostedService>().AsSelf();
+            builder.RegisterModule(new Repository.Cosmos.AutofacModule(Configuration));
         }
 
         public IAppCache BuildAppCache()

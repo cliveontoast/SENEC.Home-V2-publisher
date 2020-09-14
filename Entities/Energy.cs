@@ -63,8 +63,8 @@ namespace Entities
                     GridImportWatts: GridImportWatts.Value.Value,
                     BatteryDischarge: BatteryDischargeWatts.Value.Value,
                     BatteryCharge: BatteryChargeWatts.Value.Value,
-                    IsBatteryCharging: IsBatteryCharging.Value.Value,
-                    IsBatteryDischarging: IsBatteryDischarging.Value.Value,
+                    IsBatteryCharging: IsBatteryCharging.IsTrue,
+                    IsBatteryDischarging: IsBatteryDischarging.IsTrue,
                     HomeInstantPowerConsumption: HomeInstantPowerConsumption.Value,
                     SolarPowerGeneration: SolarPowerGeneration.Value
                     );

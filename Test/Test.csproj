@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Resources\lalaRequest1.json" />
     <None Remove="Resources\lalaRequest12.json" />
+    <None Remove="Resources\lalaRequest2 - Copy.json" />
     <None Remove="Resources\lalaRequest2.json" />
     <None Remove="Resources\lalaRequest\SmartMeterConsumption.json" />
     <None Remove="Resources\lalaRequest\SmartMeterProduction.json" />
@@ -20,6 +21,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\lalaRequest1.json" />
     <EmbeddedResource Include="Resources\lalaRequest12.json" />
+    <EmbeddedResource Include="Resources\lalaRequest2 - Copy.json" />
     <EmbeddedResource Include="Resources\lalaRequest2.json" />
     <EmbeddedResource Include="Resources\lalaRequest\SmartMeterConsumption.json" />
     <EmbeddedResource Include="Resources\lalaRequest\SmartMeterProduction.json" />

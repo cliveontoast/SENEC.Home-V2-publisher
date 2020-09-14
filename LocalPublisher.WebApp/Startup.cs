@@ -32,6 +32,8 @@ namespace LocalPublisherWebApp
             builder.RegisterInstance(Log.Logger).As<ILogger>();
             builder.AddMediatR(typeof(GridMeterCache).Assembly);
             builder.RegisterModule(new AutofacModule(Configuration));
+            builder.RegisterModule(new ReadRepository.Cosmos.AutofacModule(Configuration));
+            builder.RegisterModule(new Repository.Cosmos.AutofacModule(Configuration));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

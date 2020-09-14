@@ -5,22 +5,26 @@
         public decimal Minimum;
         public decimal Maximum;
         public decimal Median;
-        public int Failures;
+        public decimal Average;
+        public bool IsValid { get; }
 
-        public Statistic(int failures)
+        public Statistic(bool isValid)
         {
-            Failures = failures;
+            IsValid = isValid;
             Minimum = 0;
             Maximum = 0;
             Median = 0;
+            Average = 0;
         }
-        public Statistic(decimal minimum, decimal maximum, decimal median, int failures)
+        public Statistic(decimal minimum, decimal maximum, decimal median, decimal average)
         {
+            IsValid = true;
             Minimum = minimum;
             Maximum = maximum;
             Median = median;
-            Failures = failures;
+            Average = average;
         }
+
     }
 }
 

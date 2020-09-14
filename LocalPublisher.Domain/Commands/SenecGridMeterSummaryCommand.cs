@@ -20,7 +20,7 @@ namespace Domain
     public class SenecGridMeterSummaryCommandHandler : IRequestHandler<SenecGridMeterSummaryCommand, Unit>
     {
         private readonly IGridMeterAdapter _gridMeterAdapter;
-        private readonly ISenecCompressConfig _config;
+        private readonly ISenecVoltCompressConfig _config;
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
         private readonly ILogger _logger;
@@ -30,7 +30,7 @@ namespace Domain
 
         public SenecGridMeterSummaryCommandHandler(
             IGridMeterAdapter gridMeterAdapter,
-            ISenecCompressConfig config,
+            ISenecVoltCompressConfig config,
             IMediator mediator,
             ILogger logger,
             IAppCache cache)
@@ -149,7 +149,7 @@ namespace Domain
             return stats;
         }
 
-        private Statistic CreateStatistics(List<MomentVoltage> list, Func<MomentVoltage, decimal> property, int maximumValues)
+        private StatisticV1 CreateStatistics(List<MomentVoltage> list, Func<MomentVoltage, decimal> property, int maximumValues)
         {
             var values = (
                 from a in list
@@ -166,9 +166,9 @@ namespace Domain
                     ? values.Count / 2 - 1
                     : values.Count / 2;
                 var median = values[midPoint];
-                return new Statistic(minimum, maximum, median, failures);
+                return new StatisticV1(minimum, maximum, median, failures);
             }
-            return new Statistic(failures);
+            return new StatisticV1(failures);
         }
     }
 }

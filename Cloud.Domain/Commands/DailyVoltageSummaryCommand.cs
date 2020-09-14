@@ -38,7 +38,7 @@ namespace Domain.Commands
             return results;
         }
 
-        private DayVoltageSummary GetPhase(DateTime date, IEnumerable<VoltageSummaryReadModel> dayData, Func<VoltageSummaryReadModel, Statistic> p)
+        private DayVoltageSummary GetPhase(DateTime date, IEnumerable<VoltageSummaryReadModel> dayData, Func<VoltageSummaryReadModel, StatisticV1> p)
         {
             var times = Enumerable.Range(0, 24 * 12)
                 .Select(i => TimeSpan.FromMinutes(5 * i)); // TODO this is for 5 minute intervals
@@ -50,9 +50,9 @@ namespace Domain.Commands
                 );
         }
 
-        private Statistic? GetTimeData(TimeSpan timeOfDay, Dictionary<TimeSpan, Statistic> phaseData)
+        private StatisticV1? GetTimeData(TimeSpan timeOfDay, Dictionary<TimeSpan, StatisticV1> phaseData)
         {
-            if (phaseData.TryGetValue(timeOfDay, out Statistic result))
+            if (phaseData.TryGetValue(timeOfDay, out StatisticV1 result))
                 return result;
             return null;
         }

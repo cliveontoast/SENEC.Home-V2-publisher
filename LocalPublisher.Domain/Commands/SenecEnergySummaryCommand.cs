@@ -10,6 +10,7 @@ using Entities;
 using MediatR;
 using System.Threading.Tasks;
 using Serilog;
+using System.Runtime.Versioning;
 
 namespace Domain
 {
@@ -20,7 +21,7 @@ namespace Domain
     public class SenecEnergySummaryCommandHandler : IRequestHandler<SenecEnergySummaryCommand, Unit>
     {
         private readonly IEnergyAdapter _gridMeterAdapter;
-        private readonly ISenecCompressConfig _config;
+        private readonly ISenecEnergyCompressConfig _config;
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
         private readonly ILogger _logger;
@@ -30,7 +31,7 @@ namespace Domain
 
         public SenecEnergySummaryCommandHandler(
             IEnergyAdapter gridMeterAdapter,
-            ISenecCompressConfig config,
+            ISenecEnergyCompressConfig config,
             IMediator mediator,
             ILogger logger,
             IAppCache cache)
@@ -130,9 +131,9 @@ namespace Domain
             {
                 if (!collection.TryRemove(instant, out string textValue)) continue;
                 removedTexts.Add(textValue);
-                var original = JsonConvert.DeserializeObject<SenecEntities.SmartMeterEnergy>(textValue);
+                var original = JsonConvert.DeserializeObject<SenecEntities.Energy>(textValue);
                 if (original == null) continue; // no way the programmer serialised nothing
-                var entity = _gridMeterAdapter.Convert(instant, original.ENERGY);
+                var entity = _gridMeterAdapter.Convert(instant, original);
                 var voltages = entity.GetMomentEnergy();
                 if (voltages.IsValid)
                     list.Add(voltages);
@@ -142,29 +143,57 @@ namespace Domain
             var stats = new EnergySummary(
                 intervalStartIncluded: intervalStart,
                 intervalEndExcluded: intervalEnd,
-                batteryPercentageFull: new decimal?().Value,
-                gridExportWattHours: new decimal ?().Value,
-                gridImportWattHours: new decimal ?().Value,
-                consumptionWattHours: new decimal ?().Value,
-                solarPowerGenerationWattHours: new decimal ?().Value,
-                batteryChargeWattHours: new decimal ?().Value,
-                batteryDischargeWattHours: new decimal ?().Value,
-                new int?().Value,
-                new int?().Value,
-                new int?().Value
+                batteryPercentageFull: CreateStatistics(list, l => l.BatteryPercentageFull),
+                gridExportWatts: CreateStatistics(list, l => l.GridExportWatts),
+                gridExportWattEnergy: TimeseriesSummary(list, l => l.GridExportWatts, intervalStart, intervalEnd),
+                gridImportWatts: CreateStatistics(list, l => l.GridImportWatts),
+                gridImportWattEnergy: TimeseriesSummary(list, l => l.GridImportWatts, intervalStart, intervalEnd),
+                consumptionWatts: CreateStatistics(list, l => l.HomeInstantPowerConsumption),
+                consumptionWattEnergy: TimeseriesSummary(list, l => l.HomeInstantPowerConsumption, intervalStart, intervalEnd),
+                solarPowerGenerationWatts: CreateStatistics(list, l => l.SolarPowerGeneration),
+                solarPowerGenerationWattEnergy: TimeseriesSummary(list, l => l.SolarPowerGeneration, intervalStart, intervalEnd),
+                batteryChargeWatts: CreateStatistics(list, l => l.BatteryCharge),
+                batteryChargeWattEnergy: TimeseriesSummary(list, l => l.BatteryCharge, intervalStart, intervalEnd),
+                batteryDischargeWatts: CreateStatistics(list, l => l.BatteryDischarge),
+                batteryDischargeWattEnergy: TimeseriesSummary(list, l => l.BatteryDischarge, intervalStart, intervalEnd),
+                secondsBatteryCharging: list.Count(a => a.IsBatteryCharging),
+                secondsBatteryDischarging: list.Count(a => a.IsBatteryDischarging),
+                secondsWithoutData: maximumValues - list.Count
                 );
             return stats;
         }
 
-        private Statistic CreateStatistics(List<MomentVoltage> list, Func<MomentVoltage, decimal> property, int maximumValues)
+        private decimal TimeseriesSummary(List<MomentEnergy> list, Func<MomentEnergy, decimal?> p, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        {
+            decimal sum = 0;
+            decimal lastValue = 0;
+            var index = list.ToDictionary(a => a.Instant);
+            DateTimeOffset instant = intervalStart;
+            while (instant <= intervalEnd)
+            {
+                if (index.ContainsKey(instant))
+                {
+                    var value = p(index[instant]);
+                    if (value.HasValue)
+                        lastValue = value.Value;
+                }
+                sum += lastValue;
+                instant = instant.AddSeconds(1);
+            }
+            var timespan = (intervalEnd - intervalStart).TotalSeconds;
+
+            return sum;
+        }
+
+        private Statistic CreateStatistics(List<MomentEnergy> list, Func<MomentEnergy, decimal?> property)
         {
             var values = (
                 from a in list
                 let value = property(a)
-                orderby value
-                select value
+                where value.HasValue
+                orderby value.Value
+                select value.Value
                 ).ToList();
-            var failures = maximumValues - values.Count;
             if (values.Count > 0)
             {
                 var minimum = values.First();
@@ -173,9 +202,9 @@ namespace Domain
                     ? values.Count / 2 - 1
                     : values.Count / 2;
                 var median = values[midPoint];
-                return new Statistic(minimum, maximum, median, failures);
+                return new Statistic(minimum, maximum, median, decimal.Round(values.Average(), 2));
             }
-            return new Statistic(failures);
+            return new Statistic(false);
         }
     }
 }

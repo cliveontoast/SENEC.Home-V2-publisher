@@ -8,8 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 using ReadRepository.Cosmos;
 using Repository;
+using Repository.Cosmos;
 using SenecEntitesAdapter;
 using SenecEntities;
 using SenecEntitiesAdapter;
@@ -175,5 +177,91 @@ namespace SenecSourceWebAppTest
             var readRepo = scope.Resolve<IVoltageSummaryDocumentReadRepository>();
             readRepo.Fetch(new DateTime(2020, 05, 11)).RunWait();
         }
+
+        [TestMethod]
+        public void CloudCreate()
+        {
+            InitScope(a =>
+                a.Item1.RegisterModule(new Repository.Cosmos.AutofacModule(a.Item2.Object))
+            );
+            var repo = scope.Resolve<IContext>();
+            var obj = JsonConvert.DeserializeObject<Entities.EnergySummary>(@"{
+  ""IntervalStartIncluded"": ""2020-09-14T20:38:04+00:00"",
+  ""IntervalEndExcluded"": ""2020-09-14T20:39:00+00:00"",
+  ""Failures"": 0,
+  ""GridExportWatts"": {
+    ""Minimum"": 0.0,
+    ""Maximum"": 49.62,
+    ""Median"": 18.16,
+    ""Average"": 17.811666666666666666666666667,
+    ""IsValid"": true
+  },
+  ""GridExportWattEnergy"": 857.48,
+  ""GridImportWatts"": {
+    ""Minimum"": 0.0,
+    ""Maximum"": 10.86,
+    ""Median"": 0.0,
+    ""Average"": 0.3364583333333333333333333333,
+    ""IsValid"": true
+  },
+  ""GridImportWattEnergy"": 16.65,
+  ""ConsumptionWatts"": {
+    ""Minimum"": 567.15,
+    ""Maximum"": 607.96,
+    ""Median"": 583.78,
+    ""Average"": 583.595625,
+    ""IsValid"": true
+  },
+  ""ConsumptionWattEnergy"": 29197.95,
+  ""SolarPowerGenerationWatts"": {
+    ""Minimum"": 0.0,
+    ""Maximum"": 0.0,
+    ""Median"": 0.0,
+    ""Average"": 0.0,
+    ""IsValid"": true
+  },
+  ""SolarPowerGenerationWattEnergy"": 0.0,
+  ""BatteryChargeWatts"": {
+    ""Minimum"": 0.0,
+    ""Maximum"": 0.0,
+    ""Median"": 0.0,
+    ""Average"": 0.0,
+    ""IsValid"": true
+  },
+  ""BatteryChargeWattEnergy"": 0.0,
+  ""BatteryDischargeWatts"": {
+    ""Minimum"": 593.69,
+    ""Maximum"": 623.62,
+    ""Median"": 598.68,
+    ""Average"": 601.06979166666666666666666667,
+    ""IsValid"": true
+  },
+  ""BatteryDischargeWattEnergy"": 30038.73,
+  ""BatteryPercentageFull"": {
+    ""Minimum"": 86.2,
+    ""Maximum"": 86.2,
+    ""Median"": 86.2,
+    ""Average"": 86.2,
+    ""IsValid"": true
+  },
+  ""SecondsBatteryCharging"": 0,
+  ""SecondsBatteryDischarging"": 48,
+  ""SecondsWithoutData"": 12
+}");
+            var createItemFunc = repo.CreateItemAsync(obj);
+            var result = createItemFunc(CancellationToken.None).RunWait();
+        }
+
+        [TestMethod]
+        public void FetchEnergy()
+        {
+            InitScope(a =>
+                a.Item1.RegisterModule(new ReadRepository.Cosmos.AutofacModule(a.Item2.Object))
+            );
+            var readRepo = scope.Resolve<IEnergySummaryDocumentReadRepository>();
+            readRepo.Fetch(new DateTime(2020, 09, 14)).RunWait();
+            readRepo.Get("2020-09-14T20:38:04+00:00", CancellationToken.None).RunWait();
+        }
     }
+
 }
