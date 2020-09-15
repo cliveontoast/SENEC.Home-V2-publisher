@@ -23,15 +23,15 @@ namespace ReadRepository.Cosmos
         public async Task<EnergySummaryReadModel> Get(string key, CancellationToken cancellationToken)
         {
             var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
-            var iterator = queryable.Where(p => p.Id == key).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Partition == "ES_" + key).ToFeedIterator();
             var response = await ToReadModel(iterator);
             return response.FirstOrDefault();
         }
         public async Task<IEnumerable<EnergySummaryReadModel>> Fetch(DateTime date)
         {
-            var dateText = date.ToString("yyyy-MM-dd");
+            var dateText = "ES_" + date.ToString("yyyy-MM-dd");
             var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
-            var iterator = queryable.Where(p => p.Id.StartsWith(dateText)).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Partition.StartsWith(dateText) && p.Discriminator == EnergySummaryEntity.DISCRIMINATOR).ToFeedIterator();
             var response = await ToReadModel(iterator);
             return response;
         }
@@ -43,8 +43,23 @@ namespace ReadRepository.Cosmos
                 intervalEndExcluded: a.IntervalEndExcluded,
                 intervalStartIncluded: a.IntervalStartIncluded,
                 key: a.Id,
-                // tba
-                version: a.Version)
+                version: a.Version,
+                batteryPercentageFull: a.BatteryPercentageFull,
+                gridExportWatts: a.GridExportWatts,
+                gridExportWattEnergy: a.GridExportWattEnergy,
+                gridImportWatts: a.GridImportWatts,
+                gridImportWattEnergy: a.GridImportWattEnergy,
+                consumptionWatts: a.ConsumptionWatts,
+                consumptionWattEnergy: a.ConsumptionWattEnergy,
+                solarPowerGenerationWatts: a.SolarPowerGenerationWatts,
+                solarPowerGenerationWattEnergy: a.SolarPowerGenerationWattEnergy,
+                batteryChargeWatts: a.BatteryChargeWatts,
+                batteryChargeWattEnergy: a.BatteryChargeWattEnergy,
+                batteryDischargeWatts: a.BatteryDischargeWatts,
+                batteryDischargeWattEnergy: a.BatteryDischargeWattEnergy,
+                secondsBatteryCharging: a.SecondsBatteryCharging,
+                secondsBatteryDischarging: a.SecondsBatteryDischarging ,
+                secondsWithoutData: a.SecondsWithoutData)
                 ).ToImmutableList();
             return response;
         }

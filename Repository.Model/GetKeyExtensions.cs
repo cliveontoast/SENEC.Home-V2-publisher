@@ -11,7 +11,7 @@ namespace Repository
         public static string GetKey(this Entities.EnergySummary voltageSummary)
         {
             // TODO cosmosdb 'Items' really one giant bucket?
-            return "ES_" + GetIntervalKey(voltageSummary.IntervalStartIncluded);
+            return GetIntervalKey(voltageSummary.IntervalStartIncluded);
         }
         public static string GetKey(this Entities.VoltageSummary voltageSummary)
         {

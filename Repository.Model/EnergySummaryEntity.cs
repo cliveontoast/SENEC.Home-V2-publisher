@@ -6,6 +6,7 @@ namespace Repository.Model
 {
     public class EnergySummaryEntity : EnergySummary
     {
+        public const string DISCRIMINATOR = "EnergySummary";
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         // required for documentDB
         public EnergySummaryEntity(): base(default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default)
@@ -34,14 +35,14 @@ namespace Repository.Model
             secondsWithoutData:entity.SecondsWithoutData)
         {
             Id = this.GetKey();
-            Partition = this.GetKey();
+            Partition = "ES_" + this.GetKey();
             Version = version;
         }
 
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
         public string Partition { get; set; }
-        public string Discriminator { get => "EnergySummary"; }
+        public string Discriminator { get => DISCRIMINATOR; }
         public int Version { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Entities
                     l1: L1.Voltage.Value.Value,
                     l2: L2.Voltage.Value.Value,
                     l3: L3.Voltage.Value.Value);
-            return new MomentVoltage(Instant);
+            return new MomentVoltage(Instant, false);
         }
     }
 }
