@@ -9,7 +9,7 @@
 
     public class ApplicationVersion : IApplicationVersion
     {
-        public int Number { get => 1; }
+        public int Number { get => 2; }
         public int? PersistedNumber { get; set; }
         public bool ThisProcessWrittenRecord { get; set; }
     }

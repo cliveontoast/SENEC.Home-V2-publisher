@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Repository;
 using Repository.Cosmos;
 using Repository.Cosmos.Repositories;
+using Shared;
 
 namespace Repository.Cosmos
 {
@@ -29,9 +30,10 @@ namespace Repository.Cosmos
             {
                 var configuration = context.Resolve<ILocalContextConfiguration>();
                 var client = context.Resolve<CosmosClient>();
+                var version = context.Resolve<IApplicationVersion>();
                 var db = client.GetDatabase(configuration.DatabaseName);
                 var container = db.GetContainer(configuration.DefaultContainer);
-                return new WriteContext(container) as IContext;
+                return new WriteContext(version, container) as IContext;
             }).InstancePerLifetimeScope();
             builder.RegisterType<EnergySummaryRepository>().AsImplementedInterfaces();
         }

@@ -259,8 +259,8 @@ namespace SenecSourceWebAppTest
                 a.Item1.RegisterModule(new ReadRepository.Cosmos.AutofacModule(a.Item2.Object))
             );
             var readRepo = scope.Resolve<IEnergySummaryDocumentReadRepository>();
-            readRepo.Fetch(new DateTime(2020, 09, 14)).RunWait();
-            readRepo.Get("2020-09-14T20:38:04+00:00", CancellationToken.None).RunWait();
+            var items = readRepo.Fetch(new DateTime(2020, 09, 15)).RunWait();
+            var item = readRepo.Get("2020-09-15T19:30:00+00:00", CancellationToken.None).RunWait();
         }
     }
 

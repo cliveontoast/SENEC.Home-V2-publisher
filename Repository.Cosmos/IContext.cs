@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.Azure.Cosmos;
 using Repository.Model;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,19 +22,19 @@ namespace Repository.Cosmos
             ES, // energy summary
         }
         private readonly Container _container;
-        //private readonly IApplicationVersion _version;
+        private readonly IApplicationVersion _version;
 
         public WriteContext(
-            //IApplicationVersion version,
+            IApplicationVersion version,
             Container container)
         {
             _container = container;
-            //_version = version;
+            _version = version;
         }
 
         public Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> CreateItemAsync(EnergySummary energySummary)
         {
-            var persistedValue = new EnergySummaryEntity(energySummary, 5);// _version.Number);
+            var persistedValue = new EnergySummaryEntity(energySummary, _version.Number);
             Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> obj = (CancellationToken c) => 
                 _container.CreateItemAsync(persistedValue,
                     //new PartitionKey(persistedValue.Partition),

@@ -24,22 +24,27 @@ namespace ReadRepository.Cosmos
         {
             var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
             var iterator = queryable.Where(p => p.Partition == "ES_" + key).ToFeedIterator();
-            var response = await ToReadModel(iterator);
+            var result = await iterator.ReadNextAsync();
+            var response = ToReadModel(result);
             return response.FirstOrDefault();
         }
         public async Task<IEnumerable<EnergySummaryReadModel>> Fetch(DateTime date)
         {
+            var results = await FetchRaw(date);
+            return ToReadModel(results);
+        }
+        public async Task<IEnumerable<EnergySummaryEntity>> FetchRaw(DateTime date)
+        {
             var dateText = "ES_" + date.ToString("yyyy-MM-dd");
             var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
             var iterator = queryable.Where(p => p.Partition.StartsWith(dateText) && p.Discriminator == EnergySummaryEntity.DISCRIMINATOR).ToFeedIterator();
-            var response = await ToReadModel(iterator);
-            return response;
+            var results = await iterator.ReadNextAsync();
+            return results;
         }
 
-        private static async Task<ImmutableList<EnergySummaryReadModel>> ToReadModel(Microsoft.Azure.Cosmos.FeedIterator<EnergySummaryEntity> iterator)
+        private static ImmutableList<EnergySummaryReadModel> ToReadModel(IEnumerable<EnergySummaryEntity> iterator)
         {
-            var results = await iterator.ReadNextAsync();
-            var response = results.Select(a => new EnergySummaryReadModel(
+            var response = iterator.Select(a => new EnergySummaryReadModel(
                 intervalEndExcluded: a.IntervalEndExcluded,
                 intervalStartIncluded: a.IntervalStartIncluded,
                 key: a.Id,
