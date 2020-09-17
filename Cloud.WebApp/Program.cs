@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace NuanceWebApp
+namespace Client.WebApp
 {
     public class Program
     {

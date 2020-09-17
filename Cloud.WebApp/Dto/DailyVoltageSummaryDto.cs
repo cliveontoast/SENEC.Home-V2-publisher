@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NuanceWebApp.Dto
+namespace Client.WebApp.Dto
 {
     public class DailyVoltageSummaryDto
     {

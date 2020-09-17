@@ -14,7 +14,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "NuanceWebApp": {
+    "Client.WebApp": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

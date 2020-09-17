@@ -68,7 +68,7 @@ namespace SenecSourceWebAppTest
                 }
                 catch (Exception e)
                 {
-
+                    var ex = e;
                 }
             }
         }

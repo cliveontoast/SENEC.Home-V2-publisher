@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Domain.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NuanceWebApp.Dto;
+using Client.WebApp.Dto;
 using Serilog;
 
-namespace NuanceWebApp.Controllers
+namespace Client.WebApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
