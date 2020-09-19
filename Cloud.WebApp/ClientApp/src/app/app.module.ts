@@ -13,7 +13,6 @@ import { EnergyComponent } from './energy/energy.component';
 import { EnergySummaryService } from './services/energySummary.service';
 import { HomeConsumptionComponent } from './home-consumption/home-consumption.component';
 import { HomeConsumptionService } from './services/home-consumption.service';
-import { HomeAllComponent } from './home-all/home-all.component';
 
 @NgModule({
   declarations: [
