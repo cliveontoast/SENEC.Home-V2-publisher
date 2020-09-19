@@ -13,6 +13,7 @@ import { EnergyComponent } from './energy/energy.component';
 import { EnergySummaryService } from './services/energySummary.service';
 import { HomeConsumptionComponent } from './home-consumption/home-consumption.component';
 import { HomeConsumptionService } from './services/home-consumption.service';
+import { HomeAllComponent } from './home-all/home-all.component';
 
 @NgModule({
   declarations: [
@@ -28,10 +29,10 @@ import { HomeConsumptionService } from './services/home-consumption.service';
     FormsModule,
     HighchartsChartModule,
     RouterModule.forRoot([
-      { path: 'voltages', component: VoltagesComponent },
-      { path: 'energy', component: EnergyComponent },
       { path: 'consumption', component: HomeConsumptionComponent },
-      { path: '**', component: VoltagesComponent }
+      { path: 'energy', component: EnergyComponent },
+      { path: 'voltages', component: VoltagesComponent },
+      { path: '**', component: HomeConsumptionComponent }
     ])
   ],
   providers: [

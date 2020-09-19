@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { HomeConsumptionService } from '../services/home-consumption.service';
 
@@ -6,7 +6,7 @@ import { HomeConsumptionService } from '../services/home-consumption.service';
   selector: 'app-home-consumption',
   templateUrl: './home-consumption.component.html'
 })
-export class HomeConsumptionComponent {
+export class HomeConsumptionComponent implements OnInit {
 
   Highcharts: typeof Highcharts = Highcharts; // required
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
@@ -73,27 +73,48 @@ export class HomeConsumptionComponent {
     series: [
       {
         type: 'area',
+        color: '#C2E0A1',
+        lineColor: '#47A530',
+        lineWidth: 1,
+        name: 'Sun to community'
+      },
+      {
+        type: 'area',
+        color: '#FFD145',
+        lineColor: '#C4A136',
+        lineWidth: 1,
+        name: 'Sun to battery'
+      },
+      {
+        type: 'area',
         color: 'lightblue',
+        lineColor: '#60DAFF',
+        lineWidth: 1,
         name: 'From battery (from sun)'
       },
       {
         type: 'area',
-        color: 'lightgreen',
+        color: '#5DDD40',
+        lineColor: '#47B72C',
+        lineWidth: 1,
         name: 'From sun'
       },
       {
         type: 'area',
         color: 'gray',
+        lineColor: 'black',
+        lineWidth: 1,
         name: 'From grid (fossil fuels)'
       },
       {
         type: 'spline',
         color: 'red',
-        name: 'Total'
+        name: 'Consumption'
       },
     ],
     tooltip: {
       split: true,
+      valueSuffix: ' watt hours'
     },
     plotOptions: {
       series: {
@@ -144,10 +165,12 @@ export class HomeConsumptionComponent {
   private getData() {
     this.homeConsumptionService.get(this.displayDate).subscribe(value => {
       this.chartOptions.plotOptions.area.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
-      this.chartOptions.series[0]['data'] = value.fromBattery.data;
-      this.chartOptions.series[1]['data'] = value.fromSolar.data;
-      this.chartOptions.series[2]['data'] = value.fromGrid.data;
-      this.chartOptions.series[3]['data'] = value.toHome.data;
+      this.chartOptions.series[0]['data'] = value.toCommunity.data;
+      this.chartOptions.series[1]['data'] = value.toBattery.data;
+      this.chartOptions.series[2]['data'] = value.fromBattery.data;
+      this.chartOptions.series[3]['data'] = value.fromSolar.data;
+      this.chartOptions.series[4]['data'] = value.fromGrid.data;
+      this.chartOptions.series[5]['data'] = value.toHome.data;
       this.updateFlag = true;
     });
   }

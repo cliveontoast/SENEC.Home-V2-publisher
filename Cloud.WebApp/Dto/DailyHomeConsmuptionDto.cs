@@ -14,6 +14,8 @@ namespace NuanceWebApp.Dto
             FromGrid = new HomeConsumptionDto("From grid", result.Grid.UsageSummary.Select(a => a.WattHours));
             FromSolar = new HomeConsumptionDto("From sun", result.Solar.UsageSummary.Select(a => a.WattHours));
             FromBattery = new HomeConsumptionDto("From battery", result.Battery.UsageSummary.Select(a => a.WattHours));
+            ToBattery = new HomeConsumptionDto("To battery", result.BatteryCharge.UsageSummary.Select(a => a.WattHours));
+            ToCommunity = new HomeConsumptionDto("Solar to community", result.SolarExported.UsageSummary.Select(a => a.WattHours));
         }
 
         public long Date { get; private set; }
@@ -21,6 +23,8 @@ namespace NuanceWebApp.Dto
         public HomeConsumptionDto FromGrid { get; }
         public HomeConsumptionDto FromSolar { get; }
         public HomeConsumptionDto FromBattery { get; }
+        public HomeConsumptionDto ToBattery { get; }
+        public HomeConsumptionDto ToCommunity { get; }
         public IEnumerable<string> XLabels { get; }
     }
 

@@ -34,8 +34,13 @@ namespace Domain.Commands
                 date: request.Date,
                 consumption: GetData(request.Date, dayData, a => a.ConsumptionWattHours),
                 grid: GetData(request.Date, dayData, a => a.GridImportWattHours),
-                solar: GetData(request.Date, dayData, a => Math.Min(a.ConsumptionWattHours - a.GridImportWattHours, a.SolarPowerGenerationWattHours)),
-                battery: GetData(request.Date, dayData, a => Math.Max(0,Math.Min(a.ConsumptionWattHours - a.GridImportWattHours - a.SolarPowerGenerationWattHours, a.BatteryDischargeWattHours)))
+                solarConsumption: GetData(request.Date, dayData, a => Math.Min(a.ConsumptionWattHours - a.GridImportWattHours, a.SolarPowerGenerationWattHours)),
+                batteryConsumption: GetData(request.Date, dayData, a => Math.Max(0,Math.Min(a.ConsumptionWattHours - a.GridImportWattHours - a.SolarPowerGenerationWattHours, a.BatteryDischargeWattHours))),
+                batteryCharge: GetData(request.Date, dayData, a => a.BatteryChargeWattHours),
+
+                solarExported: GetData(request.Date, dayData, a => Math.Max(0, a.SolarPowerGenerationWattHours 
+                    - Math.Min(a.ConsumptionWattHours - a.GridImportWattHours, a.SolarPowerGenerationWattHours)
+                    - a.BatteryChargeWattHours))
                 );
             return results;
         }

@@ -4,6 +4,8 @@ export interface DailyHomeConsumptionDto {
   fromGrid: HomeConsumptionDto;
   fromSolar: HomeConsumptionDto;
   fromBattery: HomeConsumptionDto;
+  toBattery: HomeConsumptionDto;
+  toCommunity: HomeConsumptionDto;
 }
 
 export interface HomeConsumptionDto {

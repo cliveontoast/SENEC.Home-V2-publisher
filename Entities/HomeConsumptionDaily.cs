@@ -8,20 +8,31 @@ namespace Entities
     {
         public DateTime Date { get; set; }
         public DayConsumptionSource BatteryEstimate { get; }
-
+        public DayConsumptionSource BatteryCharge { get; }
+        public DayConsumptionSource SolarExported { get; }
         public DayConsumptionSource Grid { get; set; }
         public DayConsumptionSource Solar { get; set; }
         public DayConsumptionSource Battery { get; set; }
         public DayConsumptionSource Consumption { get; }
 
-        public HomeConsumptionDaily(DateTime date, DayConsumptionSource consumption, DayConsumptionSource grid, DayConsumptionSource solar, DayConsumptionSource battery)
+        public HomeConsumptionDaily(
+            DateTime date,
+            DayConsumptionSource consumption,
+            DayConsumptionSource grid,
+            DayConsumptionSource solarConsumption,
+            DayConsumptionSource batteryConsumption,
+            DayConsumptionSource batteryCharge,
+            DayConsumptionSource solarExported)
         {
-            Battery = battery;
+            Battery = batteryConsumption;
             Consumption = consumption;
-            Solar = solar;
+            Solar = solarConsumption;
             Grid = grid;
             Date = date;
             BatteryEstimate = GetEstimate();
+            BatteryCharge = batteryCharge;
+            SolarExported = solarExported;
+            // missing battery exported
         }
 
         private DayConsumptionSource GetEstimate()
