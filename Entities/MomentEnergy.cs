@@ -304,7 +304,7 @@ namespace Entities
 
         private static PowerMovements SolarBatteryCharge(decimal solarPower, MomentEnergy moment)
         {
-            if (moment.GridExportWatts > 0)
+            if (moment.GridExportWatts >= 0 && moment.GridImportWatts == 0)
             {
                 //var gridToBattery = 0;
                 //var gridToHome = 0;
@@ -320,15 +320,16 @@ namespace Entities
                     powerState: powerState,
                     solarPower: solarPower);
             }
-            else // grid import >= 0
+            else // grid import > 0
             {
+                PowerMovements? result = null;
                 if (solarPower > moment.BatteryCharge)
                 {
                     var solarToBattery = moment.BatteryCharge;
                     var solarToHome = solarPower - solarToBattery;
                     var solarToGrid = 0;
                     var gridToHome = moment.GridImportWatts;
-                    return new PowerMovements(
+                    result = new PowerMovements(
                         solarToBattery: solarToBattery,
                         solarToGrid: solarToGrid,
                         solarToHome: solarToHome,
@@ -344,7 +345,7 @@ namespace Entities
                     var solarToGrid = 0;
                     var gridToBattery = moment.BatteryCharge - solarToBattery;
                     var gridToHome = moment.GridImportWatts - gridToBattery;
-                    return new PowerMovements(
+                    result = new PowerMovements(
                         solarToBattery: solarToBattery,
                         solarToHome: solarToHome,
                         solarToGrid: solarToGrid,
@@ -354,6 +355,22 @@ namespace Entities
                         solarPower: solarPower
                         );
                 }
+                CheckIfBatteryCausedGridImport(result);
+                return result;
+
+            }
+        }
+
+        private static void CheckIfBatteryCausedGridImport(PowerMovements result)
+        {
+            if (result.SolarToBattery > 0 && result.GridToHome > 0)
+            {
+                var powerToMove = Math.Min(result.SolarToBattery.Value, result.GridToHome.Value);
+                result.GridToHome = result.GridToHome.GetValueOrDefault() - powerToMove;
+                result.GridToBattery = result.GridToBattery.GetValueOrDefault() + powerToMove;
+
+                result.SolarToBattery = result.SolarToBattery.GetValueOrDefault() - powerToMove;
+                result.SolarToHome = result.SolarToHome.GetValueOrDefault() + powerToMove;
             }
         }
     }
