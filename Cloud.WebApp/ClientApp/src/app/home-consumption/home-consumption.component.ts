@@ -90,14 +90,14 @@ export class HomeConsumptionComponent implements OnInit {
         color: 'lightblue',
         lineColor: '#60DAFF',
         lineWidth: 1,
-        name: 'From battery (from sun)'
+        name: 'Battery to home'
       },
       {
         type: 'area',
         color: '#5DDD40',
         lineColor: '#47B72C',
         lineWidth: 1,
-        name: 'From sun'
+        name: 'Sun to home'
       },
       {
         type: 'area',

@@ -2,13 +2,13 @@
 {
     public abstract class WebResponse
     {
-        public long Sent { get; set; }
-        public long Received { get; set; }
+        public long SentMilliseconds { get; set; }
+        public long ReceivedMilliseconds { get; set; }
 
-        public WebResponse(long sent, long received)
+        public WebResponse(long sentMilliseconds, long receivedMilliseconds)
         {
-            Sent = sent;
-            Received = received;
+            SentMilliseconds = sentMilliseconds;
+            ReceivedMilliseconds = receivedMilliseconds;
         }
     }
 }

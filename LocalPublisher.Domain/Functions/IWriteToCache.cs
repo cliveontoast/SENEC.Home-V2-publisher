@@ -32,16 +32,13 @@ namespace LocalPublisher.Domain.Functions
 
         public void Add(IRealTimeNotification notification, string cacheKey)
         {
-            var time = _adapter.GetDecimal(notification.RTC.WEB_TIME);
-            if (time.IsInteger)
-                Writefile(notification, time.AsInteger, cacheKey);
-            else
-                _logger.Error("{TypeName} has no time value - {@Notification}", notification.GetType().Name, notification);
+            Writefile(notification, cacheKey);
         }
 
-        private void Writefile(IRealTimeNotification notification, long unixMoment, string cacheKey)
+        private void Writefile(IRealTimeNotification notification, string cacheKey)
         {
-            var moment = DateTimeOffset.FromUnixTimeSeconds(unixMoment);
+            var unixMoment = notification.ReceivedUnixMillisecondsTimestamp / 1000;
+            var moment = DateTimeOffset.FromUnixTimeMilliseconds(unixMoment);
             var collection = _cache.GetOrAdd(cacheKey, () => new ConcurrentDictionary<long, string>(), DateTimeOffset.MaxValue);
             if (collection.TryAdd(unixMoment, JsonConvert.SerializeObject(notification.SerializableEntity)))
                 _logger.Verbose("Cached {UnixTime} {Time} - Cache count {Count}", unixMoment, moment, collection.Count);

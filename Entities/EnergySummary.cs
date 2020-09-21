@@ -27,21 +27,23 @@ namespace Entities
         public Statistic BatteryPercentageFull { get; set; }
         public int SecondsBatteryCharging { get; set; }
         public int SecondsBatteryDischarging { get; set; }
+        public int SecondsWithoutData { get; set; }
+        public Statistic SolarInverterPowerGenerationWatts { get; }
+        public decimal SolarInverterPowerGenerationWattEnergy { get; }
         #endregion 
 
-        public int SecondsWithoutData { get; set; }
 
         public EnergySummary(
             DateTimeOffset intervalStartIncluded, DateTimeOffset intervalEndExcluded,
             Statistic batteryPercentageFull, 
             Statistic gridExportWatts, decimal gridExportWattEnergy,
             Statistic gridImportWatts, decimal gridImportWattEnergy,
-            Statistic consumptionWatts, decimal consumptionWattEnergy,
-            Statistic solarPowerGenerationWatts, decimal solarPowerGenerationWattEnergy,
+            Statistic estimateConsumptionWatts, decimal estimateConsumptionWattEnergy,
+            Statistic batteryReportedSolarPowerGenerationWatts, decimal batteryReportedSolarPowerGenerationWattEnergy,
             Statistic batteryChargeWatts, decimal batteryChargeWattEnergy,
             Statistic batteryDischargeWatts, decimal batteryDischargeWattEnergy,
-            int secondsBatteryCharging, int secondsBatteryDischarging,
-            int secondsWithoutData)
+            int secondsBatteryCharging, int secondsBatteryDischarging, int secondsWithoutData,
+            Statistic solarInverterPowerGenerationWatts, decimal solarInverterPowerGenerationWattEnergy)
         {
             IntervalStartIncluded = intervalStartIncluded;
             IntervalEndExcluded = intervalEndExcluded;
@@ -50,10 +52,10 @@ namespace Entities
             GridExportWattEnergy = gridExportWattEnergy;
             GridImportWatts = gridImportWatts;
             GridImportWattEnergy = gridImportWattEnergy;
-            ConsumptionWatts = consumptionWatts;
-            ConsumptionWattEnergy = consumptionWattEnergy;
-            SolarPowerGenerationWatts = solarPowerGenerationWatts;
-            SolarPowerGenerationWattEnergy = solarPowerGenerationWattEnergy;
+            ConsumptionWatts = estimateConsumptionWatts;
+            ConsumptionWattEnergy = estimateConsumptionWattEnergy;
+            SolarPowerGenerationWatts = batteryReportedSolarPowerGenerationWatts;
+            SolarPowerGenerationWattEnergy = batteryReportedSolarPowerGenerationWattEnergy;
             BatteryChargeWatts = batteryChargeWatts;
             BatteryChargeWattEnergy = batteryChargeWattEnergy;
             BatteryDischargeWatts = batteryDischargeWatts;
@@ -61,6 +63,16 @@ namespace Entities
             SecondsBatteryCharging = secondsBatteryCharging;
             SecondsBatteryDischarging = secondsBatteryDischarging;
             SecondsWithoutData = secondsWithoutData;
+            SolarInverterPowerGenerationWatts = solarInverterPowerGenerationWatts;
+            SolarInverterPowerGenerationWattEnergy = solarInverterPowerGenerationWattEnergy;
+
+            // solar to home
+            // solar to battery
+            // solar to grid
+            // battery to home
+            // battery to grid
+            // grid to home
+            // grid to battery
         }
     }
 }

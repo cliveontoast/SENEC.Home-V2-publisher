@@ -68,36 +68,9 @@ namespace SenecSource
                     _logger.Error(e, "Cannot deserialise {Content} {Start} {End}", response.response, response.start, response.end);
                 }
             }
-            result.Sent = response.start.ToUnixTimeMilliseconds();
-            result.Received = response.end.ToUnixTimeMilliseconds();
+            result.SentMilliseconds = response.start.ToUnixTimeMilliseconds();
+            result.ReceivedMilliseconds = response.end.ToUnixTimeMilliseconds();
             return result;
-        }
-
-        // TODO delete
-        public async Task<TResponse> RequestDirectToObject<TResponse>(CancellationToken token) where TResponse : WebResponse
-        {
-            using (var client = new HttpClient())
-            {
-                var timeSent = _time.Now;
-                using (var response = await GetResponse(client, token))
-                {
-                    var timeReceived = _time.Now;
-                    var result = Activator.CreateInstance<TResponse>();
-                    if (IsOk(response.response))
-                    {
-                        using (var stream = await response.response.Content.ReadAsStreamAsync())
-                        using (var sr = new StreamReader(stream))
-                        using (var reader = new JsonTextReader(sr))
-                        {
-                            var serializer = new JsonSerializer();
-                            result = serializer.Deserialize<TResponse>(reader) ?? result;
-                        }
-                    }
-                    result.Received = timeReceived.ToUnixTimeMilliseconds();
-                    result.Sent = timeSent.ToUnixTimeMilliseconds();
-                    return result;
-                }
-            }
         }
 
         private bool IsOk(HttpResponseMessage response)
@@ -117,7 +90,7 @@ namespace SenecSource
             client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9,de;q=0.8");
             client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
             var httpContent = new StringContent(Content, Encoding.UTF8, "application/json");
-            var start = DateTimeOffset.Now;
+            var start = _time.Now;
             var lalaResponse = await TryGet(client, httpContent, token);
             return (lalaResponse.value, start, lalaResponse.end);
         }
@@ -132,17 +105,17 @@ namespace SenecSource
                     _logger.Fatal(txt);
                     throw new Exception(txt);
                 }
-                return (await client.PostAsync($"http://{_senecSettings.IP}/lala.cgi", httpContent, token), DateTimeOffset.Now);
+                return (await client.PostAsync($"http://{_senecSettings.IP}/lala.cgi", httpContent, token), _time.Now);
             }
             catch (HttpRequestException e)
             {
                 _logger.Warning(e, "Couldn't fetch from SENEC");
-                return (new HttpResponseMessage(), DateTimeOffset.Now);
+                return (new HttpResponseMessage(), _time.Now);
             }
         }
     }
 
-    internal struct ResponseTime : IDisposable
+    public struct ResponseTime : IDisposable
     {
         public HttpResponseMessage response;
         public DateTimeOffset start;

@@ -4,7 +4,7 @@ namespace SenecEntities
 {
     public interface IRealTimeNotification
     {
-        RealTimeClock RTC { get; set; }
+        long ReceivedUnixMillisecondsTimestamp { get; }
         object SerializableEntity { get; }
         bool IsValid { get; }
     }

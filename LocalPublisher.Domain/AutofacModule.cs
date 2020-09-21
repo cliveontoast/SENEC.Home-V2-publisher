@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using FroniusSource;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Repository;
@@ -28,6 +29,7 @@ namespace Domain
             Repository(builder);
 
             SenecSource(builder);
+            FroniusSource(builder);
             Shared(builder);
         }
 
@@ -47,6 +49,21 @@ namespace Domain
                 var result = Configuration.GetSection("CosmosDB").Get<LocalContextConfiguration>();
                 return result as ILocalContextConfiguration;
             });
+        }
+
+        private void FroniusSource(ContainerBuilder builder)
+        {
+            var assembly = typeof(GetPowerFlowRealtimeDataRequest).Assembly;
+            builder.RegisterAssemblyTypes(assembly)
+                .Where(a => a != typeof(FroniusSettings))
+                .AsImplementedInterfaces();
+            builder.Register((context) =>
+            {
+                return new FroniusSettings
+                {
+                    IP = Configuration.GetValue<string?>("FroniusIP")
+                } as IFroniusSettings;
+            }).SingleInstance();
         }
 
         private void SenecSource(ContainerBuilder builder)
@@ -92,6 +109,8 @@ namespace Domain
             builder.RegisterType<SenecGridMeterSummaryCommand>().AsSelf();
             // TODO 
             builder.RegisterType<SenecEnergySummaryCommand>().AsSelf();
+
+            builder.RegisterType<FroniusPollCommand>().AsSelf();
         }
     }
 }

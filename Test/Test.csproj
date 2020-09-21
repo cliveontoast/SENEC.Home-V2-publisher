@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR.Extensions.Autofac.DependencyInjection" Version="5.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
@@ -40,6 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FroniusEntities\FroniusEntities.csproj" />
+    <ProjectReference Include="..\FroniusSource\FroniusSource.csproj" />
     <ProjectReference Include="..\LocalPublisher.Domain\LocalPublisher.Domain.csproj" />
     <ProjectReference Include="..\LocalPublisher.WebApp\LocalPublisher.WebApp.csproj" />
     <ProjectReference Include="..\ReadRepository.Cosmos\ReadRepository.Cosmos.csproj" />

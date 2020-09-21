@@ -41,6 +41,21 @@ namespace Domain
             _mediator = mediator;
             _logger = logger;
             _cache = cache;
+            _cache.GetOrAdd(SolarPowerCache.CacheKey, () => new ConcurrentDictionary<long, string>());
+        }
+
+        private Dictionary<long, decimal> GetSolarValues(long lowerBound, long upperBoundInclusive)
+        {
+            var newCache = new Dictionary<long, decimal>();
+            var cache = _cache.Get<ConcurrentDictionary<long, string>>(SolarPowerCache.CacheKey);
+            for (var i = lowerBound; i <= upperBoundInclusive; i++)
+            {
+                if (!cache.TryRemove(i, out var value)) continue;
+                if (!decimal.TryParse(value, out decimal decimalValue)) continue;
+
+                newCache.Add(i, decimalValue);
+            }
+            return newCache;
         }
 
         public async Task<Unit> Handle(SenecEnergySummaryCommand request, CancellationToken cancellationToken)
@@ -127,6 +142,7 @@ namespace Domain
             var list = new List<MomentEnergy>();
             var lowerBound = intervalStart.ToUnixTimeSeconds();
             var upperBound = intervalEnd.ToUnixTimeSeconds();
+            var solarValues = GetSolarValues(lowerBound, upperBound - 1);
             for (long instant = lowerBound; instant < upperBound; instant++)
             {
                 if (!collection.TryRemove(instant, out string textValue)) continue;
@@ -136,7 +152,12 @@ namespace Domain
                 var entity = _gridMeterAdapter.Convert(instant, original);
                 var voltages = entity.GetMomentEnergy();
                 if (voltages.IsValid)
+                {
                     list.Add(voltages);
+                    if (solarValues.TryGetValue(instant, out decimal solarValue))
+                        voltages.SolarInvertorsPowerGeneration = solarValue;
+                    voltages.PowerMovements = PowerMovementsBuilder.Build(voltages);
+                }
             }
 
             var maximumValues = (int)(intervalEnd - intervalStart).TotalSeconds;
@@ -148,10 +169,12 @@ namespace Domain
                 gridExportWattEnergy: TimeseriesSummary(list, l => l.GridExportWatts, intervalStart, intervalEnd),
                 gridImportWatts: CreateStatistics(list, l => l.GridImportWatts),
                 gridImportWattEnergy: TimeseriesSummary(list, l => l.GridImportWatts, intervalStart, intervalEnd),
-                consumptionWatts: CreateStatistics(list, l => l.HomeInstantPowerConsumption),
-                consumptionWattEnergy: TimeseriesSummary(list, l => l.HomeInstantPowerConsumption, intervalStart, intervalEnd),
-                solarPowerGenerationWatts: CreateStatistics(list, l => l.SolarPowerGeneration),
-                solarPowerGenerationWattEnergy: TimeseriesSummary(list, l => l.SolarPowerGeneration, intervalStart, intervalEnd),
+                estimateConsumptionWatts: CreateStatistics(list, l => l.HomeInstantPowerConsumption),
+                estimateConsumptionWattEnergy: TimeseriesSummary(list, l => l.HomeInstantPowerConsumption, intervalStart, intervalEnd),
+                batteryReportedSolarPowerGenerationWatts: CreateStatistics(list, l => l.SolarPowerGeneration),
+                batteryReportedSolarPowerGenerationWattEnergy: TimeseriesSummary(list, l => l.SolarPowerGeneration, intervalStart, intervalEnd),
+                solarInverterPowerGenerationWatts: CreateStatistics(solarValues.Values.ToList()),
+                solarInverterPowerGenerationWattEnergy: TimeseriesSummary(solarValues, intervalStart, intervalEnd),
                 batteryChargeWatts: CreateStatistics(list, l => l.BatteryCharge),
                 batteryChargeWattEnergy: TimeseriesSummary(list, l => l.BatteryCharge, intervalStart, intervalEnd),
                 batteryDischargeWatts: CreateStatistics(list, l => l.BatteryDischarge),
@@ -163,24 +186,34 @@ namespace Domain
             return stats;
         }
 
-        private decimal TimeseriesSummary(List<MomentEnergy> list, Func<MomentEnergy, decimal?> p, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        private decimal TimeseriesSummary(List<MomentEnergy> list, Func<MomentEnergy, decimal?> property, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
         {
-            decimal sum = 0;
+            var query = (
+                from i in list
+                let value = property(i)
+                where value.HasValue
+                select new { instant = i.Instant.ToUnixTimeSeconds(), value.Value })
+                .ToDictionary(i => i.instant, i => i.Value);
+            return TimeseriesSummary(query, intervalStart, intervalEnd);
+        }
+
+        private decimal TimeseriesSummary(Dictionary<long, decimal> index, DateTimeOffset intervalStartTime, DateTimeOffset intervalEndTime)
+        {
+            long intervalStart = intervalStartTime.ToUnixTimeSeconds();
+            long intervalEnd = intervalEndTime.ToUnixTimeSeconds();
             decimal lastValue = 0;
-            var index = list.ToDictionary(a => a.Instant);
-            DateTimeOffset instant = intervalStart;
+            decimal sum = 0;
+            long instant = intervalStart;
             while (instant <= intervalEnd)
             {
                 if (index.ContainsKey(instant))
                 {
-                    var value = p(index[instant]);
-                    if (value.HasValue)
-                        lastValue = value.Value;
+                    var value = index[instant];
+                    lastValue = value;
                 }
                 sum += lastValue;
-                instant = instant.AddSeconds(1);
+                instant++;
             }
-            var timespan = (intervalEnd - intervalStart).TotalSeconds;
 
             return sum;
         }
@@ -194,6 +227,11 @@ namespace Domain
                 orderby value.Value
                 select value.Value
                 ).ToList();
+            return CreateStatistics(values);
+        }
+
+        private static Statistic CreateStatistics(List<decimal> values)
+        {
             if (values.Count > 0)
             {
                 var minimum = values.First();

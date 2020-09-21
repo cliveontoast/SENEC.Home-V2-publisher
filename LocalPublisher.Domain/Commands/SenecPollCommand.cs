@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SenecEntities;
+using SenecEntitiesAdapter;
 using SenecSource;
 using Serilog;
 using System;
@@ -16,15 +17,18 @@ namespace Domain
     {
         private readonly ILalaRequestBuilder _builder;
         private readonly ILogger _logger;
+        private readonly IAdapter _adapter;
         private readonly IMediator _mediator;
 
         public SenecPollCommandHandler(
             ILalaRequestBuilder builder,
             ILogger logger,
+            IAdapter adapter,
             IMediator mediator)
         {
             _builder = builder;
             _logger = logger;
+            _adapter = adapter;
             _mediator = mediator;
         }
 
@@ -40,24 +44,25 @@ namespace Domain
 
                 var response = await lalaRequest.Request<LalaResponseContent>(cancellationToken);
                 if (response.RTC == null) return Unit.Value;
+                var sourceTime = _adapter.GetDecimal(response.RTC.WEB_TIME).AsInteger;
                 if (response.PM1OBJ1 != null)
                 {
                     await _mediator.Publish(
                         new GridMeter(
-                            pM1OBJ1: response.PM1OBJ1,
-                            rTC: response.RTC,
-                            sent: response.Sent,
-                            received: response.Received),
+                            meter: response.PM1OBJ1,
+                            sourceTimestamp:  response.RTC,
+                            sentMilliseconds: response.SentMilliseconds,
+                            receivedMilliseconds: response.ReceivedMilliseconds),
                         cancellationToken);
                 }
                 if (response.ENERGY != null)
                 {
                     await _mediator.Publish(
                         new SmartMeterEnergy(
-                            eNERGY: response.ENERGY,
-                            rTC: response.RTC,
-                            sent: response.Sent,
-                            received: response.Received),
+                            energy: response.ENERGY,
+                            sourceTimestamp: response.RTC,
+                            sentMilliseconds: response.SentMilliseconds,
+                            receivedMilliseconds: response.ReceivedMilliseconds),
                         cancellationToken);
                 }
             }

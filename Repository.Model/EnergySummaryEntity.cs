@@ -9,7 +9,7 @@ namespace Repository.Model
         public const string DISCRIMINATOR = "EnergySummary";
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         // required for documentDB
-        public EnergySummaryEntity(): base(default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default)
+        public EnergySummaryEntity(): base(default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default)
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
         }
@@ -22,14 +22,16 @@ namespace Repository.Model
             gridExportWattEnergy: entity.GridExportWattEnergy,
             gridImportWatts: entity.GridImportWatts,
             gridImportWattEnergy: entity.GridImportWattEnergy,
-            consumptionWatts: entity.ConsumptionWatts,
-            consumptionWattEnergy: entity.ConsumptionWattEnergy,
-            solarPowerGenerationWatts:entity.SolarPowerGenerationWatts,
-            solarPowerGenerationWattEnergy:entity.SolarPowerGenerationWattEnergy,
+            estimateConsumptionWatts: entity.ConsumptionWatts,
+            estimateConsumptionWattEnergy: entity.ConsumptionWattEnergy,
+            batteryReportedSolarPowerGenerationWatts: entity.SolarPowerGenerationWatts,
+            batteryReportedSolarPowerGenerationWattEnergy: entity.SolarPowerGenerationWattEnergy,
             batteryChargeWatts:entity.BatteryChargeWatts,
             batteryChargeWattEnergy:entity.BatteryChargeWattEnergy,
             batteryDischargeWatts:entity.BatteryDischargeWatts,
             batteryDischargeWattEnergy:entity.BatteryDischargeWattEnergy,
+            solarInverterPowerGenerationWattEnergy: entity.SolarInverterPowerGenerationWattEnergy,
+            solarInverterPowerGenerationWatts: entity.SolarInverterPowerGenerationWatts,
             secondsBatteryCharging:entity.SecondsBatteryCharging,
             secondsBatteryDischarging:entity.SecondsBatteryDischarging,
             secondsWithoutData:entity.SecondsWithoutData)

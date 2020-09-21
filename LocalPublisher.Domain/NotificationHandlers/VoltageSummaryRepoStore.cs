@@ -22,7 +22,6 @@ namespace Domain
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
         private readonly IVoltageSummaryRepository _voltageSummaryRepository;
-        private readonly ISenecVoltCompressConfig _config;
         private readonly IApplicationVersion _versionConfig;
         private readonly IVoltageSummaryDocumentReadRepository _voltageSummaryReadRepository;
 
@@ -53,7 +52,6 @@ namespace Domain
             ILogger logger,
             IMediator mediator,
             IAppCache cache,
-            ISenecVoltCompressConfig config,
             IApplicationVersion versionConfig,
             IVoltageSummaryDocumentReadRepository voltageSummaryReadRepository,
             IVoltageSummaryRepository voltageSummaryRepository)
@@ -61,7 +59,6 @@ namespace Domain
             _logger = logger;
             _mediator = mediator;
             _cache = cache;
-            _config = config;
             _versionConfig = versionConfig;
             _voltageSummaryReadRepository = voltageSummaryReadRepository;
             _voltageSummaryRepository = voltageSummaryRepository;

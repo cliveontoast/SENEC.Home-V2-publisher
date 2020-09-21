@@ -17,6 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FroniusEntities\FroniusEntities.csproj" />
+    <ProjectReference Include="..\FroniusSource\FroniusSource.csproj" />
     <ProjectReference Include="..\ReadRepository.Cosmos\ReadRepository.Cosmos.csproj" />
     <ProjectReference Include="..\Repository.Cosmos\Repository.Cosmos.csproj" />
     <ProjectReference Include="..\Repository.EFCore\Repository.EFCore.csproj" />

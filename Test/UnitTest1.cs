@@ -1,5 +1,7 @@
 using Autofac;
 using Domain;
+using FroniusEntities;
+using FroniusSource;
 using LazyCache;
 using LazyCache.Providers;
 using LocalPublisherWebApp;
@@ -16,6 +18,7 @@ using SenecEntitesAdapter;
 using SenecEntities;
 using SenecEntitiesAdapter;
 using SenecSource;
+using Shared;
 using System;
 using System.Threading;
 
@@ -78,6 +81,16 @@ namespace SenecSourceWebAppTest
         }
 
         [TestMethod]
+        public void Request_Fronius()
+        {
+            InitScope();
+
+            var request = scope.Resolve<IGetPowerFlowRealtimeDataRequest>();
+            request.Content = "";
+            var response = request.Request<GetPowerFlowRealtimeDataResponse>(CancellationToken.None).RunWait();
+        }
+
+        [TestMethod]
         public void RequestBuilder_DailyStats()
         {
             InitScope();
@@ -113,6 +126,10 @@ namespace SenecSourceWebAppTest
             startup.ConfigureServices(services);
             cb.RegisterInstance(BuildAppCache());
             startup.ConfigureContainer(cb);
+            cb.RegisterInstance<IFroniusSettings>(new FroniusSettings
+            {
+                IP = "192.168.0.101"
+            }).SingleInstance();
             cb.RegisterInstance<ISenecSettings>(new SenecSettings
             {
                 IP = "192.168.0.199"

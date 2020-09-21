@@ -5,21 +5,22 @@ namespace SenecEntities
     public class SmartMeterEnergy : WebResponse, INotification, IRealTimeNotification
     {
         public SmartMeterEnergy(
-            RealTimeClock rTC,
-            Energy eNERGY,
-            long sent,
-            long received)
+            RealTimeClock sourceTimestamp,
+            Energy energy,
+            long sentMilliseconds,
+            long receivedMilliseconds)
             :base(
-                 sent,
-                 received)
+                 sentMilliseconds,
+                 receivedMilliseconds)
         {
-            RTC = rTC;
-            ENERGY = eNERGY;
+            SourceTimestamp = sourceTimestamp;
+            Energy = energy;
         }
 
-        public RealTimeClock RTC { get; set; }
-        public Energy ENERGY { get; set; }
-        public object SerializableEntity => ENERGY;
-        public bool IsValid => RTC != null && ENERGY != null;
+        public RealTimeClock SourceTimestamp { get; set; }
+        public Energy Energy { get; set; }
+        public object SerializableEntity => Energy;
+        public bool IsValid => SourceTimestamp != null && Energy != null;
+        public long ReceivedUnixMillisecondsTimestamp => ReceivedMilliseconds;
     }
 }

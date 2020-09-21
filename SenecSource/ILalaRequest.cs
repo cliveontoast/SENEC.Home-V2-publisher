@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 
 namespace SenecSource
 {
-    public interface ILalaRequest
+    public interface ILalaRequest : IEquipmentRequest
+    {
+    }
+    public interface IEquipmentRequest
     {
         string? Content { get; set; }
 

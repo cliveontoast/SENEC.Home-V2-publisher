@@ -1,20 +1,20 @@
 ﻿using MediatR;
-using System.Runtime.Serialization;
 
 namespace SenecEntities
 {
     public class GridMeter : WebResponse, INotification, IRealTimeNotification
     {
-        public Meter PM1OBJ1 { get; set; }
-        public RealTimeClock RTC { get; set; }
+        public Meter Meter { get; set; }
+        public RealTimeClock SourceTimestamp { get; set; }
 
-        public GridMeter(RealTimeClock rTC, Meter pM1OBJ1, long sent, long received): base(sent, received)
+        public GridMeter(RealTimeClock sourceTimestamp, Meter meter, long sentMilliseconds, long receivedMilliseconds): base(sentMilliseconds, receivedMilliseconds)
         {
-            RTC = rTC;
-            PM1OBJ1 = pM1OBJ1;
+            Meter = meter;
+            SourceTimestamp = sourceTimestamp;
         }
 
-        public object SerializableEntity => PM1OBJ1;
-        public bool IsValid => RTC != null && PM1OBJ1 != null;
+        public object SerializableEntity => Meter;
+        public bool IsValid => SourceTimestamp != null && Meter != null;
+        public long ReceivedUnixMillisecondsTimestamp => ReceivedMilliseconds;
     }
 }

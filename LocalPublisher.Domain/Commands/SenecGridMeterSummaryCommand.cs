@@ -40,6 +40,8 @@ namespace Domain
             _mediator = mediator;
             _logger = logger;
             _cache = cache;
+
+            _cache.GetOrAdd(GridMeterCache.CacheKey, () => new ConcurrentDictionary<long, string>());
         }
 
         public async Task<Unit> Handle(SenecGridMeterSummaryCommand request, CancellationToken cancellationToken)
