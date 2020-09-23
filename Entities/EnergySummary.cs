@@ -30,7 +30,9 @@ namespace Entities
         public int SecondsWithoutData { get; set; }
         public Statistic SolarInverterPowerGenerationWatts { get; }
         public decimal SolarInverterPowerGenerationWattEnergy { get; }
-        #endregion 
+        public PowerMovementSummary? PowerMovementSummary { get; } // version 3+
+
+        #endregion
 
 
         public EnergySummary(
@@ -43,7 +45,9 @@ namespace Entities
             Statistic batteryChargeWatts, decimal batteryChargeWattEnergy,
             Statistic batteryDischargeWatts, decimal batteryDischargeWattEnergy,
             int secondsBatteryCharging, int secondsBatteryDischarging, int secondsWithoutData,
-            Statistic solarInverterPowerGenerationWatts, decimal solarInverterPowerGenerationWattEnergy)
+            Statistic solarInverterPowerGenerationWatts, decimal solarInverterPowerGenerationWattEnergy,
+            PowerMovementSummary? powerMovementSummary
+            )
         {
             IntervalStartIncluded = intervalStartIncluded;
             IntervalEndExcluded = intervalEndExcluded;
@@ -65,14 +69,50 @@ namespace Entities
             SecondsWithoutData = secondsWithoutData;
             SolarInverterPowerGenerationWatts = solarInverterPowerGenerationWatts;
             SolarInverterPowerGenerationWattEnergy = solarInverterPowerGenerationWattEnergy;
-
-            // solar to home
-            // solar to battery
-            // solar to grid
-            // battery to home
-            // battery to grid
-            // grid to home
-            // grid to battery
+            PowerMovementSummary = powerMovementSummary;
         }
+    }
+
+    public class PowerMovementSummary
+    {
+        public PowerMovementSummary(
+            Statistic solarToGridWatts, decimal solarToGridWattEnergy,
+            Statistic solarToBatteryWatts, decimal solarToBatteryWattEnergy,
+            Statistic solarToHomeWatts, decimal solarToHomeWattEnergy,
+            Statistic batteryToHomeWatts, decimal batteryToHomeWattEnergy,
+            Statistic batteryToGridWatts, decimal batteryToGridWattEnergy,
+            Statistic gridToHomeWatts, decimal gridToHomeWattEnergy,
+            Statistic gridToBatteryWatts, decimal gridToBatteryWattEnergy)
+        {
+            SolarToGridWatts = solarToGridWatts;
+            SolarToGridWattEnergy = solarToGridWattEnergy;
+            SolarToBatteryWatts = solarToBatteryWatts;
+            SolarToBatteryWattEnergy = solarToBatteryWattEnergy;
+            SolarToHomeWatts = solarToHomeWatts;
+            SolarToHomeWattEnergy = solarToHomeWattEnergy;
+            BatteryToHomeWatts = batteryToHomeWatts;
+            BatteryToHomeWattEnergy = batteryToHomeWattEnergy;
+            BatteryToGridWatts = batteryToGridWatts;
+            BatteryToGridWattEnergy = batteryToGridWattEnergy;
+            GridToHomeWatts = gridToHomeWatts;
+            GridToHomeWattEnergy = gridToHomeWattEnergy;
+            GridToBatteryWatts = gridToBatteryWatts;
+            GridToBatteryWattEnergy = gridToBatteryWattEnergy;
+        }
+
+        public Statistic SolarToGridWatts { get; }
+        public decimal SolarToGridWattEnergy { get; }
+        public Statistic SolarToBatteryWatts { get; }
+        public decimal SolarToBatteryWattEnergy { get; }
+        public Statistic SolarToHomeWatts { get; }
+        public decimal SolarToHomeWattEnergy { get; }
+        public Statistic BatteryToHomeWatts { get; }
+        public decimal BatteryToHomeWattEnergy { get; }
+        public Statistic BatteryToGridWatts { get; }
+        public decimal BatteryToGridWattEnergy { get; }
+        public Statistic GridToHomeWatts { get; }
+        public decimal GridToHomeWattEnergy { get; }
+        public Statistic GridToBatteryWatts { get; }
+        public decimal GridToBatteryWattEnergy { get; }
     }
 }

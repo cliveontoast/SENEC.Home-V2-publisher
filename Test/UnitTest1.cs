@@ -111,7 +111,7 @@ namespace SenecSourceWebAppTest
 
             if (response?.ENERGY == null || !time.Value.HasValue)
                 return;
-            var energy = adapter.Convert(time.AsInteger, response.ENERGY);
+            var energy = adapter.Convert(time.AsInteger.ToEquipmentLocalTime(scope.Resolve<IZoneProvider>()), response.ENERGY);
             var ename = energy.SystemState.EnglishName;
         }
 
@@ -172,7 +172,9 @@ namespace SenecSourceWebAppTest
         [TestMethod]
         public void Convert()
         {
-            var now = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.Now.ToUnixTimeSeconds());
+            InitScope();
+
+            var now = DateTimeOffset.Now.ToEquipmentLocalTime(scope.Resolve<IZoneProvider>());
             var a = new Repository.Model.VoltageSummary()
             {
                 IntervalStartIncluded = now,

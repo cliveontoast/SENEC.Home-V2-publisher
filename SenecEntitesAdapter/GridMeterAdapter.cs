@@ -17,10 +17,10 @@ namespace SenecEntitesAdapter
         }
 
 
-        public Meter Convert(long instant, SenecMeter meter)
+        public Meter Convert(DateTimeOffset instant, SenecMeter meter)
         {
             var result = new Meter(
-                instant: DateTimeOffset.FromUnixTimeSeconds(instant),
+                instant: instant,
                 totalPower: _adapter.GetDecimal(meter.P_TOTAL),
                 frequency: _adapter.GetDecimal(meter.FREQ),
                 l1: Convert(meter, 0),
@@ -42,6 +42,6 @@ namespace SenecEntitesAdapter
 
     public interface IGridMeterAdapter
     {
-        Meter Convert(long instant, SenecMeter meter);
+        Meter Convert(DateTimeOffset instant, SenecMeter meter);
     }
 }

@@ -9,7 +9,7 @@ namespace Repository.Model
         public const string DISCRIMINATOR = "EnergySummary";
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         // required for documentDB
-        public EnergySummaryEntity(): base(default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default)
+        public EnergySummaryEntity(): base(default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default)
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
         }
@@ -32,6 +32,7 @@ namespace Repository.Model
             batteryDischargeWattEnergy:entity.BatteryDischargeWattEnergy,
             solarInverterPowerGenerationWattEnergy: entity.SolarInverterPowerGenerationWattEnergy,
             solarInverterPowerGenerationWatts: entity.SolarInverterPowerGenerationWatts,
+            powerMovementSummary: entity.PowerMovementSummary,
             secondsBatteryCharging:entity.SecondsBatteryCharging,
             secondsBatteryDischarging:entity.SecondsBatteryDischarging,
             secondsWithoutData:entity.SecondsWithoutData)

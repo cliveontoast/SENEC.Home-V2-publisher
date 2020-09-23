@@ -11,6 +11,7 @@ using MediatR;
 using System.Threading.Tasks;
 using Serilog;
 using System.Runtime.Versioning;
+using Shared;
 
 namespace Domain
 {
@@ -25,6 +26,7 @@ namespace Domain
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
         private readonly ILogger _logger;
+        private readonly IZoneProvider _zoneProvider;
 
         // TODO make a DI singleton
         private static object _lock = new object();
@@ -34,12 +36,14 @@ namespace Domain
             ISenecEnergyCompressConfig config,
             IMediator mediator,
             ILogger logger,
+            IZoneProvider zoneProvider,
             IAppCache cache)
         {
             _gridMeterAdapter = gridMeterAdapter;
             _config = config;
             _mediator = mediator;
             _logger = logger;
+            _zoneProvider = zoneProvider;
             _cache = cache;
             _cache.GetOrAdd(SolarPowerCache.CacheKey, () => new ConcurrentDictionary<long, string>());
         }
@@ -89,7 +93,7 @@ namespace Domain
                     _logger.Verbose("grid meter loop count {Count}", collection.Count);
                     var interval = GetMinimumInterval(collection);
                     var intervalPlusBuffer = interval.End.AddSeconds(10);
-                    var internalLastAdded = GetLastTime(collection);
+                    var internalLastAdded = GetLastTime(collection, _zoneProvider);
                     var isBufferBeyondLastItem = intervalPlusBuffer >= internalLastAdded;
                     _logger.Verbose("{intervalPlusBuffer} >= {internalLastAdded} is {Truthiness}", intervalPlusBuffer, internalLastAdded, isBufferBeyondLastItem);
                     if (isBufferBeyondLastItem) break;
@@ -107,20 +111,26 @@ namespace Domain
 
         private (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection)
         {
-            var firstItem = collection.Keys.Min();
-            _logger.Verbose("Minimum in collection {Minimum} {Time}", firstItem, DateTimeOffset.FromUnixTimeSeconds(firstItem));
-            var firstTime = DateTimeOffset.FromUnixTimeSeconds(firstItem);
-            var frequency = TimeSpan.FromMinutes(_config.MinutesPerSummary);
+            return GetMinimumInterval(collection, _zoneProvider, _logger, _config.MinutesPerSummary);
+        }
+
+        // TODO move to shared function
+        public static (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection, IZoneProvider zoneProvider, ILogger logger, int minutes)
+        {
+            var firstItemUnixTime = collection.Keys.Min();
+            DateTimeOffset firstTime = firstItemUnixTime.ToEquipmentLocalTime(zoneProvider);
+            logger.Verbose("Minimum in collection {Minimum} {Time}", firstItemUnixTime, firstTime);
+            var frequency = TimeSpan.FromMinutes(minutes);
             var minIntoInterval = firstTime.TimeOfDay.Ticks % frequency.Ticks;
-            var intervalStart = firstTime.AddTicks(-minIntoInterval);
-            var intervalEnd = intervalStart + frequency;
+            var intervalStart = firstTime.AddTicks(-minIntoInterval).ToEquipmentLocalTime(zoneProvider);
+            var intervalEnd = (intervalStart + frequency).ToEquipmentLocalTime(zoneProvider);
             return (intervalStart, intervalEnd);
         }
 
-        private static DateTimeOffset GetLastTime(ConcurrentDictionary<long, string> collection)
+        public static DateTimeOffset GetLastTime(ConcurrentDictionary<long, string> collection, IZoneProvider zoneProvider)
         {
             var lastItem = collection.Keys.Max();
-            return DateTimeOffset.FromUnixTimeSeconds(lastItem);
+            return lastItem.ToEquipmentLocalTime(zoneProvider);
         }
 
         private EnergySummary? CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
@@ -149,7 +159,8 @@ namespace Domain
                 removedTexts.Add(textValue);
                 var original = JsonConvert.DeserializeObject<SenecEntities.Energy>(textValue);
                 if (original == null) continue; // no way the programmer serialised nothing
-                var entity = _gridMeterAdapter.Convert(instant, original);
+                var moment = instant.ToEquipmentLocalTime(_zoneProvider);
+                var entity = _gridMeterAdapter.Convert(moment, original);
                 var voltages = entity.GetMomentEnergy();
                 if (voltages.IsValid)
                 {
@@ -179,11 +190,32 @@ namespace Domain
                 batteryChargeWattEnergy: TimeseriesSummary(list, l => l.BatteryCharge, intervalStart, intervalEnd),
                 batteryDischargeWatts: CreateStatistics(list, l => l.BatteryDischarge),
                 batteryDischargeWattEnergy: TimeseriesSummary(list, l => l.BatteryDischarge, intervalStart, intervalEnd),
+                powerMovementSummary: CreatePowerSummary(list, intervalStart, intervalEnd),
                 secondsBatteryCharging: list.Count(a => a.IsBatteryCharging),
                 secondsBatteryDischarging: list.Count(a => a.IsBatteryDischarging),
                 secondsWithoutData: maximumValues - list.Count
                 );
             return stats;
+        }
+
+        private PowerMovementSummary CreatePowerSummary(List<MomentEnergy> list, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        {
+            return new PowerMovementSummary(
+                batteryToGridWatts: CreateStatistics(list, l => l.PowerMovements?.BatteryToGrid),
+                batteryToHomeWatts: CreateStatistics(list, l => l.PowerMovements?.BatteryToHome),
+                gridToBatteryWatts: CreateStatistics(list, l => l.PowerMovements?.GridToBattery),
+                gridToHomeWatts: CreateStatistics(list, l => l.PowerMovements?.GridToHome),
+                solarToBatteryWatts: CreateStatistics(list, l => l.PowerMovements?.SolarToBattery),
+                solarToGridWatts: CreateStatistics(list, l => l.PowerMovements?.SolarToGrid),
+                solarToHomeWatts: CreateStatistics(list, l => l.PowerMovements?.SolarToHome),
+                batteryToGridWattEnergy: TimeseriesSummary(list, l => l.PowerMovements?.BatteryToGrid, intervalStart, intervalEnd),
+                batteryToHomeWattEnergy: TimeseriesSummary(list, l => l.PowerMovements?.BatteryToHome, intervalStart, intervalEnd),
+                gridToBatteryWattEnergy: TimeseriesSummary(list, l => l.PowerMovements?.GridToBattery, intervalStart, intervalEnd),
+                gridToHomeWattEnergy: TimeseriesSummary(list, l => l.PowerMovements?.GridToHome, intervalStart, intervalEnd),
+                solarToBatteryWattEnergy: TimeseriesSummary(list, l => l.PowerMovements?.SolarToBattery, intervalStart, intervalEnd),
+                solarToGridWattEnergy: TimeseriesSummary(list, l => l.PowerMovements?.SolarToGrid, intervalStart, intervalEnd),
+                solarToHomeWattEnergy: TimeseriesSummary(list, l => l.PowerMovements?.SolarToHome, intervalStart, intervalEnd)
+                );
         }
 
         private decimal TimeseriesSummary(List<MomentEnergy> list, Func<MomentEnergy, decimal?> property, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)

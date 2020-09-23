@@ -107,6 +107,17 @@ namespace FroniusSource
                 }
                 return (await client.GetAsync($"http://{_froniusSettings.IP}/solar_api/v1/GetPowerFlowRealtimeData.fcgi", token), _time.Now);
             }
+            catch (HttpRequestException e) 
+            when (e.InnerException is System.Net.WebException webex
+                && webex.Status == System.Net.WebExceptionStatus.ConnectFailure
+                && webex.InnerException is System.Net.Sockets.SocketException socex
+                && (socex.SocketErrorCode == System.Net.Sockets.SocketError.TimedOut
+                    || socex.SocketErrorCode == System.Net.Sockets.SocketError.HostNotFound
+                    || socex.SocketErrorCode == System.Net.Sockets.SocketError.HostUnreachable
+                    ))
+            {
+                throw new BackOffPeriodException(e, TimeSpan.FromMinutes(1));
+            }
             catch (HttpRequestException e)
             {
                 _logger.Warning(e, "Couldn't fetch from Fronius");

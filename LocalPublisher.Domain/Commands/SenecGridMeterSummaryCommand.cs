@@ -24,6 +24,7 @@ namespace Domain
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
         private readonly ILogger _logger;
+        private readonly IZoneProvider _zoneProvider;
 
         // TODO make a DI singleton
         private static object _lock = new object();
@@ -33,12 +34,14 @@ namespace Domain
             ISenecVoltCompressConfig config,
             IMediator mediator,
             ILogger logger,
+            IZoneProvider zoneProvider,
             IAppCache cache)
         {
             _gridMeterAdapter = gridMeterAdapter;
             _config = config;
             _mediator = mediator;
             _logger = logger;
+            _zoneProvider = zoneProvider;
             _cache = cache;
 
             _cache.GetOrAdd(GridMeterCache.CacheKey, () => new ConcurrentDictionary<long, string>());
@@ -75,7 +78,7 @@ namespace Domain
                     _logger.Verbose("grid meter loop count {Count}", collection.Count);
                     var interval = GetMinimumInterval(collection);
                     var intervalPlusBuffer = interval.End.AddSeconds(10);
-                    var internalLastAdded = GetLastTime(collection);
+                    var internalLastAdded = SenecEnergySummaryCommandHandler.GetLastTime(collection, _zoneProvider);
                     var isBufferBeyondLastItem = intervalPlusBuffer >= internalLastAdded;
                     _logger.Verbose("{intervalPlusBuffer} >= {internalLastAdded} is {Truthiness}", intervalPlusBuffer, internalLastAdded, isBufferBeyondLastItem);
                     if (isBufferBeyondLastItem) break;
@@ -93,20 +96,7 @@ namespace Domain
 
         private (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection)
         {
-            var firstItem = collection.Keys.Min();
-            _logger.Verbose("Minimum in collection {Minimum} {Time}", firstItem, DateTimeOffset.FromUnixTimeSeconds(firstItem));
-            var firstTime = DateTimeOffset.FromUnixTimeSeconds(firstItem);
-            var frequency = TimeSpan.FromMinutes(_config.MinutesPerSummary);
-            var minIntoInterval = firstTime.TimeOfDay.Ticks % frequency.Ticks;
-            var intervalStart = firstTime.AddTicks(-minIntoInterval);
-            var intervalEnd = intervalStart + frequency;
-            return (intervalStart, intervalEnd);
-        }
-
-        private static DateTimeOffset GetLastTime(ConcurrentDictionary<long, string> collection)
-        {
-            var lastItem = collection.Keys.Max();
-            return DateTimeOffset.FromUnixTimeSeconds(lastItem);
+            return SenecEnergySummaryCommandHandler.GetMinimumInterval(collection, _zoneProvider, _logger, _config.MinutesPerSummary);
         }
 
         private VoltageSummary? CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
@@ -134,7 +124,8 @@ namespace Domain
                 removedTexts.Add(textValue);
                 var original = JsonConvert.DeserializeObject<SenecEntities.Meter>(textValue);
                 if (original == null) continue; // no way the programmer serialised nothing
-                var entity = _gridMeterAdapter.Convert(instant, original);
+                var moment = instant.ToEquipmentLocalTime(_zoneProvider);
+                var entity = _gridMeterAdapter.Convert(moment, original);
                 var voltages = entity.GetVoltageMoment();
                 if (voltages.IsValid)
                     list.Add(voltages);

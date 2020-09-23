@@ -16,10 +16,10 @@ namespace SenecEntitesAdapter
             _adapter = adapter;
         }
 
-        public Energy Convert(long instant, SenecEnergy meter)
+        public Energy Convert(DateTimeOffset instant, SenecEnergy meter)
         {
             var result = new Energy(
-                instant: DateTimeOffset.FromUnixTimeSeconds(instant),
+                instant: instant,
                 batteryPercentageFull: _adapter.GetDecimal(meter.GUI_BAT_DATA_FUEL_CHARGE),
                 homeInstantPowerConsumption: _adapter.GetDecimal(meter.GUI_HOUSE_POW),
                 solarPowerGeneration: _adapter.GetDecimal(meter.GUI_INVERTER_POWER),
@@ -38,6 +38,6 @@ namespace SenecEntitesAdapter
 
     public interface IEnergyAdapter
     {
-        Energy Convert(long instant, SenecEnergy meter);
+        Energy Convert(DateTimeOffset instant, SenecEnergy meter);
     }
 }

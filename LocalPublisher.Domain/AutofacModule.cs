@@ -31,6 +31,7 @@ namespace Domain
             SenecSource(builder);
             FroniusSource(builder);
             Shared(builder);
+            builder.RegisterInstance(new ZoneProvider(Configuration.GetValue<string>("Timezone")) as IZoneProvider).SingleInstance();
         }
 
 

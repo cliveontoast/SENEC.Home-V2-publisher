@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using Domain;
+using Entities;
 using LazyCache;
 using Newtonsoft.Json;
 using SenecEntities;
@@ -18,15 +19,18 @@ namespace LocalPublisher.Domain.Functions
     {
         private readonly ILogger _logger;
         private readonly IAppCache _cache;
+        private readonly IZoneProvider _zoneProvider;
         private readonly IAdapter _adapter;
 
         public WriteToCache(
             ILogger logger,
+            IZoneProvider zoneProvider,
             IAppCache cache,
             IAdapter adapter)
         {
             _logger = logger;
             _cache = cache;
+            _zoneProvider = zoneProvider;
             _adapter = adapter;
         }
 
@@ -38,10 +42,11 @@ namespace LocalPublisher.Domain.Functions
         private void Writefile(IRealTimeNotification notification, string cacheKey)
         {
             var unixMoment = notification.ReceivedUnixMillisecondsTimestamp / 1000;
-            var moment = DateTimeOffset.FromUnixTimeMilliseconds(unixMoment);
             var collection = _cache.GetOrAdd(cacheKey, () => new ConcurrentDictionary<long, string>(), DateTimeOffset.MaxValue);
-            if (collection.TryAdd(unixMoment, JsonConvert.SerializeObject(notification.SerializableEntity)))
+            if (collection.TryAdd(unixMoment, JsonConvert.SerializeObject(notification.SerializableEntity))) {
+                var moment = DateTimeOffset.FromUnixTimeMilliseconds(unixMoment).ToEquipmentLocalTime(_zoneProvider);
                 _logger.Verbose("Cached {UnixTime} {Time} - Cache count {Count}", unixMoment, moment, collection.Count);
+            }
             else
                 _logger.Information("Cached {UnixTime} already exists for {TypeName} - Cache count {Count}", unixMoment, notification.GetType().Name, collection.Count);
         }

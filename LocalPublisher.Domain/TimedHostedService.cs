@@ -5,6 +5,7 @@ using Repository;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +16,24 @@ namespace Domain
         private readonly ILogger _logger;
         private readonly ILifetimeScope _scope;
         private readonly IEnumerable<ITimedService> _services;
-        private List<Timer> _timers;
+        private Dictionary<string, Timer> _timers;
+
+        private class TimerCallbackState
+        {
+            public Type command;
+            public CancellationToken cancellationToken;
+            public TimeSpan period;
+            public int pauseTimes;
+            internal bool isLastCallbackBackoff;
+
+            public TimerCallbackState(Type command, CancellationToken cancellationToken, TimeSpan period, int pauseTimes)
+            {
+                this.command = command;
+                this.cancellationToken = cancellationToken;
+                this.period = period;
+                this.pauseTimes = pauseTimes;
+            }
+        }
 
         public TimedHostedService(
             ILogger logger,
@@ -25,7 +43,7 @@ namespace Domain
             _logger = logger;
             _scope = scope;
             _services = services;
-            _timers = new List<Timer>();
+            _timers = new Dictionary<string, Timer>();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -37,23 +55,44 @@ namespace Domain
             {
                 _logger.Information("Timed Background Service {Name} is starting.", item.Command.Name);
                 Type command = item.Command;
-                _timers.Add(new Timer(async (state) =>
+                var callbackState = new TimerCallbackState(command: command, cancellationToken: cancellationToken, item.Period, 0);
+                _timers.Add(command.Name, new Timer(async (state) => await timerCallback(state), callbackState, TimeSpan.FromSeconds(1), item.Period));
+            }
+        }
+
+        private async Task timerCallback(object state)
+        {
+            var stateObject = (TimerCallbackState)state;
+            if (stateObject.cancellationToken.IsCancellationRequested) return;
+            try
+            {
+                using (var scope = _scope.BeginLifetimeScope())
                 {
-                    try
+                    var mediator = scope.Resolve<IMediator>();
+                    var instance = scope.Resolve(stateObject.command);
+                    if (instance is IRequest<TimeSpan?> backoffInstance)
                     {
-                        using (var scope = _scope.BeginLifetimeScope())
+                        var result = await mediator.Send(backoffInstance, stateObject.cancellationToken);
+                        if (result != null)
                         {
-                            var mediator = scope.Resolve<IMediator>();
-                            var instance = scope.Resolve(command);
-                            await mediator.Send(instance, cancellationToken);
+                            _timers[stateObject.command.Name].Change(result.Value, result.Value);
+                            stateObject.isLastCallbackBackoff = true;
+                        }
+                        else if (stateObject.isLastCallbackBackoff)
+                        {
+                            stateObject.isLastCallbackBackoff = false;
+                            _timers[stateObject.command.Name].Change(TimeSpan.FromSeconds(1), _services.First(a => a.Command == stateObject.command).Period);
                         }
                     }
-                    catch (Exception e)
-                    {
-                        if (!cancellationToken.IsCancellationRequested)
-                            _logger.Error(e, "Timer {Name} Failed", command.Name);
-                    }
-                }, cancellationToken, TimeSpan.Zero, item.Period));
+                    else
+                        await mediator.Send(instance, stateObject.cancellationToken);
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                if (!stateObject.cancellationToken.IsCancellationRequested)
+                    _logger.Error(e, "Timer {Name} Failed", stateObject.command.Name);
             }
         }
 
@@ -70,7 +109,7 @@ namespace Domain
         {
             _logger.Information("Timed Background Service is stopping.");
 
-            foreach (var item in _timers)
+            foreach (var item in _timers.Values)
             {
                 item.Change(Timeout.Infinite, 0);
             }
@@ -80,7 +119,7 @@ namespace Domain
 
         public virtual void Dispose()
         {
-            foreach (var timer in _timers)
+            foreach (var timer in _timers.Values)
             {
                 timer.Dispose();
             }
