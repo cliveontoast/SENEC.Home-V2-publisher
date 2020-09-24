@@ -13,6 +13,8 @@ import { EnergyComponent } from './energy/energy.component';
 import { EnergySummaryService } from './services/energySummary.service';
 import { HomeConsumptionComponent } from './home-consumption/home-consumption.component';
 import { HomeConsumptionService } from './services/home-consumption.service';
+import { PowerMovementComponent } from './power-movement/power-movement.component';
+import { PowerMovementService } from './services/power-movement.service';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,7 @@ import { HomeConsumptionService } from './services/home-consumption.service';
     NavMenuComponent,
     EnergyComponent,
     HomeConsumptionComponent,
+    PowerMovementComponent,
     VoltagesComponent
   ],
   imports: [
@@ -29,7 +32,8 @@ import { HomeConsumptionService } from './services/home-consumption.service';
     HighchartsChartModule,
     RouterModule.forRoot([
       { path: 'consumption', component: HomeConsumptionComponent },
-      { path: 'energy', component: EnergyComponent },
+      { path: 'power', component: PowerMovementComponent },
+      { path: 'battery', component: EnergyComponent },
       { path: 'voltages', component: VoltagesComponent },
       { path: '**', component: HomeConsumptionComponent }
     ])
@@ -38,6 +42,7 @@ import { HomeConsumptionService } from './services/home-consumption.service';
     VoltageSummaryService,
     HomeConsumptionService,
     EnergySummaryService,
+    PowerMovementService,
   ],
   bootstrap: [AppComponent]
 })

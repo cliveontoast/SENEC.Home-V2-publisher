@@ -28,11 +28,59 @@ namespace ReadRepository.Cosmos
             var response = ToReadModel(result);
             return response.FirstOrDefault();
         }
+
+        public async Task<PowerMovementSummaryReadModel> GetPowerMovement(string key, CancellationToken cancellationToken)
+        {
+            var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
+            var iterator = queryable.Where(p => p.Partition == "ES_" + key).ToFeedIterator();
+            var result = await iterator.ReadNextAsync();
+            var response = ToMovementReadModel(result);
+            return response.FirstOrDefault();
+        }
+        public async Task<IEnumerable<PowerMovementSummaryReadModel>> FetchPowerMovements(DateTime date)
+        {
+            var results = await FetchRaw(date);
+            return ToMovementReadModel(results);
+        }
+
+        private IEnumerable<PowerMovementSummaryReadModel> ToMovementReadModel(IEnumerable<EnergySummaryEntity> iterator)
+        {
+            var response = (
+                from a in iterator
+                where a.PowerMovementSummary != null
+                let p = a.PowerMovementSummary
+                select new PowerMovementSummaryReadModel(
+                    intervalEndExcluded: a.IntervalEndExcluded,
+                    intervalStartIncluded: a.IntervalStartIncluded,
+                    key: a.Id,
+                    version: a.Version,
+                    solarToGridWatts: p.SolarToGridWatts,
+                    solarToGridWattEnergy: p.SolarToGridWattEnergy,
+                    solarToBatteryWatts: p.SolarToBatteryWatts,
+                    solarToBatteryWattEnergy: p.SolarToBatteryWattEnergy,
+                    solarToHomeWatts: p.SolarToHomeWatts,
+                    solarToHomeWattEnergy: p.SolarToHomeWattEnergy,
+                    batteryToHomeWatts: p.BatteryToHomeWatts,
+                    batteryToHomeWattEnergy: p.BatteryToHomeWattEnergy,
+                    batteryToGridWatts: p.BatteryToGridWatts,
+                    batteryToGridWattEnergy: p.BatteryToGridWattEnergy,
+                    gridToHomeWatts: p.GridToHomeWatts,
+                    gridToHomeWattEnergy: p.GridToHomeWattEnergy,
+                    gridToBatteryWatts: p.GridToBatteryWatts,
+                    gridToBatteryWattEnergy: p.GridToBatteryWattEnergy,
+                    secondsBatteryCharging: a.SecondsBatteryCharging,
+                    secondsBatteryDischarging: a.SecondsBatteryDischarging,
+                    secondsWithoutData: a.SecondsWithoutData)
+            ).ToImmutableList();
+            return response;
+        }
+
         public async Task<IEnumerable<EnergySummaryReadModel>> Fetch(DateTime date)
         {
             var results = await FetchRaw(date);
             return ToReadModel(results);
         }
+
         public async Task<IEnumerable<EnergySummaryEntity>> FetchRaw(DateTime date)
         {
             var dateText = "ES_" + date.ToString("yyyy-MM-dd");

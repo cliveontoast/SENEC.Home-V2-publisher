@@ -81,10 +81,14 @@ export class EnergyComponent implements OnInit {
     },
     series: [
       {
-        type: 'spline',
+        type: 'area',
         name: 'Battery Percentage'
       }
     ],
+    tooltip: {
+      split: true,
+      // valueSuffix: ' watt hours'
+    },
     plotOptions: {
       series: {
           marker: {
@@ -100,6 +104,17 @@ export class EnergyComponent implements OnInit {
         },
         marker: {
             enabled: false
+        },
+        pointInterval: 3600000/12, // one hour / 12 = 5 min
+        pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)
+      },
+      area: {
+        stacking: 'normal',
+        lineColor: '#666666',
+        lineWidth: 0,
+        marker: {
+            lineWidth: 4,
+            lineColor: '#666666'
         },
         pointInterval: 3600000/12, // one hour / 12 = 5 min
         pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)

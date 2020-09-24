@@ -139,6 +139,7 @@ namespace SenecSourceWebAppTest
                 accountKey: "...",
                 defaultContainer: "SenecDev",
                 databaseName: "ToDoList"));
+            cb.RegisterInstance<IZoneProvider>(new ZoneProvider("Australia/Perth"));
             return (cb, mockConfiguration);
         }
 
@@ -280,6 +281,26 @@ namespace SenecSourceWebAppTest
             var readRepo = scope.Resolve<IEnergySummaryDocumentReadRepository>();
             var items = readRepo.Fetch(new DateTime(2020, 09, 15)).RunWait();
             var item = readRepo.Get("2020-09-15T19:30:00+00:00", CancellationToken.None).RunWait();
+        }
+
+        [TestMethod]
+        public void FetchPower()
+        {
+            InitScope(a =>
+                a.Item1.RegisterModule(new ReadRepository.Cosmos.AutofacModule(a.Item2.Object))
+            );
+            var readRepo = scope.Resolve<IEnergySummaryDocumentReadRepository>();
+            var item = readRepo.GetPowerMovement("2020-09-23T00:00:00+00:00", CancellationToken.None).RunWait();
+        }
+
+        [TestMethod]
+        public void FetchPower1()
+        {
+            InitScope(a =>
+                a.Item1.RegisterModule(new ReadRepository.Cosmos.AutofacModule(a.Item2.Object))
+            );
+            var readRepo = scope.Resolve<IEnergySummaryDocumentReadRepository>();
+            var item = readRepo.FetchPowerMovements(new DateTime(2020, 9, 23)).RunWait();
         }
     }
 
