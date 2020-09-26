@@ -42,6 +42,7 @@ namespace LocalPublisherMono
             }
             finally
             {
+                Log.Information("Toilets flush when they are finished");
                 Log.CloseAndFlush();
             }
         }
@@ -57,6 +58,7 @@ namespace LocalPublisherMono
             {
                 Log.Information("Press ENTER to quit");
                 Console.ReadLine();
+                service.StopAsync(tokenSource.Token);
                 tokenSource.Cancel();
             });
             Task.WaitAll(cancelTask);

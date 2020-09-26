@@ -35,20 +35,17 @@ namespace FroniusSource
 
         public async Task<(string? response, DateTimeOffset start, DateTimeOffset end)> Request(CancellationToken token)
         {
-            using (var client = new HttpClient())
+            using var client = new HttpClient();
+            using var response = await GetResponse(client, token);
+
+            if (IsOk(response.response))
             {
-                using (var response = await GetResponse(client, token))
-                {
-                    if (IsOk(response.response))
-                    {
-                        var result = await response.response.Content.ReadAsStringAsync();
-                        if (string.IsNullOrWhiteSpace(result))
-                            _logger.Error("Fronius returned success status code. Result was {IsNull} value of '{Result}'", result == null ? "null" : "not null", result);
-                        return (result, response.start, response.end);
-                    }
-                    return (null, response.start, response.end);
-                }
+                var result = await response.response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(result))
+                    _logger.Error("Fronius returned success status code. Result was {IsNull} value of '{Result}'", result == null ? "null" : "not null", result);
+                return (result, response.start, response.end);
             }
+            return (null, response.start, response.end);
         }
 
         public async Task<TResponse> Request<TResponse>(CancellationToken token) where TResponse : WebResponse
@@ -105,7 +102,12 @@ namespace FroniusSource
                     _logger.Fatal(txt);
                     throw new Exception(txt);
                 }
+                client.Timeout = TimeSpan.FromMilliseconds(1);
                 return (await client.GetAsync($"http://{_froniusSettings.IP}/solar_api/v1/GetPowerFlowRealtimeData.fcgi", token), _time.Now);
+            }
+            catch (TimeoutException e)
+            {
+                throw new BackOffPeriodException(e, TimeSpan.FromMinutes(1));
             }
             catch (HttpRequestException e) 
             when (e.InnerException is System.Net.WebException webex

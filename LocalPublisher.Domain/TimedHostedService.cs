@@ -107,13 +107,12 @@ namespace Domain
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.Information("Timed Background Service is stopping.");
-
+            _logger.Error("Not an error... timed Background Service is stopping.");
             foreach (var item in _timers.Values)
             {
                 item.Change(Timeout.Infinite, 0);
             }
-
+            _logger.Error("Stop completed");
             return Task.CompletedTask;
         }
 

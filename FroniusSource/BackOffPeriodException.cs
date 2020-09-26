@@ -7,7 +7,7 @@ namespace FroniusSource
     [Serializable]
     public class BackOffPeriodException : Exception
     {
-        public BackOffPeriodException(HttpRequestException e, TimeSpan newPollingTime) : base("Back off period", e)
+        public BackOffPeriodException(Exception e, TimeSpan newPollingTime) : base("Back off period", e)
         {
             BackoffTime = newPollingTime;
         }

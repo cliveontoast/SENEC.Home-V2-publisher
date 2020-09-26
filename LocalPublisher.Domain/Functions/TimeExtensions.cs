@@ -12,8 +12,7 @@ namespace Domain
         }
         public static DateTimeOffset ToEquipmentLocalTime(this DateTimeOffset utcDateTime, IZoneProvider timezone)
         {
-            var zoneProvider = DateTimeZoneProviders.Tzdb[timezone.NodaTimeZone];
-            var dateTimeAtSite = ZonedDateTime.FromDateTimeOffset(utcDateTime).WithZone(zoneProvider);
+            var dateTimeAtSite = ZonedDateTime.FromDateTimeOffset(utcDateTime).WithZone(timezone.DateTimeZone);
             return dateTimeAtSite.ToDateTimeOffset();
         }
     }
