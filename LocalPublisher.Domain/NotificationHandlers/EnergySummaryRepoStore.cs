@@ -226,6 +226,7 @@ namespace Domain
         private async Task<bool> IsPersisted(EnergySummary notification, CancellationToken cancellationToken)
         {
             var result = await _EnergySummaryReadRepository.Get(notification.GetKey(), cancellationToken);
+            result = result ?? await _EnergySummaryReadRepository.Get(notification.GetKeyVersion2(), cancellationToken);
             return result != null;
         }
 

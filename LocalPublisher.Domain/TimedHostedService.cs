@@ -75,11 +75,13 @@ namespace Domain
                         var result = await mediator.Send(backoffInstance, stateObject.cancellationToken);
                         if (result != null)
                         {
+                            _logger.Information("Timer backing off");
                             _timers[stateObject.command.Name].Change(result.Value, result.Value);
                             stateObject.isLastCallbackBackoff = true;
                         }
                         else if (stateObject.isLastCallbackBackoff)
                         {
+                            _logger.Information("Timer coming back on");
                             stateObject.isLastCallbackBackoff = false;
                             _timers[stateObject.command.Name].Change(TimeSpan.FromSeconds(1), _services.First(a => a.Command == stateObject.command).Period);
                         }

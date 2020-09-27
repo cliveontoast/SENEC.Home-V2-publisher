@@ -222,6 +222,7 @@ namespace Domain
         private async Task<bool> IsPersisted(VoltageSummary notification, CancellationToken cancellationToken)
         {
             var result = await _voltageSummaryReadRepository.Get(notification.GetKey(), cancellationToken);
+            result = result ?? await _voltageSummaryReadRepository.Get(notification.GetKeyVersion2(), cancellationToken);
             return result != null;
         }
 

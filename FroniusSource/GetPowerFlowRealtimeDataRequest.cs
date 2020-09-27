@@ -13,6 +13,7 @@ namespace FroniusSource
 {
     public interface IGetPowerFlowRealtimeDataRequest : IEquipmentRequest
     {
+        TimeSpan? Timeout { get; set; }
     }
 
     public class GetPowerFlowRealtimeDataRequest : IGetPowerFlowRealtimeDataRequest
@@ -32,10 +33,12 @@ namespace FroniusSource
         }
 
         public string? Content { get; set; }
+        public TimeSpan? Timeout { get; set; }
 
         public async Task<(string? response, DateTimeOffset start, DateTimeOffset end)> Request(CancellationToken token)
         {
             using var client = new HttpClient();
+            client.Timeout = Timeout ?? client.Timeout;
             using var response = await GetResponse(client, token);
 
             if (IsOk(response.response))
@@ -102,10 +105,9 @@ namespace FroniusSource
                     _logger.Fatal(txt);
                     throw new Exception(txt);
                 }
-                client.Timeout = TimeSpan.FromMilliseconds(1);
                 return (await client.GetAsync($"http://{_froniusSettings.IP}/solar_api/v1/GetPowerFlowRealtimeData.fcgi", token), _time.Now);
             }
-            catch (TimeoutException e)
+            catch (TaskCanceledException e)
             {
                 throw new BackOffPeriodException(e, TimeSpan.FromMinutes(1));
             }

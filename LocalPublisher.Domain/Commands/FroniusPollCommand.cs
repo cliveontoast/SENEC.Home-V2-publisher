@@ -32,6 +32,7 @@ namespace Domain
         {
             try
             {
+                _request.Timeout = TimeSpan.FromMilliseconds(800);
                 var response = await _request.Request<GetPowerFlowRealtimeDataResponse>(cancellationToken);
                 if (response.Body?.Data?.Site?.P_PV == null) return TimeSpan.FromSeconds(10);
                 if (response.Head?.Timestamp == null) return TimeSpan.FromSeconds(10);

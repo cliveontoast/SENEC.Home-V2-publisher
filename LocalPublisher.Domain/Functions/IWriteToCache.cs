@@ -48,7 +48,7 @@ namespace LocalPublisher.Domain.Functions
                 _logger.Verbose("Cached {UnixTime} {Time} - Cache count {Count}", unixMoment, moment, collection.Count);
             }
             else
-                _logger.Information("Cached {UnixTime} already exists for {TypeName} - Cache count {Count}", unixMoment, notification.GetType().Name, collection.Count);
+                _logger.Debug("Cached {UnixTime} already exists for {TypeName} - Cache count {Count}", unixMoment, notification.GetType().Name, collection.Count);
         }
     }
 }

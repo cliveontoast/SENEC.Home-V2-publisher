@@ -2,9 +2,9 @@
 
 namespace Domain
 {
-    //public class FroniusSourceService : ITimedService
-    //{
-    //    public Type Command { get => typeof(FroniusPollCommand); }
-    //    public TimeSpan Period => TimeSpan.FromMilliseconds(500);
-    //}
+    public class FroniusSourceService : ITimedService
+    {
+        public Type Command { get => typeof(FroniusPollCommand); }
+        public TimeSpan Period => TimeSpan.FromMilliseconds(1000);
+    }
 }

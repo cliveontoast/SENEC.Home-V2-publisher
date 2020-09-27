@@ -112,6 +112,7 @@ namespace Domain
             builder.RegisterType<SenecEnergySummaryCommand>().AsSelf();
 
             builder.RegisterType<FroniusPollCommand>().AsSelf();
+            builder.RegisterType<FroniusClearCommand>().AsSelf();
         }
     }
 }

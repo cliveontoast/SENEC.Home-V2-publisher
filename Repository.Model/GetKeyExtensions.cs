@@ -21,5 +21,21 @@ namespace Repository
         {
             return JsonConvert.SerializeObject(intervalStart).Replace(@"""", "");
         }
+
+        public static string GetKeyVersion2(this Entities.EnergySummary voltageSummary)
+        {
+            return GetIntervalKeyVersion2(voltageSummary.IntervalStartIncluded);
+        }
+
+        public static string GetKeyVersion2(this Entities.VoltageSummary voltageSummary)
+        {
+            // TODO cosmosdb 'Items' really one giant bucket?
+            return GetIntervalKeyVersion2(voltageSummary.IntervalStartIncluded);
+        }
+        public static string GetIntervalKeyVersion2(this DateTimeOffset intervalStart)
+        {
+            var oldKey = new DateTimeOffset(intervalStart.DateTime, TimeSpan.Zero);
+            return JsonConvert.SerializeObject(oldKey).Replace(@"""", "");
+        }
     }
 }

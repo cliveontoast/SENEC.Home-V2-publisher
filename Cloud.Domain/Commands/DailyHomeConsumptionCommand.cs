@@ -51,7 +51,11 @@ namespace Domain.Commands
                 .Select(i => TimeSpan.FromMinutes(5 * i)); // TODO this is for 5 minute intervals
             var phaseData = dayData
                 .Where(a => a.IntervalStartIncluded.Date == date)
-                .ToDictionary(a => a.IntervalStartIncluded.TimeOfDay, a => p(a));
+                // problem on 27th sept 2020 in production data
+                // while there could be two with a +00:00 and +08:00
+                //.ToDictionary(a => a.IntervalStartIncluded.TimeOfDay, a => p(a));
+                .ToLookup(a => a.IntervalStartIncluded.TimeOfDay, a => p(a))
+                .ToDictionary(a => a.Key, a => a.First());
             return new DayConsumptionSource(
                 summary: times.Select(timeOfDay => (timeOfDay, GetTimeData(timeOfDay, phaseData))).ToList()
                 );
