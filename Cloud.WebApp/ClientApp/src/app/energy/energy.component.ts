@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { EnergySummaryService } from '../services/energySummary.service';
 import * as Highcharts from 'highcharts';
+import { InitialDateService } from '../services/initial-date.service';
+import { take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-energy',
@@ -130,10 +132,17 @@ export class EnergyComponent implements OnInit {
   
 
 
-  constructor(private energySummaryService: EnergySummaryService) { }
+  constructor(private energySummaryService: EnergySummaryService,
+    private initialDateService: InitialDateService) { }
 
   ngOnInit() {
-    this.getData();
+    this.initialDateService.today.pipe(
+      take(1),
+      tap(s => {
+        this.displayDate = s;
+        this.getData();
+      })
+    ).subscribe();
   }
 
   private getData() {

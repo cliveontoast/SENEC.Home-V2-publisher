@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { HomeConsumptionService } from '../services/home-consumption.service';
+import { InitialDateService } from '../services/initial-date.service';
+import { take, tap, switchMap } from 'rxjs/operators';
+import { DailyHomeConsumptionDto } from '../dto/dailyHomeConsumptionDto';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home-consumption',
@@ -156,36 +160,48 @@ export class HomeConsumptionComponent implements OnInit {
   displayDate: Date = new Date();
 
 
-  constructor(private homeConsumptionService: HomeConsumptionService) { }
+  constructor(private homeConsumptionService: HomeConsumptionService,
+    private initialDateService: InitialDateService) { }
 
   ngOnInit() {
-    this.getData();
+    this.initialDateService.today.pipe(
+      take(1),
+      tap(s => this.displayDate = s),
+      switchMap(s => this.getData()),
+      tap(value => this.applyData(value))
+    ).subscribe();
   }
 
-  private getData() {
-    this.homeConsumptionService.get(this.displayDate).subscribe(value => {
-      this.chartOptions.plotOptions.area.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
-      this.chartOptions.series[0]['data'] = value.toCommunity.data;
-      this.chartOptions.series[1]['data'] = value.toBattery.data;
-      this.chartOptions.series[2]['data'] = value.fromBattery.data;
-      this.chartOptions.series[3]['data'] = value.fromSolar.data;
-      this.chartOptions.series[4]['data'] = value.fromGrid.data;
-      this.chartOptions.series[5]['data'] = value.toHome.data;
-      this.updateFlag = true;
-    });
+  private getData(): Observable<DailyHomeConsumptionDto> {
+    return this.homeConsumptionService.get(this.displayDate);
+  }
+  
+  private applyData(value: DailyHomeConsumptionDto) {
+    this.chartOptions.plotOptions.area.pointStart = new Date(
+      this.displayDate.getFullYear(),
+      this.displayDate.getMonth(),
+      this.displayDate.getDate())
+      .valueOf();
+    this.chartOptions.series[0]['data'] = value.toCommunity.data;
+    this.chartOptions.series[1]['data'] = value.toBattery.data;
+    this.chartOptions.series[2]['data'] = value.fromBattery.data;
+    this.chartOptions.series[3]['data'] = value.fromSolar.data;
+    this.chartOptions.series[4]['data'] = value.fromGrid.data;
+    this.chartOptions.series[5]['data'] = value.toHome.data;
+    this.updateFlag = true;
   }
 
   previousDay() {
     var dte = new Date(this.displayDate.toUTCString());
     dte.setDate(dte.getDate()-1);
     this.displayDate = dte;
-    this.getData();
+    this.getData().subscribe(a => this.applyData(a));
   }
 
   nextDay() {
     var dte = new Date(this.displayDate.toUTCString());
     dte.setDate(dte.getDate()+1);
     this.displayDate = dte;
-    this.getData();
+    this.getData().subscribe(a => this.applyData(a));
   }
 }

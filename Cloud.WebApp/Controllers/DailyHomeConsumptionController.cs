@@ -17,11 +17,29 @@ namespace NuanceWebApp.Controllers
 
         public DailyHomeConsumptionController(
             ILogger logger,
+
             IMediator mediator)
         {
             _logger = logger;
             _mediator = mediator;
         }
+
+        [HttpGet("today")]
+        public IActionResult Today()
+        {
+            try
+            {
+                _logger.Debug("Received {Controller} {Name}",
+                    nameof(DailyHomeConsumptionController),
+                    nameof(Today));
+                return Ok(DateTimeOffset.UtcNow.ToOffset(new TimeSpan(8,0,0)).Date);
+            }
+            catch (Exception e)
+            {
+                return this.Problem(e.Message + Environment.NewLine + e.StackTrace);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get(string date)
         {

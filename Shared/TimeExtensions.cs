@@ -1,8 +1,8 @@
-﻿using LocalPublisher.Domain.Functions;
-using NodaTime;
+﻿using NodaTime;
+using Shared;
 using System;
 
-namespace Domain
+namespace Shared
 {
     public static class TimeExtensions
     {

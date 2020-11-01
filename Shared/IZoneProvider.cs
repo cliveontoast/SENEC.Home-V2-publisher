@@ -1,6 +1,6 @@
 ﻿using NodaTime;
 
-namespace Domain
+namespace Shared
 {
     public interface IZoneProvider
     {

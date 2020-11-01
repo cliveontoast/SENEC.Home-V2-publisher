@@ -4,6 +4,7 @@ using SenecSource;
 using Serilog;
 using Shared;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -72,7 +73,14 @@ namespace FroniusSource
             }
             result.SentMilliseconds = response.start.ToUnixTimeMilliseconds();
             result.ReceivedMilliseconds = response.end.ToUnixTimeMilliseconds();
+            //LocalStore(result);
             return result;
+        }
+
+        private void LocalStore<TResponse>(TResponse response) where TResponse : WebResponse
+        {
+            var text = JsonConvert.SerializeObject(response, Formatting.Indented);
+            File.WriteAllText($@"C:\temp\localpublisher\powerflow\{response.ReceivedMilliseconds}.json", text);
         }
 
         private bool IsOk(HttpResponseMessage response)

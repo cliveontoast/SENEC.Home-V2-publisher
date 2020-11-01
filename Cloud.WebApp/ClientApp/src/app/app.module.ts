@@ -15,6 +15,7 @@ import { HomeConsumptionComponent } from './home-consumption/home-consumption.co
 import { HomeConsumptionService } from './services/home-consumption.service';
 import { PowerMovementComponent } from './power-movement/power-movement.component';
 import { PowerMovementService } from './services/power-movement.service';
+import { InitialDateService } from './services/initial-date.service';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { PowerMovementService } from './services/power-movement.service';
     VoltageSummaryService,
     HomeConsumptionService,
     EnergySummaryService,
+    InitialDateService,
     PowerMovementService,
   ],
   bootstrap: [AppComponent]

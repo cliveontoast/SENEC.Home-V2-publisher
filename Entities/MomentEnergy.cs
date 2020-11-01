@@ -73,8 +73,9 @@ namespace Entities
 
         public decimal HomeConsumption => BatteryToHome + GridToHome + SolarToHome;
 
-        public PowerMovements(decimal gridToHome): this(gridToHome, PowerStateEnum.GridOnly)
+        public PowerMovements(decimal gridToHome, int what, decimal solarToGrid = 0): this(gridToHome, PowerStateEnum.GridOnly)
         {
+            SolarToGrid = solarToGrid;
         }
         public PowerMovements(decimal gridToHome, PowerStateEnum powerState)
         {
@@ -83,7 +84,7 @@ namespace Entities
         }
 
         public PowerMovements(decimal batteryToGrid, decimal batteryToHome, decimal gridToHome)
-            : this(gridToHome: gridToHome)
+            : this(gridToHome: gridToHome, what:0)
         {
             if (batteryToGrid > 0 || batteryToHome > 0)
                 PowerState = PowerStateEnum.SolarIdleBatteryDischarge;
@@ -91,8 +92,8 @@ namespace Entities
             BatteryToHome = batteryToHome;
         }
 
-        public PowerMovements(decimal gridToHome, decimal gridToBattery)
-            : this(gridToHome: gridToHome)
+        public PowerMovements(decimal gridToHome, decimal gridToBattery) // TODO
+            : this(gridToHome: gridToHome, what:0)
         {
             if (gridToBattery > 0)
                 PowerState = PowerStateEnum.SolarIdleBatteryCharge;
@@ -198,7 +199,19 @@ namespace Entities
 
         private static PowerMovements GridOnly(MomentEnergy moment)
         {
-            return new PowerMovements(gridToHome: moment.GridImportWatts);
+            // seen on 28-sept-2020 when the battery first became full. solar value was 0 :( consumption was zero
+            // no accurate home consumption value (fronius)
+            // no battery charge or discharge
+            // battery reports 100%
+            // grid export 2750.07
+            // grid imports 0
+            // home instant power consupmtion 0
+            // system state
+            // solar inverters power generation 0
+            // solar power generation 0
+
+            return new PowerMovements(gridToHome: moment.GridImportWatts, what: 5,
+                solarToGrid: moment.GridExportWatts);
         }
 
         private static PowerMovements SolarIdleBatteryDischarge(MomentEnergy moment)

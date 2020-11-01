@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { VoltageSummaryService } from '../services/voltageSummary.service';
 import * as Highcharts from 'highcharts';
+import { InitialDateService } from '../services/initial-date.service';
+import { take, tap, switchMap } from 'rxjs/operators';
+import { DailyVoltageSummaryDto } from '../dto/dailyVoltageSummaryDto';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-voltages',
@@ -112,20 +116,28 @@ export class VoltagesComponent {
   displayDate: Date = new Date();
 
 
-  constructor(private voltageSummaryService: VoltageSummaryService) { }
+  constructor(private voltageSummaryService: VoltageSummaryService,
+    private initialDateService: InitialDateService) { }
 
   ngOnInit() {
-    this.getData();
+    this.initialDateService.today.pipe(
+      take(1),
+      tap(s => this.displayDate = s),
+      switchMap(s => this.getData()),
+      tap(value => this.applyData(value))
+    ).subscribe();
   }
 
-  private getData() {
-    this.voltageSummaryService.get(this.displayDate).subscribe(value => {
-      this.chartOptions.plotOptions.spline.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
-      this.chartOptions.series[0]['data'] = value.phases[0].data;
-      this.chartOptions.series[1]['data'] = value.phases[1].data;
-      this.chartOptions.series[2]['data'] = value.phases[2].data;
-      this.updateFlag = true;
-    });
+  private getData(): Observable<DailyVoltageSummaryDto> {
+    return this.voltageSummaryService.get(this.displayDate);
+  }
+
+  private applyData(value: DailyVoltageSummaryDto){
+    this.chartOptions.plotOptions.spline.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
+    this.chartOptions.series[0]['data'] = value.phases[0].data;
+    this.chartOptions.series[1]['data'] = value.phases[1].data;
+    this.chartOptions.series[2]['data'] = value.phases[2].data;
+    this.updateFlag = true;
   }
 
   previousDay() {

@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { PowerMovementService } from '../services/power-movement.service';
 import * as Highcharts from 'highcharts';
+import { InitialDateService } from '../services/initial-date.service';
+import { take, tap, switchMap } from 'rxjs/operators';
+import { PowerMovementDto } from '../dto/dailyPowerMovementDto';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-power-movement',
@@ -421,31 +425,39 @@ export class PowerMovementComponent implements OnInit {
   displayDate: Date = new Date();
 
 
-  constructor(private powerMovementService: PowerMovementService) { }
+  constructor(private powerMovementService: PowerMovementService,
+    private initialDateService: InitialDateService) { }
 
   ngOnInit() {
-    this.getData();
+    this.initialDateService.today.pipe(
+      take(1),
+      tap(s => this.displayDate = s),
+      switchMap(s => this.getData()),
+      tap(value => this.applyData(value))
+    ).subscribe();
   }
 
-  private getData() {
-    this.powerMovementService.get(this.displayDate).subscribe(value => {
-      this.solarChartOptions.plotOptions.area.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
-      this.solarChartOptions.series[0]['data'] = value.fromSunToGrid.data;
-      this.solarChartOptions.series[1]['data'] = value.fromSunToBattery.data;
-      this.solarChartOptions.series[2]['data'] = value.fromSunToHome.data;
+  private getData(): Observable<PowerMovementDto> {
+    return this.powerMovementService.get(this.displayDate);
+  }
 
-      this.batteryChartOptions.series[0]['data'] = value.fromSunToBattery.data;
-      this.batteryChartOptions.series[1]['data'] = value.fromGridToBattery.data;
-      this.batteryChartOptions.series[2]['data'] = value.fromBatteryToHomeNeg.data;
-      this.batteryChartOptions.series[3]['data'] = value.fromBatteryToCommunityNeg.data;
+  private applyData(value: PowerMovementDto){
+    this.solarChartOptions.plotOptions.area.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
+    this.solarChartOptions.series[0]['data'] = value.fromSunToGrid.data;
+    this.solarChartOptions.series[1]['data'] = value.fromSunToBattery.data;
+    this.solarChartOptions.series[2]['data'] = value.fromSunToHome.data;
 
-      this.homeChartOptions.series[0]['data'] = value.fromSunToHome.data;
-      this.homeChartOptions.series[1]['data'] = value.fromBatteryToHome.data;
-      this.homeChartOptions.series[2]['data'] = value.fromGridToHome.data;
-      this.homeChartOptions.series[3]['data'] = value.fromGridToBattery.data;
+    this.batteryChartOptions.series[0]['data'] = value.fromSunToBattery.data;
+    this.batteryChartOptions.series[1]['data'] = value.fromGridToBattery.data;
+    this.batteryChartOptions.series[2]['data'] = value.fromBatteryToHomeNeg.data;
+    this.batteryChartOptions.series[3]['data'] = value.fromBatteryToCommunityNeg.data;
 
-      this.updateFlag = true;
-    });
+    this.homeChartOptions.series[0]['data'] = value.fromSunToHome.data;
+    this.homeChartOptions.series[1]['data'] = value.fromBatteryToHome.data;
+    this.homeChartOptions.series[2]['data'] = value.fromGridToHome.data;
+    this.homeChartOptions.series[3]['data'] = value.fromGridToBattery.data;
+
+    this.updateFlag = true;
   }
 
   previousDay() {

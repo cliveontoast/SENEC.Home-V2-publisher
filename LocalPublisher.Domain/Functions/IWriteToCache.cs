@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using SenecEntities;
 using SenecEntitiesAdapter;
 using Serilog;
+using Shared;
 using System;
 using System.Collections.Concurrent;
 

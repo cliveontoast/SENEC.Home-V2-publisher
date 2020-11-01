@@ -70,7 +70,14 @@ namespace SenecSource
             }
             result.SentMilliseconds = response.start.ToUnixTimeMilliseconds();
             result.ReceivedMilliseconds = response.end.ToUnixTimeMilliseconds();
+            //LocalStore(result);
             return result;
+        }
+
+        private void LocalStore<TResponse>(TResponse response) where TResponse : WebResponse
+        {
+            var text = JsonConvert.SerializeObject(response, Formatting.Indented);
+            File.WriteAllText($@"C:\temp\localpublisher\lala\{response.ReceivedMilliseconds}.json", text);
         }
 
         private bool IsOk(HttpResponseMessage response)

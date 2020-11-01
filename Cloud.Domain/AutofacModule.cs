@@ -29,6 +29,7 @@ namespace Cloud.Domain
         private void Shared(ContainerBuilder builder)
         {
             builder.RegisterType<TimeProvider>().AsImplementedInterfaces();
+            builder.RegisterInstance(new ZoneProvider(Configuration.GetValue<string>("Timezone")) as IZoneProvider).SingleInstance();
             builder.RegisterType<ApplicationVersion>().AsImplementedInterfaces().SingleInstance();
             builder.Register((context) =>
             {

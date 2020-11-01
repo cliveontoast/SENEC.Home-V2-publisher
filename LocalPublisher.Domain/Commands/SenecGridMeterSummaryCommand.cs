@@ -10,6 +10,7 @@ using Entities;
 using MediatR;
 using System.Threading.Tasks;
 using Serilog;
+using Shared;
 
 namespace Domain
 {
