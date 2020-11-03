@@ -1,0 +1,31 @@
+{
+  "Body": {
+    "Data": {
+      "Site": {
+        "E_Day": 12238,
+        "E_Total": 16963530,
+        "E_Year": 4586030,
+        "Meter_Location": "unknown",
+        "Mode": "produce-only",
+        "P_Akku": null,
+        "P_Grid": null,
+        "P_Load": null,
+        "P_PV": 3043,
+        "rel_Autonomy": null,
+        "rel_SelfConsumption": null
+      },
+      "Version": "12"
+    }
+  },
+  "Head": {
+    "RequestArguments": {},
+    "Status": {
+      "Code": 0,
+      "Reason": "",
+      "UserMessage": ""
+    },
+    "Timestamp": "2020-09-28T14:59:27+08:00"
+  },
+  "SentMilliseconds": 1601276369646,
+  "ReceivedMilliseconds": 1601276370205
+}

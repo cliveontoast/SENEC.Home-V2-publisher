@@ -1,0 +1,22 @@
+{
+  "IntervalStartIncluded": "2020-09-28T18:55:00+08:00",
+  "IntervalEndExcluded": "2020-09-28T19:00:00+08:00",
+  "L1": {
+    "Minimum": 240.7,
+    "Maximum": 242.7,
+    "Median": 242.0,
+    "Failures": 44
+  },
+  "L2": {
+    "Minimum": 241.5,
+    "Maximum": 243.6,
+    "Median": 242.1,
+    "Failures": 44
+  },
+  "L3": {
+    "Minimum": 241.9,
+    "Maximum": 244.2,
+    "Median": 243.0,
+    "Failures": 44
+  }
+}

@@ -23,7 +23,7 @@ namespace Domain
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
         private readonly IEnergySummaryRepository _EnergySummaryRepository;
-        private readonly ISenecVoltCompressConfig _config;
+        private readonly IRepoConfig _config;
         private readonly IApplicationVersion _versionConfig;
         private readonly IEnergySummaryDocumentReadRepository _EnergySummaryReadRepository;
 
@@ -54,7 +54,7 @@ namespace Domain
             ILogger logger,
             IMediator mediator,
             IAppCache cache,
-            ISenecVoltCompressConfig config,
+            IRepoConfig config,
             IApplicationVersion versionConfig,
             IEnergySummaryDocumentReadRepository EnergySummaryReadRepository,
             IEnergySummaryRepository EnergySummaryRepository)
@@ -70,6 +70,7 @@ namespace Domain
 
         public async Task Handle(EnergySummary notification, CancellationToken cancellationToken)
         {
+            if (_config.Testing) return;
             try
             {
                 _logger.Verbose("Handling {EnergySummary}", JsonConvert.SerializeObject(notification));
@@ -139,7 +140,7 @@ namespace Domain
                     await WriteAndVerifyAsync(item.Summary, cancellationToken);
                 else
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+                    await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
                     if (cancellationToken.IsCancellationRequested) return;
                     var verifyResult = await VerifyAsync(item.Summary, cancellationToken);
                     if (verifyResult.isPersisted)

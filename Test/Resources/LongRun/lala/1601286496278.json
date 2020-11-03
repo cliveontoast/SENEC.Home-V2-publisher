@@ -1,0 +1,47 @@
+{
+  "PM1OBJ1": {
+    "FREQ": "fl_4247E147",
+    "U_AC": [
+      "fl_4373B333",
+      "fl_4373999A",
+      "fl_4374E667"
+    ],
+    "I_AC": [
+      "fl_3FA51EB8",
+      "fl_3FBAE147",
+      "fl_3E75C28F"
+    ],
+    "P_AC": [
+      "fl_C35DA666",
+      "fl_4365970A",
+      "fl_41808F5C"
+    ],
+    "P_TOTAL": "fl_41C00000"
+  },
+  "PM1OBJ2": null,
+  "RTC": {
+    "WEB_TIME": "u3_5F7221E2"
+  },
+  "STATISTIC": null,
+  "ENERGY": {
+    "STAT_LICENSCE_IS_OK": "VARIABLE_NOT_FOUND",
+    "STAT_STATE": "u8_12",
+    "STAT_STATE_DECODE": "u8_12",
+    "GUI_BAT_DATA_POWER": "fl_C3A428F6",
+    "GUI_INVERTER_POWER": "fl_43928000",
+    "GUI_HOUSE_POW": "fl_4421547B",
+    "GUI_GRID_POW": "fl_41C00000",
+    "STAT_MAINT_REQUIRED": "u8_00",
+    "MAINT_FILTER_REQUIRED": "VARIABLE_NOT_FOUND",
+    "GUI_BAT_DATA_FUEL_CHARGE": "fl_42C80000",
+    "GUI_CHARGING_INFO": "u8_00",
+    "GUI_BOOSTING_INFO": "u8_01"
+  },
+  "WIZARD": null,
+  "LOG": null,
+  "FEATURES": null,
+  "BMS": null,
+  "SYS_UPDATE": null,
+  "SentMilliseconds": 1601286496110,
+  "ReceivedMilliseconds": 1601286496278
+}

@@ -118,6 +118,7 @@ namespace SenecSourceWebAppTest
         public static (ContainerBuilder cb, Mock<IConfiguration> conf) Builder()
         {
             Mock<IConfiguration> mockConfiguration = new Mock<IConfiguration>();
+            mockConfiguration.Setup(a => a.GetSection("Timezone").Value).Returns("Australia/Perth");
 
             IServiceCollection services = new ServiceCollection();
             var cb = AssemblySetup.BuildContainer(services);

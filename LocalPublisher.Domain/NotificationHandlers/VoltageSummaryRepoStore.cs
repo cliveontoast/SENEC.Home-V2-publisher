@@ -21,6 +21,7 @@ namespace Domain
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
+        private readonly IRepoConfig _config;
         private readonly IVoltageSummaryRepository _voltageSummaryRepository;
         private readonly IApplicationVersion _versionConfig;
         private readonly IVoltageSummaryDocumentReadRepository _voltageSummaryReadRepository;
@@ -52,6 +53,7 @@ namespace Domain
             ILogger logger,
             IMediator mediator,
             IAppCache cache,
+            IRepoConfig config,
             IApplicationVersion versionConfig,
             IVoltageSummaryDocumentReadRepository voltageSummaryReadRepository,
             IVoltageSummaryRepository voltageSummaryRepository)
@@ -59,6 +61,7 @@ namespace Domain
             _logger = logger;
             _mediator = mediator;
             _cache = cache;
+            _config = config;
             _versionConfig = versionConfig;
             _voltageSummaryReadRepository = voltageSummaryReadRepository;
             _voltageSummaryRepository = voltageSummaryRepository;
@@ -66,6 +69,7 @@ namespace Domain
 
         public async Task Handle(VoltageSummary notification, CancellationToken cancellationToken)
         {
+            if (_config.Testing) return;
             try
             {
                 _logger.Verbose("Handling {VoltageSummary}", JsonConvert.SerializeObject(notification));

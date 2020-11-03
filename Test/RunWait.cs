@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using MediatR;
+using Moq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,6 +34,14 @@ namespace SenecSourceWebAppTest
         {
             var handler = scope.Resolve<IRequestHandler<TRequest, TResponse>>();
             return handler.Handle(request, CancellationToken.None).RunWait();
+        }
+
+        public static Mock<TInterface> RegisterMock<TInterface>(this ContainerBuilder cb) where TInterface : class
+        {
+            var mock = new Mock<TInterface>();
+            cb.RegisterInstance(mock);
+            cb.RegisterInstance(mock.Object);
+            return mock;
         }
     }
 }

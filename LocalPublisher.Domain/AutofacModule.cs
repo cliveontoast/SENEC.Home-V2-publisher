@@ -32,6 +32,7 @@ namespace Domain
             FroniusSource(builder);
             Shared(builder);
             builder.RegisterInstance(new ZoneProvider(Configuration.GetValue<string>("Timezone")) as IZoneProvider).SingleInstance();
+            builder.RegisterInstance(new RepoConfig() as IRepoConfig);
         }
 
 

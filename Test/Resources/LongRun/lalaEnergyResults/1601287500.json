@@ -1,0 +1,128 @@
+{
+  "IntervalStartIncluded": "2020-09-28T18:05:00+08:00",
+  "IntervalEndExcluded": "2020-09-28T18:10:00+08:00",
+  "GridExportWatts": {
+    "Minimum": 0.0,
+    "Maximum": 46.01,
+    "Median": 14.7,
+    "Average": 15.57,
+    "IsValid": true
+  },
+  "GridExportWattEnergy": 4597.39,
+  "GridImportWatts": {
+    "Minimum": 0.0,
+    "Maximum": 3.29,
+    "Median": 0.0,
+    "Average": 0.01,
+    "IsValid": true
+  },
+  "GridImportWattEnergy": 3.29,
+  "ConsumptionWatts": {
+    "Minimum": 307.69,
+    "Maximum": 358.88,
+    "Median": 335.05,
+    "Average": 332.63,
+    "IsValid": true
+  },
+  "ConsumptionWattEnergy": 100188.17,
+  "SolarPowerGenerationWatts": {
+    "Minimum": 0.0,
+    "Maximum": 0.0,
+    "Median": 0.0,
+    "Average": 0.0,
+    "IsValid": true
+  },
+  "SolarPowerGenerationWattEnergy": 0.0,
+  "BatteryChargeWatts": {
+    "Minimum": 0.0,
+    "Maximum": 0.0,
+    "Median": 0.0,
+    "Average": 0.0,
+    "IsValid": true
+  },
+  "BatteryChargeWattEnergy": 0.0,
+  "BatteryDischargeWatts": {
+    "Minimum": 327.49,
+    "Maximum": 368.5,
+    "Median": 353.21,
+    "Average": 348.19,
+    "IsValid": true
+  },
+  "BatteryDischargeWattEnergy": 104782.27,
+  "BatteryPercentageFull": {
+    "Minimum": 100.0,
+    "Maximum": 100.0,
+    "Median": 100.0,
+    "Average": 100.0,
+    "IsValid": true
+  },
+  "SecondsBatteryCharging": 0,
+  "SecondsBatteryDischarging": 247,
+  "SecondsWithoutData": 53,
+  "SolarInverterPowerGenerationWatts": {
+    "Minimum": 0.0,
+    "Maximum": 0.0,
+    "Median": 0.0,
+    "Average": 0.0,
+    "IsValid": false
+  },
+  "SolarInverterPowerGenerationWattEnergy": 0.0,
+  "PowerMovementSummary": {
+    "SolarToGridWatts": {
+      "Minimum": 0.0,
+      "Maximum": 0.0,
+      "Median": 0.0,
+      "Average": 0.0,
+      "IsValid": true
+    },
+    "SolarToGridWattEnergy": 0.0,
+    "SolarToBatteryWatts": {
+      "Minimum": 0.0,
+      "Maximum": 0.0,
+      "Median": 0.0,
+      "Average": 0.0,
+      "IsValid": true
+    },
+    "SolarToBatteryWattEnergy": 0.0,
+    "SolarToHomeWatts": {
+      "Minimum": 0.0,
+      "Maximum": 0.0,
+      "Median": 0.0,
+      "Average": 0.0,
+      "IsValid": true
+    },
+    "SolarToHomeWattEnergy": 0.0,
+    "BatteryToHomeWatts": {
+      "Minimum": 307.69,
+      "Maximum": 358.88,
+      "Median": 335.05,
+      "Average": 332.61,
+      "IsValid": true
+    },
+    "BatteryToHomeWattEnergy": 100184.88,
+    "BatteryToGridWatts": {
+      "Minimum": 0.0,
+      "Maximum": 46.01,
+      "Median": 14.7,
+      "Average": 15.57,
+      "IsValid": true
+    },
+    "BatteryToGridWattEnergy": 4597.39,
+    "GridToHomeWatts": {
+      "Minimum": 0.0,
+      "Maximum": 3.29,
+      "Median": 0.0,
+      "Average": 0.01,
+      "IsValid": true
+    },
+    "GridToHomeWattEnergy": 3.29,
+    "GridToBatteryWatts": {
+      "Minimum": 0.0,
+      "Maximum": 0.0,
+      "Median": 0.0,
+      "Average": 0.0,
+      "IsValid": true
+    },
+    "GridToBatteryWattEnergy": 0.0
+  }
+}
