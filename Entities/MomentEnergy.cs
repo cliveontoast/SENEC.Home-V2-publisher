@@ -2,7 +2,7 @@
 
 namespace Entities
 {
-    public class MomentEnergy
+    public class MomentEnergy : IIsValid
     {
         public MomentEnergy(DateTimeOffset instant, string systemState)
         {

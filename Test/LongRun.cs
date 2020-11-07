@@ -64,22 +64,30 @@ namespace SenecSourceWebAppTest
             var voltageSummaryCollector = scope.Resolve<Mock<INotificationHandler<VoltageSummary>>>();
             var energyCollector = scope.Resolve<Mock<INotificationHandler<EnergySummary>>>();
 
+            int voltageSummaryCollectorCallbackCount = 0;
+            const string VOLTAGE_RESULTS = @"..\..\..\Resources\LongRun\lalaVoltageResults\";
+            string voltExpected = "";
+            string voltActual = "";
             voltageSummaryCollector.Setup(a => a.Handle(It.IsAny<VoltageSummary>(), It.IsAny<CancellationToken>()))
                 .Callback<VoltageSummary, CancellationToken>((a, b) =>
                 {
-                    var txt = JsonConvert.SerializeObject(a, Formatting.Indented);
+                    voltActual = JsonConvert.SerializeObject(a, Formatting.Indented);
                     //File.WriteAllText(@"..\..\..\Resources\LongRun\lalaVoltageResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json", txt);
-                    var expected = File.ReadAllText(@"..\..\..\Resources\LongRun\lalaVoltageResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json");
-                    Assert.AreEqual(expected, txt);
+                    voltExpected = File.ReadAllText(VOLTAGE_RESULTS + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json");
+                    voltageSummaryCollectorCallbackCount++;
                 });
 
+            int energyCollectorCallbackCount = 0;
+            const string  ENERGY_RESULTS= @"..\..\..\Resources\LongRun\lalaEnergyResults\";
+            string energyExpected = "";
+            string energyActual = "";
             energyCollector.Setup(a => a.Handle(It.IsAny<EnergySummary>(), It.IsAny<CancellationToken>()))
                 .Callback<EnergySummary, CancellationToken>((a, b) =>
                 {
-                    var txt = JsonConvert.SerializeObject(a, Formatting.Indented);
+                    energyActual = JsonConvert.SerializeObject(a, Formatting.Indented);
                     //File.WriteAllText(@"..\..\..\Resources\LongRun\lalaEnergyResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json", txt);
-                    var expected = File.ReadAllText(@"..\..\..\Resources\LongRun\lalaEnergyResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json");
-                    Assert.AreEqual(expected, txt);
+                    energyExpected = File.ReadAllText(ENERGY_RESULTS + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json");
+                    energyCollectorCallbackCount++;
                 });
 
             while (!finished)
@@ -97,9 +105,16 @@ namespace SenecSourceWebAppTest
                     scope.RunWait(scope.Resolve<SenecGridMeterSummaryCommand>());
                     scope.RunWait(scope.Resolve<SenecEnergySummaryCommand>());
                 }
+                Assert.AreEqual(energyExpected, energyActual);
+                Assert.AreEqual(voltExpected, voltActual);
             }
             scope.RunWait(scope.Resolve<SenecGridMeterSummaryCommand>());
             scope.RunWait(scope.Resolve<SenecEnergySummaryCommand>());
+            Assert.AreEqual(energyExpected, energyActual);
+            Assert.AreEqual(voltExpected, voltActual);
+
+            Assert.AreEqual(Directory.GetFiles(ENERGY_RESULTS).Length, energyCollectorCallbackCount);
+            Assert.AreEqual(Directory.GetFiles(VOLTAGE_RESULTS).Length, voltageSummaryCollectorCallbackCount);
         }
     }
 

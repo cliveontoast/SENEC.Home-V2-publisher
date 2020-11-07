@@ -1,12 +1,14 @@
 ﻿namespace Domain
 {
-    public interface ISenecVoltCompressConfig
+    public interface IMinutesPerSummaryConfig
     {
         int MinutesPerSummary { get; }
     }
-    public interface ISenecEnergyCompressConfig
+    public interface ISenecVoltCompressConfig: IMinutesPerSummaryConfig
     {
-        int MinutesPerSummary { get; }
+    }
+    public interface ISenecEnergyCompressConfig: IMinutesPerSummaryConfig
+    {
     }
 
     public class SenecCompressConfig : ISenecVoltCompressConfig, ISenecEnergyCompressConfig

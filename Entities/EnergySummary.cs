@@ -3,7 +3,7 @@ using System;
 
 namespace Entities
 {
-    public class EnergySummary : INotification
+    public class EnergySummary : INotification, IRepositoryEntity
     {
         public DateTimeOffset IntervalStartIncluded { get; set; }
         public DateTimeOffset IntervalEndExcluded { get; set; }

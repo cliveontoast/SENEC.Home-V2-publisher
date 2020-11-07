@@ -11,6 +11,7 @@ using MediatR;
 using System.Threading.Tasks;
 using Serilog;
 using Shared;
+using LocalPublisher.Domain.Functions;
 
 namespace Domain
 {
@@ -20,117 +21,37 @@ namespace Domain
 
     public class SenecGridMeterSummaryCommandHandler : IRequestHandler<SenecGridMeterSummaryCommand, Unit>
     {
+        private readonly ISummaryFunctions _summaryFunctions;
         private readonly IGridMeterAdapter _gridMeterAdapter;
         private readonly ISenecVoltCompressConfig _config;
-        private readonly IMediator _mediator;
-        private readonly IAppCache _cache;
         private readonly ILogger _logger;
-        private readonly IZoneProvider _zoneProvider;
-
-        // TODO make a DI singleton
-        private static object _lock = new object();
 
         public SenecGridMeterSummaryCommandHandler(
+            ISummaryFunctions summaryFunctions,
             IGridMeterAdapter gridMeterAdapter,
             ISenecVoltCompressConfig config,
-            IMediator mediator,
-            ILogger logger,
-            IZoneProvider zoneProvider,
-            IAppCache cache)
+            ILogger logger)
         {
+            _summaryFunctions = summaryFunctions;
             _gridMeterAdapter = gridMeterAdapter;
             _config = config;
-            _mediator = mediator;
             _logger = logger;
-            _zoneProvider = zoneProvider;
-            _cache = cache;
-
-            _cache.GetOrAdd(GridMeterCache.CacheKey, () => new ConcurrentDictionary<long, string>());
+            _summaryFunctions.Initialise(_logger, _config, GridMeterCache.CacheKey, BuildVoltageSummary, "voltage");
         }
 
         public async Task<Unit> Handle(SenecGridMeterSummaryCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                List<VoltageSummary> tasks = GetSummaries();
-                foreach (var voltageSummary in tasks)
-                {
-                    _logger.Verbose("Publishing {StartTime}", voltageSummary.IntervalStartIncluded);
-                    await _mediator.Publish(voltageSummary, cancellationToken);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Fatal(e, "Logging here shouldn't be necessary, it should be caught elsewhere");
-            }
-            return Unit.Value;
-        }
-
-        private List<VoltageSummary> GetSummaries()
-        {
-            _logger.Verbose("Getting summaries");
-            lock (_lock)
-            {
-                _logger.Verbose("Getting summaries - inside lock");
-                var tasks = new List<VoltageSummary>();
-                var collection = _cache.Get<ConcurrentDictionary<long, string>>(GridMeterCache.CacheKey);
-                while (collection != null && collection.Count > 0)
-                {
-                    _logger.Verbose("grid meter loop count {Count}", collection.Count);
-                    var interval = GetMinimumInterval(collection);
-                    var intervalPlusBuffer = interval.End.AddSeconds(10);
-                    var internalLastAdded = SenecEnergySummaryCommandHandler.GetLastTime(collection, _zoneProvider);
-                    var isBufferBeyondLastItem = intervalPlusBuffer >= internalLastAdded;
-                    _logger.Verbose("{intervalPlusBuffer} >= {internalLastAdded} is {Truthiness}", intervalPlusBuffer, internalLastAdded, isBufferBeyondLastItem);
-                    if (isBufferBeyondLastItem) break;
-
-                    _logger.Verbose("Creating {StartTime}", interval.Start);
-                    var result = CreateVoltageSummary(collection, interval.Start, interval.End);
-                    if (result == null) continue;
-                    _logger.Verbose("Created {StartTime}", interval.Start);
-                    tasks.Add(result);
-                }
-                _logger.Verbose("Getting summaries complete count {Count}", tasks.Count);
-                return tasks;
-            }
-        }
-
-        private (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection)
-        {
-            return SenecEnergySummaryCommandHandler.GetMinimumInterval(collection, _zoneProvider, _logger, _config.MinutesPerSummary);
-        }
-
-        private VoltageSummary? CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
-        {
-            var removedTexts = new List<string>();
-            try
-            {
-                return BuildVoltageSummary(collection, intervalStart, intervalEnd, removedTexts);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e, "Create voltage summary error {@Values}", removedTexts);
-                return null;
-            }
+            return await _summaryFunctions.Handle(cancellationToken);
         }
 
         private VoltageSummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
         {
-            var list = new List<MomentVoltage>();
-            var lowerBound = intervalStart.ToUnixTimeSeconds();
-            var upperBound = intervalEnd.ToUnixTimeSeconds();
-            for (long instant = lowerBound; instant < upperBound; instant++)
-            {
-                if (!collection.TryRemove(instant, out string textValue)) continue;
-                removedTexts.Add(textValue);
-                var original = JsonConvert.DeserializeObject<SenecEntities.Meter>(textValue);
-                if (original == null) continue; // no way the programmer serialised nothing
-                var moment = instant.ToEquipmentLocalTime(_zoneProvider);
-                var entity = _gridMeterAdapter.Convert(moment, original);
-                var voltages = entity.GetVoltageMoment();
-                if (voltages.IsValid)
-                    list.Add(voltages);
-            }
+            var list = _summaryFunctions.FillSummary<MomentVoltage, SenecEntities.Meter>(
+                collection,
+                intervalStart,
+                intervalEnd,
+                (moment, meter) => _gridMeterAdapter.Convert(moment, meter).GetVoltageMoment(),
+                removedTexts);
 
             var maximumValues = (int)(intervalEnd - intervalStart).TotalSeconds;
             var stats = new VoltageSummary(

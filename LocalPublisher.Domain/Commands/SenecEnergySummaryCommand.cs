@@ -10,8 +10,8 @@ using Entities;
 using MediatR;
 using System.Threading.Tasks;
 using Serilog;
-using System.Runtime.Versioning;
 using Shared;
+using LocalPublisher.Domain.Functions;
 
 namespace Domain
 {
@@ -21,38 +21,28 @@ namespace Domain
 
     public class SenecEnergySummaryCommandHandler : IRequestHandler<SenecEnergySummaryCommand, Unit>
     {
+        private readonly ISummaryFunctions _summaryFunctions;
         private readonly IEnergyAdapter _gridMeterAdapter;
-        private readonly ISenecEnergyCompressConfig _config;
-        private readonly IMediator _mediator;
         private readonly IAppCache _cache;
-        private readonly ILogger _logger;
-        private readonly IZoneProvider _zoneProvider;
-
-        // TODO make a DI singleton
-        private static object _lock = new object();
 
         public SenecEnergySummaryCommandHandler(
+            ISummaryFunctions summaryFunctions,
             IEnergyAdapter gridMeterAdapter,
             ISenecEnergyCompressConfig config,
-            IMediator mediator,
             ILogger logger,
-            IZoneProvider zoneProvider,
             IAppCache cache)
         {
+            _summaryFunctions = summaryFunctions;
             _gridMeterAdapter = gridMeterAdapter;
-            _config = config;
-            _mediator = mediator;
-            _logger = logger;
-            _zoneProvider = zoneProvider;
             _cache = cache;
-            _cache.GetOrAdd(SolarPowerCache.CacheKey, () => new ConcurrentDictionary<long, string>());
+            _summaryFunctions.Initialise(logger, config, SmartMeterEnergyCache.CacheKey, BuildVoltageSummary, "energy");
         }
 
-        private Dictionary<long, decimal> GetSolarValues(long lowerBound, long upperBoundInclusive)
+        private Dictionary<long, decimal> GetSolarValues(long lowerBound, long upperBoundExclusive)
         {
             var newCache = new Dictionary<long, decimal>();
             var cache = _cache.Get<ConcurrentDictionary<long, string>>(SolarPowerCache.CacheKey);
-            for (var i = lowerBound; i <= upperBoundInclusive; i++)
+            for (var i = lowerBound; i < upperBoundExclusive; i++)
             {
                 if (!cache.TryRemove(i, out var value)) continue;
                 if (!decimal.TryParse(value, out decimal decimalValue)) continue;
@@ -64,112 +54,22 @@ namespace Domain
 
         public async Task<Unit> Handle(SenecEnergySummaryCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                List<EnergySummary> tasks = GetSummaries();
-                foreach (var voltageSummary in tasks)
-                {
-                    _logger.Verbose("Publishing {StartTime}", voltageSummary.IntervalStartIncluded);
-                    await _mediator.Publish(voltageSummary, cancellationToken);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Fatal(e, "Logging here shouldn't be necessary, it should be caught elsewhere");
-            }
-            return Unit.Value;
-        }
-
-        private List<EnergySummary> GetSummaries()
-        {
-            _logger.Verbose("Getting summaries");
-            lock (_lock)
-            {
-                _logger.Verbose("Getting summaries - inside lock");
-                var tasks = new List<EnergySummary>();
-                var collection = _cache.Get<ConcurrentDictionary<long, string>>(SmartMeterEnergyCache.CacheKey);
-                while (collection != null && collection.Count > 0)
-                {
-                    _logger.Verbose("grid meter loop count {Count}", collection.Count);
-                    var interval = GetMinimumInterval(collection);
-                    var intervalPlusBuffer = interval.End.AddSeconds(10);
-                    var internalLastAdded = GetLastTime(collection, _zoneProvider);
-                    var isBufferBeyondLastItem = intervalPlusBuffer >= internalLastAdded;
-                    _logger.Verbose("{intervalPlusBuffer} >= {internalLastAdded} is {Truthiness}", intervalPlusBuffer, internalLastAdded, isBufferBeyondLastItem);
-                    if (isBufferBeyondLastItem) break;
-
-                    _logger.Verbose("Creating {StartTime}", interval.Start);
-                    var result = CreateVoltageSummary(collection, interval.Start, interval.End);
-                    if (result == null) continue;
-                    _logger.Verbose("Created {StartTime}", interval.Start);
-                    tasks.Add(result);
-                }
-                _logger.Verbose("Getting summaries complete count {Count}", tasks.Count);
-                return tasks;
-            }
-        }
-
-        private (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection)
-        {
-            return GetMinimumInterval(collection, _zoneProvider, _logger, _config.MinutesPerSummary);
-        }
-
-        // TODO move to shared function
-        public static (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection, IZoneProvider zoneProvider, ILogger logger, int minutes)
-        {
-            var firstItemUnixTime = collection.Keys.Min();
-            DateTimeOffset firstTime = firstItemUnixTime.ToEquipmentLocalTime(zoneProvider);
-            logger.Verbose("Minimum in collection {Minimum} {Time}", firstItemUnixTime, firstTime);
-            var frequency = TimeSpan.FromMinutes(minutes);
-            var minIntoInterval = firstTime.TimeOfDay.Ticks % frequency.Ticks;
-            var intervalStart = firstTime.AddTicks(-minIntoInterval).ToEquipmentLocalTime(zoneProvider);
-            var intervalEnd = (intervalStart + frequency).ToEquipmentLocalTime(zoneProvider);
-            return (intervalStart, intervalEnd);
-        }
-
-        public static DateTimeOffset GetLastTime(ConcurrentDictionary<long, string> collection, IZoneProvider zoneProvider)
-        {
-            var lastItem = collection.Keys.Max();
-            return lastItem.ToEquipmentLocalTime(zoneProvider);
-        }
-
-        private EnergySummary? CreateVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
-        {
-            var removedTexts = new List<string>();
-            try
-            {
-                return BuildVoltageSummary(collection, intervalStart, intervalEnd, removedTexts);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e, "Create voltage summary error {@Values}", removedTexts);
-                return null;
-            }
+            return await _summaryFunctions.Handle(cancellationToken);
         }
 
         private EnergySummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
         {
-            var list = new List<MomentEnergy>();
-            var lowerBound = intervalStart.ToUnixTimeSeconds();
-            var upperBound = intervalEnd.ToUnixTimeSeconds();
-            var solarValues = GetSolarValues(lowerBound, upperBound - 1);
-            for (long instant = lowerBound; instant < upperBound; instant++)
-            {
-                if (!collection.TryRemove(instant, out string textValue)) continue;
-                removedTexts.Add(textValue);
-                var original = JsonConvert.DeserializeObject<SenecEntities.Energy>(textValue);
-                if (original == null) continue; // no way the programmer serialised nothing
-                var moment = instant.ToEquipmentLocalTime(_zoneProvider);
-                var entity = _gridMeterAdapter.Convert(moment, original);
-                var voltages = entity.GetMomentEnergy();
-                if (voltages.IsValid)
+            Dictionary<long, decimal> solarValues = null!;
+            var list = _summaryFunctions.FillSummary<MomentEnergy, SenecEntities.Energy>(collection, intervalStart, intervalEnd,
+                (moment, energy) => _gridMeterAdapter.Convert(moment, energy).GetMomentEnergy(),
+                removedTexts,
+                (lowerBound, upperBound) => solarValues = GetSolarValues(lowerBound, upperBound),
+                (momentEnergy, instant) =>
                 {
-                    list.Add(voltages);
                     if (solarValues.TryGetValue(instant, out decimal solarValue))
-                        voltages.SolarInvertorsPowerGeneration = solarValue;
-                    voltages.PowerMovements = PowerMovementsBuilder.Build(voltages);
-                }
-            }
+                        momentEnergy.SolarInvertorsPowerGeneration = solarValue;
+                    momentEnergy.PowerMovements = PowerMovementsBuilder.Build(momentEnergy);
+                });
 
             var maximumValues = (int)(intervalEnd - intervalStart).TotalSeconds;
             var stats = new EnergySummary(

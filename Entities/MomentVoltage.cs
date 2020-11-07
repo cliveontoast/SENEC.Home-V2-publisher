@@ -2,7 +2,7 @@
 
 namespace Entities
 {
-    public class MomentVoltage
+    public class MomentVoltage : IIsValid
     {
         public decimal L1 { get; }
         public decimal L2 { get; }
