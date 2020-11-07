@@ -30,6 +30,12 @@ namespace SenecSourceWebAppTest
             handler.Handle(request, CancellationToken.None).RunWait();
         }
 
+        public static void RunWaitResponse<TRequest,TResponse>(this ILifetimeScope scope, TRequest request) where TRequest : IRequest<TResponse>
+        {
+            var handler = scope.Resolve<IRequestHandler<TRequest, TResponse>>();
+            handler.Handle(request, CancellationToken.None).RunWait();
+        }
+
         public static TResponse RunSync<TRequest, TResponse>(this ILifetimeScope scope, TRequest request) where TRequest : IRequest<TResponse>
         {
             var handler = scope.Resolve<IRequestHandler<TRequest, TResponse>>();

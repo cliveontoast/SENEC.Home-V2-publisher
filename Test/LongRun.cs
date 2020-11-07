@@ -1,6 +1,7 @@
 using Autofac;
 using Domain;
 using Entities;
+using FroniusSource;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -43,6 +44,7 @@ namespace SenecSourceWebAppTest
             {
                 //a.Item1.RegisterModule(new ReadRepository.Cosmos.AutofacModule(a.Item2.Object))
                 a.Item1.RegisterInstance<ILalaRequest>(new FileLala(@"..\..\..\Resources\LongRun\lala"));
+                a.Item1.RegisterInstance<IGetPowerFlowRealtimeDataRequest>(new FileFlow(@"..\..\..\Resources\LongRun\powerflow"));
                 a.Item1.RegisterInstance<ISenecVoltCompressConfig>(new SenecCompressConfig
                 {
                     MinutesPerSummary = 5,
@@ -80,6 +82,11 @@ namespace SenecSourceWebAppTest
                     Assert.AreEqual(expected, txt);
                 });
 
+            while (!finished)
+            {
+                scope.RunWaitResponse<FroniusPollCommand, TimeSpan?>(scope.Resolve<FroniusPollCommand>());
+            }
+            finished = false;
             int i = 0;
             while (!finished)
             {
@@ -107,6 +114,31 @@ namespace SenecSourceWebAppTest
             _enum = System.IO.Directory.EnumerateFiles(_directory).GetEnumerator();
         }
         public string? Content { get; set; }
+
+        public async Task<TResponse> Request<TResponse>(CancellationToken token) where TResponse : WebResponse
+        {
+            LongRun.finished = !_enum.MoveNext();
+            if (LongRun.finished)
+                return await Task.FromResult(Activator.CreateInstance<TResponse>());
+
+            var content = await File.ReadAllTextAsync(_enum.Current);
+            var response = JsonConvert.DeserializeObject<TResponse>(value: content, new JsonSerializerSettings { Formatting = Formatting.Indented });
+            return response!;
+        }
+    }
+
+    public class FileFlow : IGetPowerFlowRealtimeDataRequest
+    {
+        private readonly string _directory;
+        private readonly IEnumerator<string> _enum;
+
+        public FileFlow(string directory)
+        {
+            _directory = directory;
+            _enum = System.IO.Directory.EnumerateFiles(_directory).GetEnumerator();
+        }
+        public string? Content { get; set; }
+        public TimeSpan? Timeout { get; set; }
 
         public async Task<TResponse> Request<TResponse>(CancellationToken token) where TResponse : WebResponse
         {

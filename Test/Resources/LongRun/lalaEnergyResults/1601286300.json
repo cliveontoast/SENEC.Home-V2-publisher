@@ -60,13 +60,13 @@
   "SecondsBatteryDischarging": 97,
   "SecondsWithoutData": 203,
   "SolarInverterPowerGenerationWatts": {
-    "Minimum": 0.0,
-    "Maximum": 0.0,
-    "Median": 0.0,
-    "Average": 0.0,
-    "IsValid": false
+    "Minimum": 305.0,
+    "Maximum": 135.0,
+    "Median": 199.0,
+    "Average": 193.28,
+    "IsValid": true
   },
-  "SolarInverterPowerGenerationWattEnergy": 0.0,
+  "SolarInverterPowerGenerationWattEnergy": 29527.0,
   "PowerMovementSummary": {
     "SolarToGridWatts": {
       "Minimum": 0.0,
@@ -85,13 +85,13 @@
     },
     "SolarToBatteryWattEnergy": 0.0,
     "SolarToHomeWatts": {
-      "Minimum": 95.23,
-      "Maximum": 304.0,
-      "Median": 214.47,
-      "Average": 221.09,
+      "Minimum": 90.23,
+      "Maximum": 305.0,
+      "Median": 216.54,
+      "Average": 219.90,
       "IsValid": true
     },
-    "SolarToHomeWattEnergy": 26529.17,
+    "SolarToHomeWattEnergy": 26365.17,
     "BatteryToHomeWatts": {
       "Minimum": 318.12,
       "Maximum": 466.1,

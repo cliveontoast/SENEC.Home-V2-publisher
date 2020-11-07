@@ -64,7 +64,7 @@
     "Maximum": 0.0,
     "Median": 0.0,
     "Average": 0.0,
-    "IsValid": false
+    "IsValid": true
   },
   "SolarInverterPowerGenerationWattEnergy": 0.0,
   "PowerMovementSummary": {
