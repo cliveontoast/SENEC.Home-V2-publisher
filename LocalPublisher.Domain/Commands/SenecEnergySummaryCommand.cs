@@ -38,6 +38,11 @@ namespace Domain
             _summaryFunctions.Initialise(logger, config, SmartMeterEnergyCache.CacheKey, BuildVoltageSummary, "energy");
         }
 
+        public async Task<Unit> Handle(SenecEnergySummaryCommand request, CancellationToken cancellationToken)
+        {
+            return await _summaryFunctions.Handle(cancellationToken);
+        }
+
         private Dictionary<long, decimal> GetSolarValues(long lowerBound, long upperBoundExclusive)
         {
             var newCache = new Dictionary<long, decimal>();
@@ -50,11 +55,6 @@ namespace Domain
                 newCache.Add(i, decimalValue);
             }
             return newCache;
-        }
-
-        public async Task<Unit> Handle(SenecEnergySummaryCommand request, CancellationToken cancellationToken)
-        {
-            return await _summaryFunctions.Handle(cancellationToken);
         }
 
         private EnergySummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
