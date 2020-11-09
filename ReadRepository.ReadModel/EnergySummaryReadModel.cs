@@ -3,7 +3,7 @@ using System;
 
 namespace ReadRepository.ReadModel
 {
-    public class EnergySummaryReadModel
+    public class EnergySummaryReadModel : IRepositoryReadModel
     {
         public DateTimeOffset IntervalStartIncluded { get; set; }
         public DateTimeOffset IntervalEndExcluded { get; set; }

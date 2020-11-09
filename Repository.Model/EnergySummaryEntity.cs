@@ -4,7 +4,7 @@ using System;
 
 namespace Repository.Model
 {
-    public class EnergySummaryEntity : EnergySummary
+    public class EnergySummaryEntity : EnergySummary, IRepositoryEntity
     {
         public const string DISCRIMINATOR = "EnergySummary";
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
@@ -47,5 +47,6 @@ namespace Repository.Model
         public string Partition { get; set; }
         public string Discriminator { get => DISCRIMINATOR; }
         public int Version { get; set; }
+        string IRepositoryEntity.Key { get => Id; set => Id = value; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Repository.Model;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -8,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace Repository.Cosmos.Repositories
 {
-    public interface IEnergySummaryRepository
+    public interface IEnergySummaryRepository : ISummaryRepository<EnergySummary>
     {
-        Task<HttpStatusCode> AddAsync(EnergySummary notification, CancellationToken cancellationToken);
     }
 
     public class EnergySummaryRepository : IEnergySummaryRepository
@@ -22,10 +22,11 @@ namespace Repository.Cosmos.Repositories
         {
             _context = context;
         }
-        public async Task<HttpStatusCode> AddAsync(EnergySummary notification, CancellationToken cancellationToken)
+
+        public async Task<bool> AddAsync(EnergySummary notification, CancellationToken cancellationToken)
         {
             var result = await _context.CreateItemAsync(notification)(cancellationToken);
-            return result.StatusCode;
+            return result.StatusCode == HttpStatusCode.Created;
         }
     }
 }

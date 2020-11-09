@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 
 namespace ReadRepository.Cosmos
 {
-    public interface IEnergySummaryDocumentReadRepository
+    public interface IEnergySummaryDocumentReadRepository : IDocumentReadRepository<EnergySummaryReadModel>
     {
-        Task<EnergySummaryReadModel> Get(string key, CancellationToken cancellationToken);
         Task<PowerMovementSummaryReadModel> GetPowerMovement(string key, CancellationToken cancellationToken);
         Task<IEnumerable<EnergySummaryReadModel>> Fetch(DateTime date);
         Task<IEnumerable<PowerMovementSummaryReadModel>> FetchPowerMovements(DateTime date);
+    }
+
+    public interface IDocumentReadRepository<TReadModel> where TReadModel : class
+    {
+        Task<TReadModel?> Get(string key, CancellationToken cancellation);
     }
 }

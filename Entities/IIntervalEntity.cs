@@ -2,7 +2,7 @@
 
 namespace Entities
 {
-    public interface IRepositoryEntity
+    public interface IIntervalEntity
     {
         DateTimeOffset IntervalStartIncluded { get; set; }
         DateTimeOffset IntervalEndExcluded { get; set; }

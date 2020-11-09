@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public interface IVoltageSummaryRepository
+    public interface IVoltageSummaryRepository : ISummaryRepository<Entities.VoltageSummary>
     {
-        Task<int> AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken);
     }
 
     public class VoltageSummaryRepository : IVoltageSummaryRepository
@@ -23,11 +22,11 @@ namespace Repository
             _version = version;
             _context = context;
         }
-        public async Task<int> AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken)
+        public async Task<bool> AddAsync(Entities.VoltageSummary notification, CancellationToken cancellationToken)
         {
             var c = _context;
             await c.VoltageSummaries.AddAsync(new VoltageSummary(notification, _version.Number), cancellationToken);
-            return await c.SaveChangesAsync(cancellationToken);
+            return await c.SaveChangesAsync(cancellationToken) > 0;
         }
     }
 }

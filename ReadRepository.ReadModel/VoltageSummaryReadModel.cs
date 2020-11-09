@@ -3,7 +3,7 @@ using System;
 
 namespace ReadRepository.ReadModel
 {
-    public class VoltageSummaryReadModel
+    public class VoltageSummaryReadModel : IRepositoryReadModel
     {
         public StatisticV1 L1 { get; set; }
         public StatisticV1 L2 { get; set; }

@@ -8,10 +8,6 @@ namespace SenecSourceWebAppTest
     [TestClass]
     public class AssemblySetup
     {
-        [AssemblyCleanup]
-        public static void Cleanup()
-        {
-        }
 
         public static ContainerBuilder BuildContainer(IServiceCollection services)
         {

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ReadRepository.Cosmos
 {
-    public interface IVoltageSummaryDocumentReadRepository
+    public interface IVoltageSummaryDocumentReadRepository : IDocumentReadRepository<VoltageSummaryReadModel>
     {
-        Task<VoltageSummaryReadModel> Get(string key, CancellationToken cancellationToken);
         Task<IEnumerable<VoltageSummaryReadModel>> Fetch(DateTime date);
     }
 }

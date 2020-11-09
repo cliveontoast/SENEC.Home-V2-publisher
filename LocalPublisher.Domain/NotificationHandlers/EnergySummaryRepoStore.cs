@@ -1,8 +1,11 @@
 ﻿using Entities;
 using LazyCache;
+using LocalPublisher.Domain.Functions;
 using MediatR;
+using Microsoft.Azure.Cosmos.Linq;
 using Newtonsoft.Json;
 using ReadRepository.Cosmos;
+using ReadRepository.ReadModel;
 using Repository;
 using Repository.Cosmos.Repositories;
 using Serilog;
@@ -23,6 +26,7 @@ namespace Domain
         private readonly IMediator _mediator;
         private readonly IAppCache _cache;
         private readonly IEnergySummaryRepository _EnergySummaryRepository;
+        private readonly PersistToRepositoryFunctions<EnergySummary, EnergySummaryReadModel> _persistFunctions;
         private readonly IRepoConfig _config;
         private readonly IApplicationVersion _versionConfig;
         private readonly IEnergySummaryDocumentReadRepository _EnergySummaryReadRepository;
@@ -66,6 +70,14 @@ namespace Domain
             _versionConfig = versionConfig;
             _EnergySummaryReadRepository = EnergySummaryReadRepository;
             _EnergySummaryRepository = EnergySummaryRepository;
+
+            _persistFunctions = new PersistToRepositoryFunctions<EnergySummary, EnergySummaryReadModel>(
+                EnergySummaryReadRepository,
+                EnergySummaryRepository,
+                versionConfig,
+                logger,
+                GetKeyExtensions.GetKey,
+                GetKeyExtensions.GetKeyVersion2);
         }
 
         public async Task Handle(EnergySummary notification, CancellationToken cancellationToken)
@@ -140,7 +152,7 @@ namespace Domain
                     await WriteAndVerifyAsync(item.Summary, cancellationToken);
                 else
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
+                    await Task.Delay(TimeSpan.FromSeconds(_config.DelaySecondsBeforePersisting), cancellationToken);
                     if (cancellationToken.IsCancellationRequested) return;
                     var verifyResult = await VerifyAsync(item.Summary, cancellationToken);
                     if (verifyResult.isPersisted)
@@ -226,34 +238,17 @@ namespace Domain
 
         private async Task<bool> IsPersisted(EnergySummary notification, CancellationToken cancellationToken)
         {
-            var result = await _EnergySummaryReadRepository.Get(notification.GetKey(), cancellationToken);
-            result = result ?? await _EnergySummaryReadRepository.Get(notification.GetKeyVersion2(), cancellationToken);
-            return result != null;
+            return await _persistFunctions.IsPersisted(notification, cancellationToken);
         }
 
         private async Task<bool> WriteAsync(EnergySummary notification, CancellationToken cancellationToken)
         {
-            _logger.Information("Writing {Time}", notification.GetKey());
-            var entriesWritten = await _EnergySummaryRepository.AddAsync(notification, cancellationToken);
-            _logger.Information("Written {Time} {Entries}", notification.GetKey(), entriesWritten);
-            return entriesWritten == System.Net.HttpStatusCode.Created;
+            return await _persistFunctions.WriteAsync(notification, cancellationToken);
         }
 
         private async Task FetchPersistedVersionAsync(EnergySummary summary, CancellationToken cancellationToken)
         {
-            if (_versionConfig.PersistedNumber != null) return;
-
-            var previousIntervalStart = summary.IntervalStartIncluded - (summary.IntervalEndExcluded - summary.IntervalStartIncluded);
-            var persistedRecord = await _EnergySummaryReadRepository.Get(summary.GetKey(), cancellationToken)
-                ?? await _EnergySummaryReadRepository.Get(previousIntervalStart.GetIntervalKey(), cancellationToken);
-            if (persistedRecord == null)
-            {
-                _versionConfig.PersistedNumber = 0;
-            }
-            else
-            {
-                _versionConfig.PersistedNumber = persistedRecord.Version;
-            }
+            await _persistFunctions.FetchPersistedVersionAsync(summary, cancellationToken);
         }
     }
 }

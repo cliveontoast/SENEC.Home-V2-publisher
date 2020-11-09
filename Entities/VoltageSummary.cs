@@ -3,7 +3,7 @@ using System;
 
 namespace Entities
 {
-    public class VoltageSummary : INotification, IRepositoryEntity
+    public class VoltageSummary : INotification, IIntervalEntity
     {
         public DateTimeOffset IntervalStartIncluded { get; set; }
         public DateTimeOffset IntervalEndExcluded { get; set; }

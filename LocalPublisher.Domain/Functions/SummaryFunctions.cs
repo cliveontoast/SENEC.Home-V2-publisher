@@ -19,7 +19,7 @@ namespace LocalPublisher.Domain.Functions
     public interface ISummaryFunctions
     {
         void Initialise(ILogger _logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
-            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IRepositoryEntity> buildSummary,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary,
             string summaryType);
         DateTimeOffset GetLastTime(ConcurrentDictionary<long, string> collection);
         (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection);
@@ -46,7 +46,7 @@ namespace LocalPublisher.Domain.Functions
         private readonly IZoneProvider _zoneProvider;
         private ILogger _logger = null!;
         private IMinutesPerSummaryConfig _minutesPerSummaryConfig = null!;
-        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IRepositoryEntity> _buildSummary = null!;
+        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> _buildSummary = null!;
         private string _cacheKey = null!;
         private string _summaryType = null!;
 
@@ -80,7 +80,7 @@ namespace LocalPublisher.Domain.Functions
         }
 
         public void Initialise(ILogger logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
-            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IRepositoryEntity> buildSummary,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary,
             string summaryType)
         {
             _logger = logger;
@@ -95,7 +95,7 @@ namespace LocalPublisher.Domain.Functions
         {
             try
             {
-                List<IRepositoryEntity> tasks = GetSummaries();
+                List<IIntervalEntity> tasks = GetSummaries();
                 foreach (var summaries in tasks)
                 {
                     _logger.Verbose("Publishing {StartTime}", summaries.IntervalStartIncluded);
@@ -109,13 +109,13 @@ namespace LocalPublisher.Domain.Functions
             return Unit.Value;
         }
 
-        private List<IRepositoryEntity> GetSummaries()
+        private List<IIntervalEntity> GetSummaries()
         {
             _logger.Verbose("Getting summaries");
             lock (_lock)
             {
                 _logger.Verbose("Getting summaries - inside lock");
-                var tasks = new List<IRepositoryEntity>();
+                var tasks = new List<IIntervalEntity>();
                 var collection = _cache.Get<ConcurrentDictionary<long, string>>(_cacheKey);
                 while (collection != null && collection.Count > 0)
                 {
@@ -138,7 +138,7 @@ namespace LocalPublisher.Domain.Functions
             }
         }
 
-        private IRepositoryEntity? CreateSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        private IIntervalEntity? CreateSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
         {
             var removedTexts = new List<string>();
             try
