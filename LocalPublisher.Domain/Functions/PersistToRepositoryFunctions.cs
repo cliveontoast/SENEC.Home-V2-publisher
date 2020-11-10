@@ -1,4 +1,5 @@
 ﻿using Entities;
+using LazyCache;
 using ReadRepository.Cosmos;
 using ReadRepository.ReadModel;
 using Repository;
@@ -6,6 +7,7 @@ using Repository.Model;
 using Serilog;
 using Shared;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -27,12 +29,16 @@ namespace LocalPublisher.Domain.Functions
         private readonly Func<TPersistedType, string> _getKey2;
         private readonly IApplicationVersion _versionConfig;
         private readonly ILogger _logger;
+        private readonly IAppCache _cache;
+        private readonly string _cacheCollectionKey;
 
         public PersistToRepositoryFunctions(
             IDocumentReadRepository<TReadModel> documentReadRepository,
             ISummaryRepository<TPersistedType> documentWriteRepository,
             IApplicationVersion versionConfig,
             ILogger logger,
+            LazyCache.IAppCache cache,
+            string cacheCollectionKey,
             Func<TPersistedType, string> getKey,
             Func<TPersistedType, string> getKey2
             )
@@ -43,8 +49,14 @@ namespace LocalPublisher.Domain.Functions
             _getKey2 = getKey2;
             _versionConfig = versionConfig;
             _logger = logger;
+            _cache = cache;
+            _cacheCollectionKey = cacheCollectionKey;
         }
 
+        public ConcurrentDictionary<string, PersistenceInfo<TPersistedType>> GetCollection()
+        {
+            return _cache.GetOrAdd(_cacheCollectionKey, () => new ConcurrentDictionary<string, PersistenceInfo<TPersistedType>>(), DateTimeOffset.MaxValue);
+        }
 
         public async Task<bool> IsPersisted(TPersistedType notification, CancellationToken cancellationToken)
         {

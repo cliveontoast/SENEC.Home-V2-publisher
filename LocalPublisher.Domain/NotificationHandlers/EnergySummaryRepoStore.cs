@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace Domain
 {
     public class EnergySummaryRepoStore :
-        INotificationHandler<EnergySummaryRepoStore.PersistenceInfo>, // TODO this should be a command, not publish
+        INotificationHandler<PersistenceInfo<EnergySummary>>, // TODO this should be a command, not publish
         INotificationHandler<EnergySummary>
     {
         private readonly ILogger _logger;
@@ -30,29 +30,6 @@ namespace Domain
         private readonly IRepoConfig _config;
         private readonly IApplicationVersion _versionConfig;
         private readonly IEnergySummaryDocumentReadRepository _EnergySummaryReadRepository;
-
-        public class PersistenceInfo : INotification
-        {
-            private int _retryCount;
-            public EnergySummary Summary { get; set; }
-
-            public PersistenceInfo(EnergySummary summary)
-            {
-                Summary = summary;
-            }
-
-            public bool IsProcessing { get; set; }
-
-            public int GetRetryCount()
-            {
-                return _retryCount;
-            }
-
-            public void Increment()
-            {
-                _retryCount++;
-            }
-        }
 
         public EnergySummaryRepoStore(
             ILogger logger,
@@ -76,6 +53,8 @@ namespace Domain
                 EnergySummaryRepository,
                 versionConfig,
                 logger,
+                cache,
+                "persistEnergySummaryList",
                 GetKeyExtensions.GetKey,
                 GetKeyExtensions.GetKeyVersion2);
         }
@@ -88,7 +67,7 @@ namespace Domain
                 _logger.Verbose("Handling {EnergySummary}", JsonConvert.SerializeObject(notification));
                 var inMemoryCollection = GetCollection();
                 var key = notification.GetKey();
-                var added = inMemoryCollection.TryAdd(key, new PersistenceInfo(notification));
+                var added = inMemoryCollection.TryAdd(key, new PersistenceInfo<EnergySummary>(notification));
                 if (!added)
                 {
                     _logger.Error("Summary {Key} already added to collection", key);
@@ -104,7 +83,7 @@ namespace Domain
             }
         }
 
-        public async Task Handle(PersistenceInfo notification, CancellationToken cancellationToken)
+        public async Task Handle(PersistenceInfo<EnergySummary> notification, CancellationToken cancellationToken)
         {
             try
             {
@@ -133,15 +112,15 @@ namespace Domain
             }
         }
 
-        private ConcurrentDictionary<string, PersistenceInfo> GetCollection()
+        private ConcurrentDictionary<string, PersistenceInfo<EnergySummary>> GetCollection()
         {
-            return _cache.GetOrAdd("persistEnergySummaryList", () => new ConcurrentDictionary<string, PersistenceInfo>(), DateTimeOffset.MaxValue);
+            return _persistFunctions.GetCollection();
         }
 
         private async Task PersistAsync(string key, CancellationToken cancellationToken)
         {
             var inMemoryCollection = GetCollection();
-            if (!inMemoryCollection.TryGetValue(key, out PersistenceInfo item))
+            if (!inMemoryCollection.TryGetValue(key, out PersistenceInfo<EnergySummary> item))
                 return;
             try
             {
@@ -195,7 +174,7 @@ namespace Domain
             var inMemoryCollection = GetCollection();
             _logger.Verbose("Inmemory energy summary count {Count}", inMemoryCollection.Keys.Count);
             var inMemoryKey = inMemoryCollection.Keys.FirstOrDefault();
-            PersistenceInfo summary;
+            PersistenceInfo<EnergySummary> summary;
             if (inMemoryKey != null)
                 if (inMemoryCollection.TryGetValue(inMemoryKey, out summary))
                 {
@@ -231,7 +210,7 @@ namespace Domain
             if (isPersisted)
             {
                 var inMemoryCollection = GetCollection();
-                isRemoved = inMemoryCollection.TryRemove(summary.GetKey(), out PersistenceInfo _);
+                isRemoved = inMemoryCollection.TryRemove(summary.GetKey(), out PersistenceInfo<EnergySummary> _);
             }
             return (isPersisted, isRemoved);
         }

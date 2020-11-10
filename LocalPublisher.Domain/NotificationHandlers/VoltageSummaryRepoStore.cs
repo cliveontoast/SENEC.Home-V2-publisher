@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Domain
 {
     public class VoltageSummaryRepoStore :
-        INotificationHandler<VoltageSummaryRepoStore.PersistenceInfo>, // TODO this should be a command, not publish
+        INotificationHandler<PersistenceInfo<VoltageSummary>>, // TODO this should be a command, not publish
         INotificationHandler<VoltageSummary>
     {
         private readonly ILogger _logger;
@@ -28,29 +28,6 @@ namespace Domain
         private readonly PersistToRepositoryFunctions<VoltageSummary, VoltageSummaryReadModel> _persistFunctions;
         private readonly IApplicationVersion _versionConfig;
         private readonly IVoltageSummaryDocumentReadRepository _voltageSummaryReadRepository;
-
-        public class PersistenceInfo : INotification
-        {
-            private int _retryCount;
-            public VoltageSummary Summary { get; set; }
-
-            public PersistenceInfo(VoltageSummary summary)
-            {
-                Summary = summary;
-            }
-
-            public bool IsProcessing { get; set; }
-
-            public int GetRetryCount()
-            {
-                return _retryCount;
-            }
-
-            public void Increment()
-            {
-                _retryCount++;
-            }
-        }
 
         public VoltageSummaryRepoStore(
             ILogger logger,
@@ -74,6 +51,8 @@ namespace Domain
                 voltageSummaryRepository,
                 versionConfig,
                 logger,
+                cache,
+                "persistVoltageSummaryList",
                 GetKeyExtensions.GetKey,
                 GetKeyExtensions.GetKeyVersion2);
         }
@@ -86,7 +65,7 @@ namespace Domain
                 _logger.Verbose("Handling {VoltageSummary}", JsonConvert.SerializeObject(notification));
                 var inMemoryCollection = GetCollection();
                 var key = notification.GetKey();
-                var added = inMemoryCollection.TryAdd(key, new PersistenceInfo(notification));
+                var added = inMemoryCollection.TryAdd(key, new PersistenceInfo<VoltageSummary>(notification));
                 if (!added)
                 {
                     _logger.Error("Summary {Key} already added to collection", key);
@@ -102,7 +81,7 @@ namespace Domain
             }
         }
 
-        public async Task Handle(PersistenceInfo notification, CancellationToken cancellationToken)
+        public async Task Handle(PersistenceInfo<VoltageSummary> notification, CancellationToken cancellationToken)
         {
             try
             {
@@ -131,15 +110,15 @@ namespace Domain
             }
         }
 
-        private ConcurrentDictionary<string, PersistenceInfo> GetCollection()
+        private ConcurrentDictionary<string, PersistenceInfo<VoltageSummary>> GetCollection()
         {
-            return _cache.GetOrAdd("persistVoltageSummaryList", () => new ConcurrentDictionary<string, PersistenceInfo>(), DateTimeOffset.MaxValue);
+            return _persistFunctions.GetCollection();
         }
 
         private async Task PersistAsync(string key, CancellationToken cancellationToken)
         {
             var inMemoryCollection = GetCollection();
-            if (!inMemoryCollection.TryGetValue(key, out PersistenceInfo item))
+            if (!inMemoryCollection.TryGetValue(key, out PersistenceInfo<VoltageSummary> item))
                 return;
             try
             {
@@ -193,7 +172,7 @@ namespace Domain
             var inMemoryCollection = GetCollection();
             _logger.Verbose("Inmemory voltage summary count {Count}", inMemoryCollection.Keys.Count);
             var inMemoryKey = inMemoryCollection.Keys.FirstOrDefault();
-            PersistenceInfo summary;
+            PersistenceInfo<VoltageSummary> summary;
             if (inMemoryKey != null)
                 if (inMemoryCollection.TryGetValue(inMemoryKey, out summary))
                 {
@@ -217,7 +196,7 @@ namespace Domain
                 }
             }
             var logMethod = isPersisted ? (Action<string, object[]>)_logger.Information : _logger.Error;
-            logMethod("Written {Written} Persisted {isPersisted} Removed {Removed} Voltage summary {Summary} ", new object[] { written, isPersisted, isRemoved,
+            logMethod("Written {Written} Persisted {isPersisted} Removed {Removed} voltage summary {Summary} ", new object[] { written, isPersisted, isRemoved,
                 Newtonsoft.Json.JsonConvert.SerializeObject(notification) });
         }
 
@@ -229,7 +208,7 @@ namespace Domain
             if (isPersisted)
             {
                 var inMemoryCollection = GetCollection();
-                isRemoved = inMemoryCollection.TryRemove(summary.GetKey(), out PersistenceInfo _);
+                isRemoved = inMemoryCollection.TryRemove(summary.GetKey(), out PersistenceInfo<VoltageSummary> _);
             }
             return (isPersisted, isRemoved);
         }
