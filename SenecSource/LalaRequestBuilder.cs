@@ -53,6 +53,12 @@ namespace SenecSource
             return this;
         }
 
+        public ILalaRequestBuilder AddInverterTemperature()
+        {
+            result.Add(nameof(LalaResponseContent.BAT1OBJ1), JObject.FromObject(new BatteryObject1()));
+            return this;
+        }
+
         //public async Task<LalaRequestBuilder> AddConsumption()
         //{
         //    return await AddResource("lalaRequest.SmartMeterConsumption.json");

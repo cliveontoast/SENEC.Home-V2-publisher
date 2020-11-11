@@ -13,6 +13,7 @@ namespace Repository.Cosmos
     public interface IContext
     {
         Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> CreateItemAsync(EnergySummary energySummary);
+        Func<CancellationToken, Task<ItemResponse<BatteryInverterTemperatureSummaryEntity>>> CreateItemAsync(InverterTemperatureSummary energySummary);
     }
 
     public class WriteContext : IContext
@@ -37,7 +38,15 @@ namespace Repository.Cosmos
             var persistedValue = new EnergySummaryEntity(energySummary, _version.Number);
             Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> obj = (CancellationToken c) => 
                 _container.CreateItemAsync(persistedValue,
-                    //new PartitionKey(persistedValue.Partition),
+                    cancellationToken: c);
+            return obj;
+        }
+
+        public Func<CancellationToken, Task<ItemResponse<BatteryInverterTemperatureSummaryEntity>>> CreateItemAsync(InverterTemperatureSummary energySummary)
+        {
+            var persistedValue = new BatteryInverterTemperatureSummaryEntity(energySummary, _version.Number);
+            Func<CancellationToken, Task<ItemResponse<BatteryInverterTemperatureSummaryEntity>>> obj = (CancellationToken c) => 
+                _container.CreateItemAsync(persistedValue,
                     cancellationToken: c);
             return obj;
         }

@@ -33,6 +33,7 @@ namespace ReadRepository.Cosmos
             }).InstancePerLifetimeScope();
             builder.RegisterType<VoltageSummaryDocumentReadRepository>().AsImplementedInterfaces();
             builder.RegisterType<EnergySummaryDocumentReadRepository>().AsImplementedInterfaces();
+            builder.RegisterType<BatteryInverterTemperatureSummaryDocumentReadRepository>().AsImplementedInterfaces();
         }
     }
 }

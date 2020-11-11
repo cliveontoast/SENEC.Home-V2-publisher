@@ -10,8 +10,14 @@
     public interface ISenecEnergyCompressConfig: IMinutesPerSummaryConfig
     {
     }
+    public interface ISenecBatteryInverterTemperatureCompressConfig: IMinutesPerSummaryConfig
+    {
+    }
 
-    public class SenecCompressConfig : ISenecVoltCompressConfig, ISenecEnergyCompressConfig
+    public class SenecCompressConfig : 
+        ISenecVoltCompressConfig,
+        ISenecEnergyCompressConfig,
+        ISenecBatteryInverterTemperatureCompressConfig
     {
         public int MinutesPerSummary { get; set; }
         public int? PersistedVersion { get; set; }

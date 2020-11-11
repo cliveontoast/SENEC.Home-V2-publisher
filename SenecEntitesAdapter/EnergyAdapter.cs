@@ -1,7 +1,6 @@
 ﻿using Entities;
 using SenecEntitiesAdapter;
 using System;
-using System.ComponentModel;
 using SenecEnergy = SenecEntities.Energy;
 
 namespace SenecEntitesAdapter

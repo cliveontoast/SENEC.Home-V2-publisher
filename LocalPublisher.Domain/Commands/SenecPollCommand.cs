@@ -40,6 +40,7 @@ namespace Domain
                     .AddGridMeter()
                     .AddEnergy()
                     .AddTime()
+                    .AddInverterTemperature()
                     .Build();
 
                 var response = await lalaRequest.Request<LalaResponseContent>(cancellationToken);
@@ -60,6 +61,16 @@ namespace Domain
                     await _mediator.Publish(
                         new SmartMeterEnergy(
                             energy: response.ENERGY,
+                            sourceTimestamp: response.RTC,
+                            sentMilliseconds: response.SentMilliseconds,
+                            receivedMilliseconds: response.ReceivedMilliseconds),
+                        cancellationToken);
+                }
+                if (response.BAT1OBJ1 != null)
+                {
+                    await _mediator.Publish(
+                        new BatteryInverterTemperature(
+                            inverter: response.BAT1OBJ1,
                             sourceTimestamp: response.RTC,
                             sentMilliseconds: response.SentMilliseconds,
                             receivedMilliseconds: response.ReceivedMilliseconds),

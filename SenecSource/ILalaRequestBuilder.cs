@@ -7,5 +7,6 @@
         ILalaRequestBuilder AddTime();
         ILalaRequestBuilder AddStatistics();
         ILalaRequestBuilder AddEnergy();
+        ILalaRequestBuilder AddInverterTemperature();
     }
 }

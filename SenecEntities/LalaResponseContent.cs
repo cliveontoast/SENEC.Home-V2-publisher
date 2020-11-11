@@ -24,6 +24,23 @@ namespace SenecEntities
         public Features? FEATURES { get; set; }
         public Bms? BMS { get; set; }
         public SysUpdate? SYS_UPDATE { get; set; }
+        public BatteryObject1 BAT1OBJ1 { get; set; }
+    }
+
+    public class BatteryObject1
+    {
+        public string? TEMP1 { get; set; }
+        public string? TEMP2 { get; set; }
+        public string? TEMP3 { get; set; }
+        public string? TEMP4 { get; set; }
+        public string? TEMP5 { get; set; }
+        public string? S { get; set; }
+        public string? P { get; set; }
+        public string? Q { get; set; }
+        public string? SW_VERSION { get; set; }
+        public string? SW_VERSION2 { get; set; }
+        public string? SW_VERSION3 { get; set; }
+        public string? I_DC { get; set; }
     }
 
     public class Meter

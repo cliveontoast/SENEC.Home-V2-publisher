@@ -36,6 +36,7 @@ namespace Repository.Cosmos
                 return new WriteContext(version, container) as IContext;
             }).InstancePerLifetimeScope();
             builder.RegisterType<EnergySummaryRepository>().AsImplementedInterfaces();
+            builder.RegisterType<BatteryInverterTemperatureSummaryRepository>().AsImplementedInterfaces();
         }
     }
 }

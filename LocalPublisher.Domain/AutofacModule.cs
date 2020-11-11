@@ -107,10 +107,15 @@ namespace Domain
                 var result = Configuration.GetSection("EnergySummary").Get<SenecCompressConfig>();
                 return result as ISenecEnergyCompressConfig;
             });
+            builder.Register((context) =>
+            {
+                var result = Configuration.GetSection("BatteryInverterTemperatureSummary").Get<SenecCompressConfig>();
+                return result as ISenecBatteryInverterTemperatureCompressConfig;
+            });
             builder.RegisterType<SenecPollCommand>().AsSelf();
             builder.RegisterType<SenecGridMeterSummaryCommand>().AsSelf();
-            // TODO 
             builder.RegisterType<SenecEnergySummaryCommand>().AsSelf();
+            builder.RegisterType<SenecBatteryInverterSummaryCommand>().AsSelf();
 
             builder.RegisterType<FroniusPollCommand>().AsSelf();
             builder.RegisterType<FroniusClearCommand>().AsSelf();
