@@ -18,10 +18,6 @@ namespace Repository.Cosmos
 
     public class WriteContext : IContext
     {
-        public enum TableDescriminators
-        {
-            ES, // energy summary
-        }
         private readonly Container _container;
         private readonly IApplicationVersion _version;
 

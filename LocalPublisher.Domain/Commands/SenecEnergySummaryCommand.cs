@@ -35,6 +35,7 @@ namespace Domain
             _summaryFunctions = summaryFunctions;
             _gridMeterAdapter = gridMeterAdapter;
             _cache = cache;
+            _cache.GetOrAdd(SolarPowerCache.CacheKey, () => new ConcurrentDictionary<long, string>());
             _summaryFunctions.Initialise(logger, config, SmartMeterEnergyCache.CacheKey, BuildVoltageSummary, "energy");
         }
 
