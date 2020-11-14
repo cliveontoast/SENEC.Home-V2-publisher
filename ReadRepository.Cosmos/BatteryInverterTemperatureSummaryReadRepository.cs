@@ -34,9 +34,17 @@ namespace ReadRepository.Cosmos
             return response.FirstOrDefault();
         }
 
-        public Task<IEnumerable<BatteryInverterTemperatureSummaryReadModel>> Fetch(DateTime date)
+        public async Task<IEnumerable<BatteryInverterTemperatureSummaryReadModel>> Fetch(DateTime date)
         {
-            throw new NotImplementedException();
+            var dateText = "ITS_" + date.ToString("yyyy-MM-dd");
+            var queryable = _readContext.GetQueryable<BatteryInverterTemperatureSummaryEntity>();
+            var iterator = queryable.Where(p => p.Partition.StartsWith(dateText) && p.Discriminator == BatteryInverterTemperatureSummaryEntity.DISCRIMINATOR).ToFeedIterator();
+            // should convert to cosmos-sql 
+            // SELECT * FROM c
+            // where startswith(c.id, '2020-11-14')
+
+            var results = await iterator.ReadNextAsync();
+            return ToReadModel(results);
         }
 
         private static ImmutableList<BatteryInverterTemperatureSummaryReadModel> ToReadModel(IEnumerable<BatteryInverterTemperatureSummaryEntity> iterator)

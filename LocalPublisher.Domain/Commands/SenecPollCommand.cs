@@ -51,7 +51,7 @@ namespace Domain
                     await _mediator.Publish(
                         new GridMeter(
                             meter: response.PM1OBJ1,
-                            sourceTimestamp:  response.RTC,
+                            sourceTimestamp: response.RTC,
                             sentMilliseconds: response.SentMilliseconds,
                             receivedMilliseconds: response.ReceivedMilliseconds),
                         cancellationToken);

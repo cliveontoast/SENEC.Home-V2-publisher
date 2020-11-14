@@ -140,11 +140,7 @@ namespace LocalPublisher.Domain.Functions
             var previousIntervalStart = summary.IntervalStartIncluded - (summary.IntervalEndExcluded - summary.IntervalStartIncluded);
             var persistedRecord = await _documentReadRepository.Get(_getKey(summary), cancellationToken)
                 ?? await _documentReadRepository.Get(previousIntervalStart.GetIntervalKey(), cancellationToken);
-            if (persistedRecord == null)
-            {
-                _versionConfig.PersistedNumber = 0;
-            }
-            else
+            if (persistedRecord != null)
             {
                 _versionConfig.PersistedNumber = persistedRecord.Version;
             }
@@ -173,12 +169,10 @@ namespace LocalPublisher.Domain.Functions
                 if (written && isPersisted)
                 {
                     _versionConfig.ThisProcessWrittenRecord = true;
-                    _logger.Information("This process written the record {Key}", _getKey(notification));
                 }
             }
             var logMethod = isPersisted ? (Action<string, object[]>)_logger.Information : _logger.Error;
-            logMethod("Written {Written} Persisted {isPersisted} Removed {Removed} {Type} summary {Summary} ", new object[] { written, isPersisted, isRemoved, typeof(TPersistedType).Name,
-                JsonConvert.SerializeObject(notification) });
+            logMethod("Write and verify: {Type} {Key} written {Written} Verified {isPersisted} Removed {Removed}", new object[] { typeof(TPersistedType).Name, _getKey(notification), written, isPersisted, isRemoved });
         }
 
         private async Task PublishWaitingSummariesAsync(CancellationToken cancellationToken)
@@ -218,16 +212,16 @@ namespace LocalPublisher.Domain.Functions
                         await FetchPersistedVersionAsync(item.Summary, cancellationToken);
                         if (_versionConfig.PersistedNumber == _versionConfig.Number)
                         {
-                            _logger.Warning("Persisted number is equal, however another process has persisted this record {Key}. Item removed {Removed}", key, verifyResult.isRemoved);
+                            _logger.Warning("Persisted number is equal, however another process has persisted this record {Type} {Key}. Item removed {Removed}", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
                         }
                         else
                         {
-                            _logger.Information("Previous version is running and has persisted this record {Key}. Item removed {Removed}", key, verifyResult.isRemoved);
+                            _logger.Information("Previous version is running and has persisted this record {Type} {Key}. Item removed {Removed}", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
                         }
                     }
                     else
                     {
-                        _logger.Information("This record {Key} has not been persisted. Attempting to write.", key, verifyResult.isRemoved);
+                        _logger.Information("This record {Type} {Key} has not been persisted. Attempting to write.", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
                         await WriteAndVerifyAsync(item.Summary, cancellationToken);
                     }
                 }

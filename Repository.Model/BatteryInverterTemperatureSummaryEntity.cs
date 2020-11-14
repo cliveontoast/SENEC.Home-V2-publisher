@@ -21,7 +21,7 @@ namespace Repository.Model
             temperatures: entity.Temperatures.ToArray(),
             secondsWithoutData:entity.SecondsWithoutData)
         {
-            Id = this.GetKey();
+            Id = "ITS_" + this.GetKey();
             Partition = "ITS_" + this.GetKey();
             Version = version;
         }
