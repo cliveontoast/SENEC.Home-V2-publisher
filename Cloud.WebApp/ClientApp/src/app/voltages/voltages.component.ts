@@ -144,13 +144,13 @@ export class VoltagesComponent {
     var dte = new Date(this.displayDate.toUTCString());
     dte.setDate(dte.getDate()-1);
     this.displayDate = dte;
-    this.getData();
+    this.getData().subscribe(a => this.applyData(a));
   }
 
   nextDay() {
     var dte = new Date(this.displayDate.toUTCString());
     dte.setDate(dte.getDate()+1);
     this.displayDate = dte;
-    this.getData();
+    this.getData().subscribe(a => this.applyData(a));
   }
 }

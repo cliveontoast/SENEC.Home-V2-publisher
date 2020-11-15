@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { EnergySummaryService } from '../services/energySummary.service';
 import * as Highcharts from 'highcharts';
 import { InitialDateService } from '../services/initial-date.service';
-import { take, tap } from 'rxjs/operators';
+import { take, tap, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { DailyEnergySummaryDto } from '../dto/dailyEnergySummaryDto';
 
 @Component({
   selector: 'app-energy',
@@ -129,7 +131,6 @@ export class EnergyComponent implements OnInit {
   runOutsideAngularFlag: boolean = false; // optional boolean, defaults to false
 
   displayDate: Date = new Date();
-  
 
 
   constructor(private energySummaryService: EnergySummaryService,
@@ -138,33 +139,32 @@ export class EnergyComponent implements OnInit {
   ngOnInit() {
     this.initialDateService.today.pipe(
       take(1),
-      tap(s => {
-        this.displayDate = s;
-        this.getData();
-      })
+      tap(s => this.displayDate = s),
+      switchMap(s => this.getData()),
+      tap(value => this.applyData(value))
     ).subscribe();
   }
 
-  private getData() {
-    this.energySummaryService.get(this.displayDate).subscribe(value => {
+  private getData(): Observable<DailyEnergySummaryDto> {
+    return this.energySummaryService.get(this.displayDate);
+  }
+  private applyData(value: DailyEnergySummaryDto) {
       this.chartOptions.plotOptions.spline.pointStart = Date.UTC(2019, 5, 19, 0, 0, 0);
       this.chartOptions.series[0]['data'] = value.batteryCapacity.data;
-      this.updateFlag = true;
-    });
+    this.updateFlag = true;
   }
 
   previousDay() {
     var dte = new Date(this.displayDate.toUTCString());
     dte.setDate(dte.getDate()-1);
     this.displayDate = dte;
-    this.getData();
+    this.getData().subscribe(a => this.applyData(a));
   }
 
   nextDay() {
     var dte = new Date(this.displayDate.toUTCString());
     dte.setDate(dte.getDate()+1);
     this.displayDate = dte;
-    this.getData();
+    this.getData().subscribe(a => this.applyData(a));
   }
-
 }
