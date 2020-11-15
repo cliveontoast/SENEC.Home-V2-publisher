@@ -1,7 +1,14 @@
 
 # SENEC.Home-V2-publisher
-Task: Display on the cloud, the voltages of the three phases of a house.
-i.e.
+Inspiration: Display using cloud services for free, the electrical sources and consumption for my house
+
+Cloud.WebApp can be published to Azure App Service to run an Angular app to display the following
+
+![Senec personal portal](https://raw.githubusercontent.com/cliveontoast/SENEC.Home-V2-publisher/master/current-development.png)
+
+![Senec personal portal](https://raw.githubusercontent.com/cliveontoast/SENEC.Home-V2-publisher/master/voltage-development.png)
+
+Inspiration came from fronius solarweb.com
 ![Fronius portal](https://raw.githubusercontent.com/cliveontoast/SENEC.Home-V2-publisher/master/end-result.png)
 
 ## processes that run 
@@ -10,9 +17,6 @@ Runs LocalPublisher.Framework on a raspeberry pi zero w in Mono
 Does not run most recent version via LocalPublisher.WebApp on hardware that supports .net core. It totally could. 
 
 Polls local network senec battery webserver and publishes to the cloud.
-
-Cloud.WebApp can be published to Azure App Service to run an Angular app to display the following
-![Senec personal portal](https://raw.githubusercontent.com/cliveontoast/SENEC.Home-V2-publisher/master/current-development.png)
 
 ## What would it cost you to run?
 The services try to use only free services from Azure as much as possible.
@@ -24,8 +28,6 @@ App services provide up to 10 free services on the lowest compute plans. If outg
 As of writing (16th June 2020), the developer has not received a bill from this subscription.
 
 ## todo
-Write a web app with react/angular front-end to display the cloud data.
-
 Align LocalPublisherWebApp.Startup and LocalPublisherFramework.Program, so LocalPublisherWebApp can run the current version.. again.
 
 Write Azure infrastructure as a service scripts to 
@@ -37,11 +39,11 @@ Write Azure infrastructure as a service scripts to
 -- App service plan
 -- App service
 
-
 ## Notes on installing for raspberry pi
 
 Update the raspberry pi
 
+```
 sudo apt update
 sudo apt upgrade
 sudo apt install mono-complete
@@ -49,6 +51,8 @@ sudo apt install mono-complete
 sudo dpkg-reconfigure tzdata
 
 sudo apt-get install tmux
+```
+
 https://iotpoint.wordpress.com/2016/11/15/tmux-terminal-multiplexer-for-raspberry-pi/
 
 ## running cloud.webapp

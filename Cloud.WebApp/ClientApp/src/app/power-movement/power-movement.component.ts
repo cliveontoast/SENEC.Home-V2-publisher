@@ -30,7 +30,7 @@ export class PowerMovementComponent implements OnInit {
     },
     yAxis: {
       title: {
-          text: 'Total Watt hours'
+          text: 'Total Watts'
       },
       plotBands: [
         {
@@ -120,7 +120,7 @@ export class PowerMovementComponent implements OnInit {
     ],
     tooltip: {
       split: true,
-      valueSuffix: ' watt hours'
+      valueSuffix: ' watts'
     },
     plotOptions: {
       series: {
@@ -170,7 +170,7 @@ export class PowerMovementComponent implements OnInit {
     },
     yAxis: {
       title: {
-          text: 'Total Watt hours'
+          text: 'Total Watts'
       },
       plotBands: [
         {
@@ -253,7 +253,7 @@ export class PowerMovementComponent implements OnInit {
     ],
     tooltip: {
       split: true,
-      valueSuffix: ' watt hours'
+      valueSuffix: ' watts'
     },
     plotOptions: {
       series: {
@@ -303,7 +303,7 @@ export class PowerMovementComponent implements OnInit {
     },
     yAxis: {
       title: {
-          text: 'Total Watt hours'
+          text: 'Total Watts'
       },
       plotBands: [
         {
@@ -381,7 +381,7 @@ export class PowerMovementComponent implements OnInit {
     ],
     tooltip: {
       split: true,
-      valueSuffix: ' watt hours'
+      valueSuffix: ' watts'
     },
     plotOptions: {
       series: {

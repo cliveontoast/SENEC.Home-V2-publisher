@@ -91,7 +91,7 @@ export class EnergyComponent implements OnInit {
     ],
     tooltip: {
       split: true,
-      // valueSuffix: ' watt hours'
+      // valueSuffix: ' watt'
     },
     plotOptions: {
       series: {

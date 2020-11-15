@@ -28,7 +28,7 @@ export class HomeConsumptionComponent implements OnInit {
     },
     yAxis: {
       title: {
-          text: 'Total Watt hours'
+          text: 'Total watts'
       },
       plotBands: [
         {
@@ -118,7 +118,7 @@ export class HomeConsumptionComponent implements OnInit {
     ],
     tooltip: {
       split: true,
-      valueSuffix: ' watt hours'
+      valueSuffix: ' watts'
     },
     plotOptions: {
       series: {
