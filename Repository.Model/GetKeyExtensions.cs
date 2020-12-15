@@ -21,6 +21,10 @@ namespace Repository
         {
             return GetIntervalKey(voltageSummary.IntervalStartIncluded);
         }
+        public static string GetKey(this Entities.EquipmentStatesSummary voltageSummary)
+        {
+            return GetIntervalKey(voltageSummary.IntervalStartIncluded);
+        }
         public static string GetIntervalKey(this DateTimeOffset intervalStart)
         {
             return JsonConvert.SerializeObject(intervalStart).Replace(@"""", "");
@@ -31,6 +35,10 @@ namespace Repository
             return GetIntervalKeyVersion2(voltageSummary.IntervalStartIncluded);
         }
         public static string GetKeyVersion2(this Entities.InverterTemperatureSummary voltageSummary)
+        {
+            return GetIntervalKeyVersion2(voltageSummary.IntervalStartIncluded);
+        }
+        public static string GetKeyVersion2(this Entities.EquipmentStatesSummary voltageSummary)
         {
             return GetIntervalKeyVersion2(voltageSummary.IntervalStartIncluded);
         }

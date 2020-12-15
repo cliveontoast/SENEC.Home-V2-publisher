@@ -1,0 +1,15 @@
+{
+  "States": [
+    {
+      "StateText": "DISCHARGE",
+      "Count": 240
+    },
+    {
+      "StateText": "GRID + DISCHARGE",
+      "Count": 9
+    }
+  ],
+  "IntervalStartIncluded": "2020-09-28T19:20:00+08:00",
+  "IntervalEndExcluded": "2020-09-28T19:25:00+08:00",
+  "SecondsWithoutData": 51
+}

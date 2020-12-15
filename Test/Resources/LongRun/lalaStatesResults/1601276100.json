@@ -1,0 +1,11 @@
+{
+  "States": [
+    {
+      "StateText": "BATTERY FULL",
+      "Count": 242
+    }
+  ],
+  "IntervalStartIncluded": "2020-09-28T14:55:00+08:00",
+  "IntervalEndExcluded": "2020-09-28T15:00:00+08:00",
+  "SecondsWithoutData": 58
+}

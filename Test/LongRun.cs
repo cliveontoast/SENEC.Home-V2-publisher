@@ -57,12 +57,14 @@ namespace SenecSourceWebAppTest
                 });
                 a.Item1.RegisterMock<INotificationHandler<VoltageSummary>>();
                 a.Item1.RegisterMock<INotificationHandler<EnergySummary>>();
+                a.Item1.RegisterMock<INotificationHandler<EquipmentStatesSummary>>();
                 a.Item1.RegisterMock<IRepoConfig>();
             });
             scope.Resolve<Mock<IRepoConfig>>().Setup(a => a.Testing).Returns(true);
             var mediator = scope.Resolve<IMediator>();
             var voltageSummaryCollector = scope.Resolve<Mock<INotificationHandler<VoltageSummary>>>();
             var energyCollector = scope.Resolve<Mock<INotificationHandler<EnergySummary>>>();
+            var statesCollector = scope.Resolve<Mock<INotificationHandler<EquipmentStatesSummary>>>();
 
             int voltageSummaryCollectorCallbackCount = 0;
             const string VOLTAGE_RESULTS = @"..\..\..\Resources\LongRun\lalaVoltageResults\";
@@ -72,7 +74,7 @@ namespace SenecSourceWebAppTest
                 .Callback<VoltageSummary, CancellationToken>((a, b) =>
                 {
                     voltActual = JsonConvert.SerializeObject(a, Formatting.Indented);
-                    //File.WriteAllText(@"..\..\..\Resources\LongRun\lalaVoltageResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json", txt);
+                    //File.WriteAllText(@"..\..\..\Resources\LongRun\lalaVoltageResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json", voltActual);
                     voltExpected = File.ReadAllText(VOLTAGE_RESULTS + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json");
                     voltageSummaryCollectorCallbackCount++;
                 });
@@ -85,9 +87,22 @@ namespace SenecSourceWebAppTest
                 .Callback<EnergySummary, CancellationToken>((a, b) =>
                 {
                     energyActual = JsonConvert.SerializeObject(a, Formatting.Indented);
-                    //File.WriteAllText(@"..\..\..\Resources\LongRun\lalaEnergyResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json", txt);
+                    //File.WriteAllText(@"..\..\..\Resources\LongRun\lalaEnergyResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json", energyActual);
                     energyExpected = File.ReadAllText(ENERGY_RESULTS + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json");
                     energyCollectorCallbackCount++;
+                });
+
+            int statesCollectorCallbackCount = 0;
+            const string  STATES_RESULTS= @"..\..\..\Resources\LongRun\lalaStatesResults\";
+            string statesExpected = "";
+            string statesActual = "";
+            statesCollector.Setup(a => a.Handle(It.IsAny<EquipmentStatesSummary>(), It.IsAny<CancellationToken>()))
+                .Callback<EquipmentStatesSummary, CancellationToken>((a, b) =>
+                {
+                    statesActual = JsonConvert.SerializeObject(a, Formatting.Indented);
+                    //File.WriteAllText(@"..\..\..\Resources\LongRun\lalaStatesResults\" + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json", statesActual);
+                    statesExpected = File.ReadAllText(STATES_RESULTS + a.IntervalStartIncluded.ToUnixTimeSeconds() + ".json");
+                    statesCollectorCallbackCount++;
                 });
 
             while (!finished)
@@ -107,14 +122,17 @@ namespace SenecSourceWebAppTest
                 }
                 Assert.AreEqual(energyExpected, energyActual);
                 Assert.AreEqual(voltExpected, voltActual);
+                Assert.AreEqual(statesExpected, statesActual);
             }
             scope.RunWait(scope.Resolve<SenecGridMeterSummaryCommand>());
             scope.RunWait(scope.Resolve<SenecEnergySummaryCommand>());
             Assert.AreEqual(energyExpected, energyActual);
             Assert.AreEqual(voltExpected, voltActual);
+            Assert.AreEqual(statesExpected, statesActual);
 
             Assert.AreEqual(Directory.GetFiles(ENERGY_RESULTS).Length, energyCollectorCallbackCount);
             Assert.AreEqual(Directory.GetFiles(VOLTAGE_RESULTS).Length, voltageSummaryCollectorCallbackCount);
+            Assert.AreEqual(Directory.GetFiles(STATES_RESULTS).Length, statesCollectorCallbackCount);
         }
     }
 

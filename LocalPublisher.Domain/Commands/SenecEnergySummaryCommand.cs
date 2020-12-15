@@ -58,14 +58,14 @@ namespace Domain
             return newCache;
         }
 
-        private EnergySummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
+        private IEnumerable<IIntervalEntity> BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
         {
             Dictionary<long, decimal> solarValues = null!;
             var list = _summaryFunctions.FillSummary<MomentEnergy, SenecEntities.Energy>(collection, intervalStart, intervalEnd,
-                (moment, energy) => _gridMeterAdapter.Convert(moment, energy).GetMomentEnergy(),
+                converter: (moment, energy) => _gridMeterAdapter.Convert(moment, energy).GetMomentEnergy(),
                 removedTexts,
-                (lowerBound, upperBound) => solarValues = GetSolarValues(lowerBound, upperBound),
-                (momentEnergy, instant) =>
+                lowerUpperBoundExtras: (lowerBound, upperBound) => solarValues = GetSolarValues(lowerBound, upperBound),
+                postConvertAction: (momentEnergy, instant) =>
                 {
                     if (solarValues.TryGetValue(instant, out decimal solarValue))
                         momentEnergy.SolarInvertorsPowerGeneration = solarValue;
@@ -96,7 +96,13 @@ namespace Domain
                 secondsBatteryDischarging: list.Count(a => a.IsBatteryDischarging),
                 secondsWithoutData: maximumValues - list.Count
                 );
-            return stats;
+            var states = new EquipmentStatesSummary(
+                intervalStartIncluded: stats.IntervalStartIncluded,
+                intervalEndExcluded: stats.IntervalEndExcluded,
+                states: CreateTextStatistics(list, l => l.SystemState),
+                secondsWithoutData: stats.SecondsWithoutData
+                );
+            return new IIntervalEntity[] { stats, states };
         }
 
         private PowerMovementSummary CreatePowerSummary(List<MomentEnergy> list, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
@@ -149,6 +155,16 @@ namespace Domain
             }
 
             return sum;
+        }
+
+        private IEnumerable<EquipmentStateStatistic> CreateTextStatistics(List<MomentEnergy> list, Func<MomentEnergy, string> property)
+        {
+            var values =
+                from a in list
+                let value = property(a)
+                group value by value into textGroup
+                select new EquipmentStateStatistic(textGroup.Key, textGroup.Count());
+            return values.ToArray();
         }
 
         private Statistic CreateStatistics(List<MomentEnergy> list, Func<MomentEnergy, decimal?> property)

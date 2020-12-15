@@ -24,7 +24,7 @@ namespace SenecEntities
         public Features? FEATURES { get; set; }
         public Bms? BMS { get; set; }
         public SysUpdate? SYS_UPDATE { get; set; }
-        public BatteryObject1 BAT1OBJ1 { get; set; }
+        public BatteryObject1? BAT1OBJ1 { get; set; }
     }
 
     public class BatteryObject1

@@ -21,6 +21,9 @@ namespace LocalPublisher.Domain.Functions
         void Initialise(ILogger _logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
             Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary,
             string summaryType);
+        void Initialise(ILogger _logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>> buildSummary,
+            string summaryType);
         DateTimeOffset GetLastTime(ConcurrentDictionary<long, string> collection);
         (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection);
         Task<Unit> Handle(CancellationToken cancellationToken);
@@ -46,7 +49,7 @@ namespace LocalPublisher.Domain.Functions
         private readonly IZoneProvider _zoneProvider;
         private ILogger _logger = null!;
         private IMinutesPerSummaryConfig _minutesPerSummaryConfig = null!;
-        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> _buildSummary = null!;
+        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>> _buildSummary = null!;
         private string _cacheKey = null!;
         private string _summaryType = null!;
 
@@ -80,15 +83,29 @@ namespace LocalPublisher.Domain.Functions
         }
 
         public void Initialise(ILogger logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
-            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>> buildSummaries,
             string summaryType)
         {
             _logger = logger;
             _minutesPerSummaryConfig = minutesPerSummaryConfig;
             _cache.GetOrAdd(cacheKey, () => new ConcurrentDictionary<long, string>());
-            _buildSummary = buildSummary;
+            _buildSummary = buildSummaries;
             _cacheKey = cacheKey;
             _summaryType = summaryType;
+        }
+
+        public void Initialise(ILogger logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary,
+            string summaryType)
+        {
+            Initialise(logger, minutesPerSummaryConfig, cacheKey, ToSummariesList(buildSummary), summaryType);
+        }
+
+        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>>
+            ToSummariesList(Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary)
+        {
+            return new Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>>((a, b, c, d) 
+                => new IIntervalEntity[1] { buildSummary(a, b, c, d) });
         }
 
         public async Task<Unit> Handle(CancellationToken cancellationToken)
@@ -98,7 +115,7 @@ namespace LocalPublisher.Domain.Functions
                 List<IIntervalEntity> tasks = GetSummaries();
                 foreach (var summaries in tasks)
                 {
-                    _logger.Verbose("Publishing {StartTime}", summaries.IntervalStartIncluded);
+                    _logger.Verbose("Publishing {Type} {StartTime}", summaries.GetType(), summaries.IntervalStartIncluded);
                     await _mediator.Publish(summaries, cancellationToken);
                 }
             }
@@ -129,16 +146,19 @@ namespace LocalPublisher.Domain.Functions
 
                     _logger.Verbose("Creating {StartTime}", interval.Start);
                     var result = CreateSummary(collection, interval.Start, interval.End);
-                    if (result == null) continue;
                     _logger.Verbose("Created {StartTime}", interval.Start);
-                    tasks.Add(result);
+                    foreach (var item in result)
+                    {
+                        if (item == null) continue;
+                        tasks.Add(item);
+                    }
                 }
                 _logger.Verbose("Getting summaries complete count {Count}", tasks.Count);
                 return tasks;
             }
         }
 
-        private IIntervalEntity? CreateSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        private IEnumerable<IIntervalEntity?> CreateSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
         {
             var removedTexts = new List<string>();
             try
@@ -148,7 +168,7 @@ namespace LocalPublisher.Domain.Functions
             catch (Exception e)
             {
                 _logger.Error(e, "Create {SummaryType} summary error {@Values}", _summaryType, removedTexts);
-                return null;
+                return Enumerable.Empty<IIntervalEntity?>();
             }
         }
 

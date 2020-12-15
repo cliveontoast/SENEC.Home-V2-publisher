@@ -20,7 +20,7 @@ namespace ReadRepository.Cosmos
             _readContext = readContext;
         }
 
-        public async Task<VoltageSummaryReadModel> Get(string key, CancellationToken cancellationToken)
+        public async Task<VoltageSummaryReadModel?> Get(string key, CancellationToken cancellationToken)
         {
             var queryable = _readContext.GetQueryable<VoltageSummary>();
             var iterator = queryable.Where(p => p.Key == key).ToFeedIterator();

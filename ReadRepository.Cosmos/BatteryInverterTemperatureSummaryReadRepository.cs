@@ -25,10 +25,11 @@ namespace ReadRepository.Cosmos
             _readContext = readContext;
         }
 
-        public async Task<BatteryInverterTemperatureSummaryReadModel> Get(string key, CancellationToken cancellationToken)
+        public async Task<BatteryInverterTemperatureSummaryReadModel?> Get(string key, CancellationToken cancellationToken)
         {
+            var discriminator = PartitionText.ITS_.ToString();
             var queryable = _readContext.GetQueryable<BatteryInverterTemperatureSummaryEntity>();
-            var iterator = queryable.Where(p => p.Partition == "ITS_" + key).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Partition == discriminator + key).ToFeedIterator();
             var result = await iterator.ReadNextAsync();
             var response = ToReadModel(result);
             return response.FirstOrDefault();
@@ -36,7 +37,7 @@ namespace ReadRepository.Cosmos
 
         public async Task<IEnumerable<BatteryInverterTemperatureSummaryReadModel>> Fetch(DateTime date)
         {
-            var dateText = "ITS_" + date.ToString("yyyy-MM-dd");
+            var dateText = PartitionText.ITS_.ToString() + date.ToString("yyyy-MM-dd");
             var queryable = _readContext.GetQueryable<BatteryInverterTemperatureSummaryEntity>();
             var iterator = queryable.Where(p => p.Partition.StartsWith(dateText) && p.Discriminator == BatteryInverterTemperatureSummaryEntity.DISCRIMINATOR).ToFeedIterator();
             // should convert to cosmos-sql 

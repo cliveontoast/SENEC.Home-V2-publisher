@@ -20,7 +20,7 @@ namespace ReadRepository.Cosmos
             _readContext = readContext;
         }
 
-        public async Task<EnergySummaryReadModel> Get(string key, CancellationToken cancellationToken)
+        public async Task<EnergySummaryReadModel?> Get(string key, CancellationToken cancellationToken)
         {
             var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
             var iterator = queryable.Where(p => p.Partition == "ES_" + key).ToFeedIterator();
