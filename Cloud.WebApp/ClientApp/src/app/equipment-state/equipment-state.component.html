@@ -1,0 +1,35 @@
+<div style="display: block;" >
+    <!--
+      When can I use the Non-Commercial License?
+  
+      The Non-Commercial License is offered for:
+      - governmentally funded schools,
+      - universities,
+      - non-profit organizations,
+      - students, or
+      - individuals using the software for personal use, testing and demonstration
+  
+      This license does not include the commercial usage of Highsoft software by the above-mentioned entities. 
+    -->
+    <highcharts-chart 
+      [Highcharts]="Highcharts"
+  
+      [constructorType]="chartConstructor"
+      [options]="chartOptions"
+      [callbackFunction]="chartCallback"
+  
+      [(update)]="updateFlag"
+      [oneToOne]="oneToOneFlag"
+      [runOutsideAngular]="runOutsideAngularFlag"
+      style="width: 100%; height: 800px; display: block;"
+    ></highcharts-chart>
+    <span class="highcharts-credits" style="cursor:pointer;color:#999999;font-size:9px;fill:#999999;float: right;padding-right: 10px;">
+      Non-Commercial License
+    </span>
+    <div style="text-align: center;">
+      <a (click)="previousDay()">Previous </a>&nbsp;
+      <span style="font-weight: bold">{{ displayDate | date : 'fullDate'}}</span>&nbsp;
+      <a (click)="nextDay()"> Next</a>
+    </div>
+  </div>
+  

@@ -18,6 +18,8 @@ import { PowerMovementService } from './services/power-movement.service';
 import { InitialDateService } from './services/initial-date.service';
 import { TemperaturesComponent } from './temperature/temperature.component';
 import { TemperatureSummaryService } from './services/temperatureSummary.service';
+import { EquipmentStateComponent } from './equipment-state/equipment-state.component';
+import { EquipmentStateService } from './services/equipment-state.service';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,7 @@ import { TemperatureSummaryService } from './services/temperatureSummary.service
     HomeConsumptionComponent,
     PowerMovementComponent,
     TemperaturesComponent,
+    EquipmentStateComponent,
     VoltagesComponent
   ],
   imports: [
@@ -40,12 +43,14 @@ import { TemperatureSummaryService } from './services/temperatureSummary.service
       { path: 'battery', component: EnergyComponent },
       { path: 'voltages', component: VoltagesComponent },
       { path: 'temperature', component: TemperaturesComponent },
+      { path: 'equipment', component: EquipmentStateComponent },
       { path: '**', component: HomeConsumptionComponent }
     ])
   ],
   providers: [
     VoltageSummaryService,
     HomeConsumptionService,
+    EquipmentStateService,
     EnergySummaryService,
     TemperatureSummaryService,
     InitialDateService,
