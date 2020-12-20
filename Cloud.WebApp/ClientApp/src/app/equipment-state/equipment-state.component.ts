@@ -19,7 +19,8 @@ export class EquipmentStateComponent implements OnInit {
   chartOptions: Highcharts.Options = {
     title: { text: 'States of the battery' },
     chart: {
-      type: 'area'
+      type: 'area',
+      zoomType: 'x',
     },
     xAxis: {
       type: 'datetime',
@@ -51,8 +52,8 @@ export class EquipmentStateComponent implements OnInit {
                       point.series.name;
               }
           },
-        // pointInterval: 3600000/12, // one hour / 12 = 5 min
-        // pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)
+          pointStart: Date.UTC(2018,1,1),
+          pointInterval: 3600000/12, // one hour / 12 = 5 min
       },
     }
   }; // required
