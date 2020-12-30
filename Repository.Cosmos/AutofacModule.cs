@@ -1,8 +1,6 @@
 ﻿using Autofac;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
-using Repository;
-using Repository.Cosmos;
 using Repository.Cosmos.Repositories;
 using Shared;
 
@@ -38,6 +36,7 @@ namespace Repository.Cosmos
             builder.RegisterType<EnergySummaryRepository>().AsImplementedInterfaces();
             builder.RegisterType<BatteryInverterTemperatureSummaryRepository>().AsImplementedInterfaces();
             builder.RegisterType<EquipmentStatesSummaryRepository>().AsImplementedInterfaces();
+            builder.RegisterType<PublisherRepository>().AsImplementedInterfaces();
         }
     }
 }

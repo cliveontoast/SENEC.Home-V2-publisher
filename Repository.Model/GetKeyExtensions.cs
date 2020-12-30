@@ -25,6 +25,10 @@ namespace Repository
         {
             return GetIntervalKey(voltageSummary.IntervalStartIncluded);
         }
+        public static string GetKey(this Entities.Publisher voltageSummary)
+        {
+            return voltageSummary.Name;
+        }
         public static string GetIntervalKey(this DateTimeOffset intervalStart)
         {
             return JsonConvert.SerializeObject(intervalStart).Replace(@"""", "");

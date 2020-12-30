@@ -113,6 +113,10 @@ namespace LocalPublisher.Domain.Functions
             try
             {
                 List<IIntervalEntity> tasks = GetSummaries();
+                if (tasks.Any())
+                {
+                    await PersistPublisherStatus(tasks.First().IntervalEndExcluded);
+                }
                 foreach (var summaries in tasks)
                 {
                     _logger.Verbose("Publishing {Type} {StartTime}", summaries.GetType(), summaries.IntervalStartIncluded);
@@ -124,6 +128,11 @@ namespace LocalPublisher.Domain.Functions
                 _logger.Fatal(e, "Logging here shouldn't be necessary, it should be caught elsewhere");
             }
             return Unit.Value;
+        }
+
+        private async Task PersistPublisherStatus(DateTimeOffset intervalEndExcluded)
+        {
+            await _mediator.Publish(new Publisher(Environment.MachineName, intervalEndExcluded.ToEquipmentLocalTime(_zoneProvider)));
         }
 
         private List<IIntervalEntity> GetSummaries()

@@ -7,6 +7,7 @@ namespace Repository.Model
     public enum PartitionText
     {
         ITS_,
+        PU_,
         EQ_
     }
 }

@@ -15,6 +15,8 @@ namespace Repository.Cosmos
         Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> CreateItemAsync(EnergySummary energySummary);
         Func<CancellationToken, Task<ItemResponse<BatteryInverterTemperatureSummaryEntity>>> CreateItemAsync(InverterTemperatureSummary energySummary);
         Func<CancellationToken, Task<ItemResponse<EquipmentStatesSummaryEntity>>> CreateItemAsync(EquipmentStatesSummary energySummary);
+        Func<CancellationToken, Task<ItemResponse<PublisherEntity>>> CreateItemAsync(Publisher energySummary);
+        Func<CancellationToken, Task<ItemResponse<PublisherEntity>>> ReplaceItemAsync(Publisher publisher);
     }
 
     public class WriteContext : IContext
@@ -53,6 +55,24 @@ namespace Repository.Cosmos
             var persistedValue = new EquipmentStatesSummaryEntity(energySummary, _version.Number);
             Func<CancellationToken, Task<ItemResponse<EquipmentStatesSummaryEntity>>> obj = (CancellationToken c) => 
                 _container.CreateItemAsync(persistedValue,
+                    cancellationToken: c);
+            return obj;
+        }
+
+        public Func<CancellationToken, Task<ItemResponse<PublisherEntity>>> CreateItemAsync(Publisher publisher)
+        {
+            var persistedValue = new PublisherEntity(publisher, _version.Number);
+            Func<CancellationToken, Task<ItemResponse<PublisherEntity>>> obj = (CancellationToken c) =>
+                _container.CreateItemAsync(persistedValue,
+                    cancellationToken: c);
+            return obj;
+        }
+
+        public Func<CancellationToken, Task<ItemResponse<PublisherEntity>>> ReplaceItemAsync(Publisher publisher)
+        {
+            var persistedValue = new PublisherEntity(publisher, _version.Number);
+            Func<CancellationToken, Task<ItemResponse<PublisherEntity>>> obj = (CancellationToken c) =>
+                _container.ReplaceItemAsync(persistedValue, persistedValue.Id,
                     cancellationToken: c);
             return obj;
         }

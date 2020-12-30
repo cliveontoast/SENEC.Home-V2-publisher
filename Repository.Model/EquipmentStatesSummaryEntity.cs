@@ -21,8 +21,8 @@ namespace Repository.Model
             states : entity.States,
             secondsWithoutData:entity.SecondsWithoutData)
         {
-            Id = "EQ_" + this.GetKey();
-            Partition = "EQ_" + this.GetKey();
+            Id = PartitionText.EQ_ + this.GetKey();
+            Partition = PartitionText.EQ_ + this.GetKey();
             Version = version;
         }
 
