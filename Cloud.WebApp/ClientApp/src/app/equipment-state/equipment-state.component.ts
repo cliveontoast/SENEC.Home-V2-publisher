@@ -87,17 +87,23 @@ export class EquipmentStateComponent implements OnInit {
     this.updateFlag = true;
   }
 
-  previousDay() {
+  getDay(addDays: number): Date {
     var dte = new Date(this.displayDate.toUTCString());
-    dte.setDate(dte.getDate()-1);
-    this.displayDate = dte;
-    this.getData().subscribe(a => this.applyData(a));
+    dte.setDate(dte.getDate()+addDays);
+    return dte;
+  }
+
+  previousDay() {
+    this.displayDate = this.getDay(-1);
+    this.refresh();
   }
 
   nextDay() {
-    var dte = new Date(this.displayDate.toUTCString());
-    dte.setDate(dte.getDate()+1);
-    this.displayDate = dte;
+    this.displayDate = this.getDay(+1);
+    this.refresh();
+  }
+
+  refresh() {
     this.getData().subscribe(a => this.applyData(a));
   }
 }

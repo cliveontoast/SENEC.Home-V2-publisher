@@ -242,7 +242,7 @@ export class TemperaturesComponent {
   private getData(): Observable<DailyTemperatureSummaryDto[]> {
     return combineLatest(
       this.temperatureSummaryService.get(this.displayDate),
-      this.temperatureSummaryService.get(this.getPreviousDay())
+      this.temperatureSummaryService.get(this.getDay(-1))
     );
   }
 
@@ -265,21 +265,23 @@ export class TemperaturesComponent {
     this.updateFlag = true;
   }
 
-  previousDay() {
-    this.displayDate = this.getPreviousDay();
-    this.getData().subscribe(a => this.applyData(a));
-  }
-
-  getPreviousDay(): Date {
+  getDay(addDays: number): Date {
     var dte = new Date(this.displayDate.toUTCString());
-    dte.setDate(dte.getDate()-1);
+    dte.setDate(dte.getDate()+addDays);
     return dte;
   }
 
+  previousDay() {
+    this.displayDate = this.getDay(-1);
+    this.refresh();
+  }
+
   nextDay() {
-    var dte = new Date(this.displayDate.toUTCString());
-    dte.setDate(dte.getDate()+1);
-    this.displayDate = dte;
+    this.displayDate = this.getDay(+1);
+    this.refresh();
+  }
+
+  refresh() {
     this.getData().subscribe(a => this.applyData(a));
   }
 }
