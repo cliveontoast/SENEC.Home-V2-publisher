@@ -35,6 +35,7 @@ namespace ReadRepository.Cosmos
             builder.RegisterType<EnergySummaryDocumentReadRepository>().AsImplementedInterfaces();
             builder.RegisterType<BatteryInverterTemperatureSummaryDocumentReadRepository>().AsImplementedInterfaces();
             builder.RegisterType<EquipmentStatesSummaryDocumentReadRepository>().AsImplementedInterfaces();
+            builder.RegisterType<PublisherDocumentReadRepository>().AsImplementedInterfaces();
         }
     }
 }

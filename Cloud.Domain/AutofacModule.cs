@@ -51,8 +51,6 @@ namespace Cloud.Domain
             builder.RegisterAssemblyTypes(assembly)
                 .Where(t => mediatrInterfaces.All(m => !t.IsClosedTypeOf(m)))
                 .AsImplementedInterfaces();
-
-            builder.RegisterType<DailyVoltageSummaryCommand>().AsSelf();
         }
     }
 }

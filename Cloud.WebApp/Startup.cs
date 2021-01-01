@@ -25,6 +25,7 @@ namespace Cloud.WebApp
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+            services.AddLazyCache();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

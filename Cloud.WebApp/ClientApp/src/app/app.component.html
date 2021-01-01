@@ -3,4 +3,12 @@
   <div class="container">
     <router-outlet></router-outlet>
   </div>
+  <div class="container" *ngIf="( publishers$ | async ) as publishersDto">
+    Publishers: {{publishersDto.publishers.length}}
+    <div *ngFor="let publisher of publishersDto.publishers">
+      <span>{{publisher.name}}</span>
+      <span>&nbsp;</span>
+      <span>{{publisher.lastActive | date:'medium' }}</span>
+    </div>
+  </div>
 </body>
