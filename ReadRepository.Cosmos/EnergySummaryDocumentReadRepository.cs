@@ -98,8 +98,8 @@ namespace ReadRepository.Cosmos
                 key: a.Id,
                 version: a.Version,
                 batteryPercentageFull: a.BatteryPercentageFull,
-                gridExportWatts: a.GridExportWatts,
-                gridExportWattEnergy: a.GridExportWattEnergy,
+                gridExportWatts: a.PowerMovementSummary?.SolarToGridWatts ?? a.GridExportWatts,
+                gridExportWattEnergy: a.PowerMovementSummary?.SolarToGridWattEnergy ?? a.GridExportWattEnergy,
                 gridImportWatts: a.GridImportWatts,
                 gridImportWattEnergy: a.GridImportWattEnergy,
                 consumptionWatts: a.ConsumptionWatts,
@@ -110,8 +110,11 @@ namespace ReadRepository.Cosmos
                 batteryChargeWattEnergy: a.BatteryChargeWattEnergy,
                 batteryDischargeWatts: a.BatteryDischargeWatts,
                 batteryDischargeWattEnergy: a.BatteryDischargeWattEnergy,
+                solarConsumption: a.PowerMovementSummary?.SolarToHomeWattEnergy,
+                solarToCommunity: a.PowerMovementSummary?.SolarToGridWattEnergy,
+                toHome: a.PowerMovementSummary?.ToHome,
                 secondsBatteryCharging: a.SecondsBatteryCharging,
-                secondsBatteryDischarging: a.SecondsBatteryDischarging ,
+                secondsBatteryDischarging: a.SecondsBatteryDischarging,
                 secondsWithoutData: a.SecondsWithoutData)
                 ).ToImmutableList();
             return response;

@@ -65,7 +65,7 @@ namespace Test.Step
         [Given(@"the energy summary has not been persisted")]
         public void GivenTheEnergySummaryHasNotBeenPersisted()
         {
-            var obj = new EnergySummaryReadModel(default, default, "", default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default);
+            var obj = new EnergySummaryReadModel(default, default, "", default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default);
             var mockReadRepo = scope.Resolve<Mock<IEnergySummaryDocumentReadRepository>>();
             Func<Task<EnergySummaryReadModel?>> FakeGetReadModel = () =>
             {

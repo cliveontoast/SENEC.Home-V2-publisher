@@ -31,6 +31,9 @@ namespace ReadRepository.ReadModel
         public int SecondsBatteryDischarging { get; set; }
         #endregion
 
+        public decimal? SolarConsumption { get; }
+        public decimal? SolarToCommunity { get; set; }
+        public decimal? ToHome { get; }
         public int SecondsWithoutData { get; set; }
 
         public EnergySummaryReadModel(DateTimeOffset intervalEndExcluded, DateTimeOffset intervalStartIncluded, string key, int version,
@@ -41,6 +44,7 @@ namespace ReadRepository.ReadModel
             Statistic solarPowerGenerationWatts, decimal solarPowerGenerationWattEnergy,
             Statistic batteryChargeWatts, decimal batteryChargeWattEnergy,
             Statistic batteryDischargeWatts, decimal batteryDischargeWattEnergy,
+            decimal? solarConsumption, decimal? solarToCommunity, decimal? toHome,
             int secondsBatteryCharging, int secondsBatteryDischarging,
             int secondsWithoutData)
         {
@@ -64,6 +68,9 @@ namespace ReadRepository.ReadModel
             BatteryChargeWattHours = AsWattHours(batteryChargeWattEnergy);
             BatteryDischargeWatts = batteryDischargeWatts;
             BatteryDischargeWattHours = AsWattHours(batteryDischargeWattEnergy);
+            SolarConsumption = solarConsumption == null ? default : AsWattHours(solarConsumption.Value);
+            SolarToCommunity = solarToCommunity == null ? default : AsWattHours(solarToCommunity.Value);
+            ToHome = toHome == null ? default : AsWattHours(toHome.Value);
             SecondsBatteryCharging = secondsBatteryCharging;
             SecondsBatteryDischarging = secondsBatteryDischarging;
             SecondsWithoutData = secondsWithoutData;

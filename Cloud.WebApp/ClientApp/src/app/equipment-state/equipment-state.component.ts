@@ -72,9 +72,21 @@ export class EquipmentStateComponent implements OnInit {
     this.initialDateService.today.pipe(
       take(1),
       tap(s => this.displayDate = s),
-      switchMap(s => this.getData()),
-      tap(value => this.applyData(value))
+      switchMap(s => this.refresh$)
     ).subscribe();
+    this.initialDateService.refresh$.pipe(
+      switchMap(() => this.refresh$)
+    ).subscribe();
+  }
+
+  get refresh$(): Observable<any> {
+    return this.getData().pipe(
+      tap(a => this.applyData(a))
+    );
+  }
+
+  refresh() {
+    this.refresh$.subscribe();
   }
 
   private getData(): Observable<DailyEquipmentStatesSummaryDto> {
@@ -101,9 +113,5 @@ export class EquipmentStateComponent implements OnInit {
   nextDay() {
     this.displayDate = this.getDay(+1);
     this.refresh();
-  }
-
-  refresh() {
-    this.getData().subscribe(a => this.applyData(a));
   }
 }

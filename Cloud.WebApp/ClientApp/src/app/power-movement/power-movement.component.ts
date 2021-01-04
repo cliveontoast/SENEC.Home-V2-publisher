@@ -17,7 +17,7 @@ export class PowerMovementComponent implements OnInit {
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
 
   solarChartOptions: Highcharts.Options = {
-    title: { text: 'Energy use by source' },
+    title: { text: 'Solar production' },
     chart: {
       // type: 'area',
       zoomType: 'x'
@@ -91,13 +91,6 @@ export class PowerMovementComponent implements OnInit {
         lineWidth: 1,
         name: 'Sun to battery'
       },
-      // {
-      //   type: 'area',
-      //   color: 'lightblue',
-      //   lineColor: '#60DAFF',
-      //   lineWidth: 1,
-      //   name: 'Battery to home'
-      // },
       {
         type: 'area',
         color: '#5DDD40',
@@ -105,18 +98,6 @@ export class PowerMovementComponent implements OnInit {
         lineWidth: 1,
         name: 'Sun to home'
       },
-      // {
-      //   type: 'area',
-      //   color: 'gray',
-      //   lineColor: 'black',
-      //   lineWidth: 1,
-      //   name: 'From grid (fossil fuels)'
-      // },
-      // {
-      //   type: 'spline',
-      //   color: 'red',
-      //   name: 'Consumption'
-      // },
     ],
     tooltip: {
       split: true,
@@ -157,7 +138,7 @@ export class PowerMovementComponent implements OnInit {
 
 
   batteryChartOptions: Highcharts.Options = {
-    title: { text: 'Energy use by source' },
+    title: { text: 'Battery charge and discharge' },
     chart: {
       // type: 'area',
       zoomType: 'x'
@@ -219,22 +200,22 @@ export class PowerMovementComponent implements OnInit {
     series: [
       {
         type: 'area',
-        color: '#C2E0A1',
-        lineColor: '#47A530',
+        color: '#FFD145',
+        lineColor: '#C4A136',
         lineWidth: 1,
         name: 'Sun to battery'
       },
       {
         type: 'area',
-        color: '#FFD145',
-        lineColor: '#C4A136',
+        color: 'brown',
+        lineColor: 'black',
         lineWidth: 1,
         name: 'Grid to battery'
       },
       {
         type: 'area',
-        color: 'gray',
-        lineColor: 'black',
+        color: 'lightblue',
+        lineColor: '#006AFF',
         lineWidth: 1,
         name: 'Battery to home'
       },
@@ -290,7 +271,7 @@ export class PowerMovementComponent implements OnInit {
   
 
   homeChartOptions: Highcharts.Options = {
-    title: { text: 'Energy use by source' },
+    title: { text: 'Home consumption' },
     chart: {
       // type: 'area',
       zoomType: 'x'
@@ -352,15 +333,15 @@ export class PowerMovementComponent implements OnInit {
     series: [
       {
         type: 'area',
-        color: '#C2E0A1',
-        lineColor: '#47A530',
+        color: '#5DDD40',
+        lineColor: '#47B72C',
         lineWidth: 1,
         name: 'Solar to home'
       },
       {
         type: 'area',
-        color: '#FFD145',
-        lineColor: '#C4A136',
+        color: 'lightblue',
+        lineColor: '#006AFF',
         lineWidth: 1,
         name: 'Battery to home'
       },
@@ -432,9 +413,21 @@ export class PowerMovementComponent implements OnInit {
     this.initialDateService.today.pipe(
       take(1),
       tap(s => this.displayDate = s),
-      switchMap(s => this.getData()),
-      tap(value => this.applyData(value))
+      switchMap(s => this.refresh$)
     ).subscribe();
+    this.initialDateService.refresh$.pipe(
+      switchMap(() => this.refresh$)
+    ).subscribe();
+  }
+
+  get refresh$(): Observable<any> {
+    return this.getData().pipe(
+      tap(a => this.applyData(a))
+    );
+  }
+
+  refresh() {
+    this.refresh$.subscribe();
   }
 
   private getData(): Observable<PowerMovementDto> {
@@ -474,9 +467,5 @@ export class PowerMovementComponent implements OnInit {
   nextDay() {
     this.displayDate = this.getDay(+1);
     this.refresh();
-  }
-
-  refresh() {
-    this.getData().subscribe(a => this.applyData(a));
   }
 }

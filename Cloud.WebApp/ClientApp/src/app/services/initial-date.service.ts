@@ -2,7 +2,6 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, timer } from 'rxjs';
 import { filter, tap, switchMap } from 'rxjs/operators';
-import { dateFormat } from 'highcharts';
 
 @Injectable()
 export class InitialDateService {
@@ -11,6 +10,10 @@ export class InitialDateService {
 
   public get today(): Observable<Date> {
     return this.date;
+  }
+
+  public get refresh$(): Observable<any> {
+    return timer(1000 * 60 * 5, 1000 * 60 * 5);
   }
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {

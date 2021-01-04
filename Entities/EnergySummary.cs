@@ -31,7 +31,7 @@ namespace Entities
         public Statistic SolarInverterPowerGenerationWatts { get; set; }
         public decimal SolarInverterPowerGenerationWattEnergy { get; set; }
         public PowerMovementSummary? PowerMovementSummary { get; set; } // version 3+
-
+        public decimal ConsumptionToHome => PowerMovementSummary == null ? ConsumptionWattEnergy : PowerMovementSummary.ToHome;
         #endregion
 
 
@@ -120,5 +120,6 @@ namespace Entities
         public decimal GridToHomeWattEnergy { get; set; }
         public Statistic GridToBatteryWatts { get; set; }
         public decimal GridToBatteryWattEnergy { get; set; }
+        public decimal ToHome => BatteryToHomeWattEnergy + GridToHomeWattEnergy + SolarToHomeWattEnergy;
     }
 }
