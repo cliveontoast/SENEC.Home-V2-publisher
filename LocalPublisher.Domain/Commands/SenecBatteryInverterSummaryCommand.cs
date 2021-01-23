@@ -44,9 +44,10 @@ namespace Domain
             return await _summaryFunctions.Handle(cancellationToken);
         }
 
-        private InverterTemperatureSummary BuildTemperatureSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
+        private InverterTemperatureSummary BuildTemperatureSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts, CancellationToken cancellationToken)
         {
             var moments = _summaryFunctions.FillSummary<MomentBatteryInverterTemperatures, SenecEntities.BatteryObject1>(
+                cancellationToken,
                 collection,
                 intervalStart,
                 intervalEnd,

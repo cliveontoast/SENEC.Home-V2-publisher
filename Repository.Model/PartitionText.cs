@@ -8,6 +8,7 @@ namespace Repository.Model
     {
         ITS_,
         PU_,
-        EQ_
+        EQ_,
+        MV_
     }
 }

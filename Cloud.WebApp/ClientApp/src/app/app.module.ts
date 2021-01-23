@@ -20,6 +20,7 @@ import { TemperaturesComponent } from './temperature/temperature.component';
 import { TemperatureSummaryService } from './services/temperatureSummary.service';
 import { EquipmentStateComponent } from './equipment-state/equipment-state.component';
 import { EquipmentStateService } from './services/equipment-state.service';
+import { HighPrecisionVoltagesComponent } from './high-precision-voltages/high-precision-voltages.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { EquipmentStateService } from './services/equipment-state.service';
     PowerMovementComponent,
     TemperaturesComponent,
     EquipmentStateComponent,
-    VoltagesComponent
+    VoltagesComponent,
+    HighPrecisionVoltagesComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -42,6 +44,7 @@ import { EquipmentStateService } from './services/equipment-state.service';
       { path: 'power', component: PowerMovementComponent },
       { path: 'battery', component: EnergyComponent },
       { path: 'voltages', component: VoltagesComponent },
+      { path: 'hpvoltages', component: HighPrecisionVoltagesComponent },
       { path: 'temperature', component: TemperaturesComponent },
       { path: 'equipment', component: EquipmentStateComponent },
       { path: '**', component: HomeConsumptionComponent }

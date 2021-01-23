@@ -19,16 +19,17 @@ namespace LocalPublisher.Domain.Functions
     public interface ISummaryFunctions
     {
         void Initialise(ILogger _logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
-            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, CancellationToken, IIntervalEntity> buildSummary,
             string summaryType);
         void Initialise(ILogger _logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
-            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>> buildSummary,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, CancellationToken, IEnumerable<IIntervalEntity>> buildSummary,
             string summaryType);
         DateTimeOffset GetLastTime(ConcurrentDictionary<long, string> collection);
         (DateTimeOffset Start, DateTimeOffset End) GetMinimumInterval(ConcurrentDictionary<long, string> collection);
         Task<Unit> Handle(CancellationToken cancellationToken);
 
         List<TSummaryEntity> FillSummary<TSummaryEntity, TSerialisedInput>(
+            CancellationToken cancellationToken,
             ConcurrentDictionary<long, string> collection,
             DateTimeOffset intervalStart,
             DateTimeOffset intervalEnd,
@@ -49,7 +50,7 @@ namespace LocalPublisher.Domain.Functions
         private readonly IZoneProvider _zoneProvider;
         private ILogger _logger = null!;
         private IMinutesPerSummaryConfig _minutesPerSummaryConfig = null!;
-        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>> _buildSummary = null!;
+        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, CancellationToken, IEnumerable<IIntervalEntity>> _buildSummary = null!;
         private string _cacheKey = null!;
         private string _summaryType = null!;
 
@@ -83,7 +84,7 @@ namespace LocalPublisher.Domain.Functions
         }
 
         public void Initialise(ILogger logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
-            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>> buildSummaries,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, CancellationToken, IEnumerable<IIntervalEntity>> buildSummaries,
             string summaryType)
         {
             _logger = logger;
@@ -95,24 +96,24 @@ namespace LocalPublisher.Domain.Functions
         }
 
         public void Initialise(ILogger logger, IMinutesPerSummaryConfig minutesPerSummaryConfig, string cacheKey,
-            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary,
+            Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, CancellationToken, IIntervalEntity> buildSummary,
             string summaryType)
         {
             Initialise(logger, minutesPerSummaryConfig, cacheKey, ToSummariesList(buildSummary), summaryType);
         }
 
-        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>>
-            ToSummariesList(Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IIntervalEntity> buildSummary)
+        private Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, CancellationToken, IEnumerable<IIntervalEntity>>
+            ToSummariesList(Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, CancellationToken, IIntervalEntity> buildSummary)
         {
-            return new Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, IEnumerable<IIntervalEntity>>((a, b, c, d) 
-                => new IIntervalEntity[1] { buildSummary(a, b, c, d) });
+            return new Func<ConcurrentDictionary<long, string>, DateTimeOffset, DateTimeOffset, List<string>, CancellationToken, IEnumerable<IIntervalEntity>>((a, b, c, d, e) 
+                => new IIntervalEntity[1] { buildSummary(a, b, c, d, e) });
         }
 
         public async Task<Unit> Handle(CancellationToken cancellationToken)
         {
             try
             {
-                List<IIntervalEntity> tasks = GetSummaries();
+                List<IIntervalEntity> tasks = GetSummaries(cancellationToken);
                 if (tasks.Any())
                 {
                     await PersistPublisherStatus(tasks.First().IntervalEndExcluded);
@@ -135,7 +136,7 @@ namespace LocalPublisher.Domain.Functions
             await _mediator.Publish(new Publisher(Environment.MachineName, intervalEndExcluded.ToEquipmentLocalTime(_zoneProvider)));
         }
 
-        private List<IIntervalEntity> GetSummaries()
+        private List<IIntervalEntity> GetSummaries(CancellationToken cancellationToken)
         {
             _logger.Verbose("Getting summaries");
             lock (_lock)
@@ -154,7 +155,7 @@ namespace LocalPublisher.Domain.Functions
                     if (isBufferBeyondLastItem) break;
 
                     _logger.Verbose("Creating {StartTime}", interval.Start);
-                    var result = CreateSummary(collection, interval.Start, interval.End);
+                    var result = CreateSummary(collection, interval.Start, interval.End, cancellationToken);
                     _logger.Verbose("Created {StartTime}", interval.Start);
                     foreach (var item in result)
                     {
@@ -167,12 +168,12 @@ namespace LocalPublisher.Domain.Functions
             }
         }
 
-        private IEnumerable<IIntervalEntity?> CreateSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
+        private IEnumerable<IIntervalEntity?> CreateSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, CancellationToken cancellationToken)
         {
             var removedTexts = new List<string>();
             try
             {
-                return _buildSummary(collection, intervalStart, intervalEnd, removedTexts);
+                return _buildSummary(collection, intervalStart, intervalEnd, removedTexts, cancellationToken);
             }
             catch (Exception e)
             {
@@ -182,6 +183,7 @@ namespace LocalPublisher.Domain.Functions
         }
 
         public List<TSummaryEntity> FillSummary<TSummaryEntity, TSerialisedInput>(
+            CancellationToken cancellationToken,
             ConcurrentDictionary<long, string> collection,
             DateTimeOffset intervalStart,
             DateTimeOffset intervalEnd,
@@ -209,6 +211,7 @@ namespace LocalPublisher.Domain.Functions
                     postConvertAction?.Invoke(entity, instant);
                 }
             }
+            _mediator.Publish(new IntervalOfMoments<TSummaryEntity>(intervalStart, intervalEnd, list), cancellationToken);
             return list;
         }
     }

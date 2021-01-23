@@ -27,15 +27,15 @@ namespace Entities
             10 => "FULL CHARGE",
             11 => "EQUALIZATION => CHARGE",
             12 => "DESULFATATION => CHARGE",
-            13 => "BATTERY FULL",
+            13 => "BATTERY FULL", // Normal operating status/grid operation. The SENEC storage unit can discharge as needed.
             14 => "CHARGE",
-            15 => "BATTERY EMPTY",
+            15 => "BATTERY EMPTY", // Control/grid operation. The SENEC storage unit will charge when an excess of PV generation is available.
             16 => "DISCHARGE",
             17 => "PV + DISCHARGE",
             18 => "GRID + DISCHARGE",
             19 => "PASSIVE",
-            20 => "OFF",
-            21 => "OWN CONSUMPTION",
+            20 => "OFF", // The SENEC storage unit was switched off via the display. 
+            21 => "OWN CONSUMPTION", // The PV generation covers the current house consumption. The SENEC storage unit is neither charged nor discharged.
             22 => "RESTART",
             23 => "MAN. EQUALIZATION => CHARGE",
             24 => "MAN. DESULFATATION => CHARGE",
@@ -69,11 +69,11 @@ namespace Entities
             52 => "MAN => EQUALIZATION => READY",
             53 => "AUTO. DESULFATATION => WAIT",
             54 => "ABSORPTION PHASE",
-            55 => "DC-SWITCH OFF",
+            55 => "DC-SWITCH OFF", // DC isolating switch has been switched off.
             56 => "PEAK-SHAVING => WAIT",
             57 => "ERROR BATTERY INVERTER",
             58 => "NPU-ERROR",
-            59 => "BMS OFFLINE",
+            59 => "BMS OFFLINE", // perhaps - The lithium modules were disconnected for safety's sake.
             60 => "MAINTENANCE CHARGE ERROR",
             61 => "MAN. SAFETY CHARGE ERROR",
             62 => "SAFETY CHARGE ERROR",

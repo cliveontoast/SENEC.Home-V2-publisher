@@ -58,10 +58,14 @@ namespace Domain
             return newCache;
         }
 
-        private IEnumerable<IIntervalEntity> BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
+        private IEnumerable<IIntervalEntity> BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts, CancellationToken cancellationToken)
         {
             Dictionary<long, decimal> solarValues = null!;
-            var list = _summaryFunctions.FillSummary<MomentEnergy, SenecEntities.Energy>(collection, intervalStart, intervalEnd,
+            var list = _summaryFunctions.FillSummary<MomentEnergy, SenecEntities.Energy>(
+                cancellationToken,
+                collection,
+                intervalStart,
+                intervalEnd,
                 converter: (moment, energy) => _gridMeterAdapter.Convert(moment, energy).GetMomentEnergy(),
                 removedTexts,
                 lowerUpperBoundExtras: (lowerBound, upperBound) => solarValues = GetSolarValues(lowerBound, upperBound),

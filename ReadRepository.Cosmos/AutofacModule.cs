@@ -32,6 +32,7 @@ namespace ReadRepository.Cosmos
                 return new ReadContainer(container) as IReadContext;
             }).InstancePerLifetimeScope();
             builder.RegisterType<VoltageSummaryDocumentReadRepository>().AsImplementedInterfaces();
+            builder.RegisterType<VoltageMomentReadRepository>().AsImplementedInterfaces();
             builder.RegisterType<EnergySummaryDocumentReadRepository>().AsImplementedInterfaces();
             builder.RegisterType<BatteryInverterTemperatureSummaryDocumentReadRepository>().AsImplementedInterfaces();
             builder.RegisterType<EquipmentStatesSummaryDocumentReadRepository>().AsImplementedInterfaces();

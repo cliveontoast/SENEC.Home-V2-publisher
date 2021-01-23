@@ -1,41 +1,41 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Client.WebApp.Dto;
 using Domain.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Client.WebApp.Dto;
 using Serilog;
-using Shared;
 
-namespace NuanceWebApp.Controllers
+namespace Client.WebApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PublisherController : ControllerBase
+    public class VoltageMomentController : ControllerBase
     {
         private readonly ILogger _logger;
-        //private readonly ITimeProvider _timeProvider;
-        //private readonly IZoneProvider _zoneProvider;
         private readonly IMediator _mediator;
 
-        public PublisherController(
+        public VoltageMomentController(
             ILogger logger,
             IMediator mediator)
         {
             _logger = logger;
             _mediator = mediator;
         }
-
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(string date)
         {
             try
             {
-                _logger.Debug("Received {Controller} {Name}",
-                    nameof(PublisherController),
-                    nameof(Get));
-                var result = await _mediator.Send(new PublishersCommand());
-                var response = new PublishersDto(result);
+                _logger.Debug("Received {Controller} {Name} {Date}",
+                    nameof(VoltageMomentController),
+                    nameof(Get),
+                    date);
+                var result = await _mediator.Send(new DailyVoltageMomentCommand
+                {
+                    Date = DateTime.Parse(date)
+                });
+                var response = new DailyVoltageMomentDto(result);
                 return Ok(response);
             }
             catch (Exception e)

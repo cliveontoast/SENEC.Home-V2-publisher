@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Repository
 {
@@ -29,6 +26,10 @@ namespace Repository
         {
             return voltageSummary.Name;
         }
+        public static string GetKey<TMoment>(this Entities.IntervalOfMoments<TMoment> voltageSummary) where TMoment : Entities.IIsValid
+        {
+            return GetIntervalKey(voltageSummary.IntervalStartIncluded);
+        }
         public static string GetIntervalKey(this DateTimeOffset intervalStart)
         {
             return JsonConvert.SerializeObject(intervalStart).Replace(@"""", "");
@@ -43,6 +44,10 @@ namespace Repository
             return GetIntervalKeyVersion2(voltageSummary.IntervalStartIncluded);
         }
         public static string GetKeyVersion2(this Entities.EquipmentStatesSummary voltageSummary)
+        {
+            return GetIntervalKeyVersion2(voltageSummary.IntervalStartIncluded);
+        }
+        public static string GetKeyVersion2<TMoment>(this Entities.IntervalOfMoments<TMoment> voltageSummary) where TMoment : Entities.IIsValid
         {
             return GetIntervalKeyVersion2(voltageSummary.IntervalStartIncluded);
         }

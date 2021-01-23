@@ -122,6 +122,7 @@ namespace LocalPublisher.Domain.Functions
         {
             var result = await _documentReadRepository.Get(_getKey(notification), cancellationToken);
             result = result ?? await _documentReadRepository.Get(_getKey2(notification), cancellationToken);
+            // TODO implement extra check, to see if we want to also check the key has the same result as the true-key
             return result != null;
         }
 

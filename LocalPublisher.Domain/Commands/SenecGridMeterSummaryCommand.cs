@@ -44,9 +44,10 @@ namespace Domain
             return await _summaryFunctions.Handle(cancellationToken);
         }
 
-        private VoltageSummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts)
+        private VoltageSummary BuildVoltageSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts, CancellationToken cancellationToken)
         {
             var list = _summaryFunctions.FillSummary<MomentVoltage, SenecEntities.Meter>(
+                cancellationToken,
                 collection,
                 intervalStart,
                 intervalEnd,

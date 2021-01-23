@@ -303,6 +303,21 @@ namespace SenecSourceWebAppTest
             var readRepo = scope.Resolve<IEnergySummaryDocumentReadRepository>();
             var item = readRepo.FetchPowerMovements(new DateTime(2020, 9, 23)).RunWait();
         }
+
+        [TestMethod]
+        public void StorePublisher()
+        {
+            InitScope(a =>
+                a.Item1.RegisterModule(new ReadRepository.Cosmos.AutofacModule(a.Item2.Object))
+            );
+            var repo = scope.Resolve<IVoltageMomentRepository>();
+            var today = DateTimeOffset.Now;
+            today = today.Add(-today.TimeOfDay);
+            var item = repo.AddAsync(new Entities.IntervalOfMoments<Entities.MomentVoltage>(today, today, new Entities.MomentVoltage[0]), CancellationToken.None).RunWait();
+            today = today.AddDays(-7);
+            item = repo.AddAsync(new Entities.IntervalOfMoments<Entities.MomentVoltage>(today, today, new Entities.MomentVoltage[0]), CancellationToken.None).RunWait();
+
+        }
     }
 
 }
