@@ -1,9 +1,6 @@
-﻿using Domain;
-using Entities;
-using LazyCache;
+﻿using LazyCache;
 using Newtonsoft.Json;
 using SenecEntities;
-using SenecEntitiesAdapter;
 using Serilog;
 using Shared;
 using System;
@@ -21,18 +18,15 @@ namespace LocalPublisher.Domain.Functions
         private readonly ILogger _logger;
         private readonly IAppCache _cache;
         private readonly IZoneProvider _zoneProvider;
-        private readonly IAdapter _adapter;
 
         public WriteToCache(
             ILogger logger,
             IZoneProvider zoneProvider,
-            IAppCache cache,
-            IAdapter adapter)
+            IAppCache cache)
         {
             _logger = logger;
             _cache = cache;
             _zoneProvider = zoneProvider;
-            _adapter = adapter;
         }
 
         public void Add(IRealTimeNotification notification, string cacheKey)

@@ -9,6 +9,7 @@ using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TeslaPowerwallSource;
 
 namespace Domain
 {
@@ -24,16 +25,20 @@ namespace Domain
         protected override void Load(ContainerBuilder builder)
         {
             Domain(builder);
-
-            builder.RegisterAssemblyTypes(typeof(IAdapter).Assembly).AsImplementedInterfaces();
             Repository(builder);
 
             SenecSource(builder);
             FroniusSource(builder);
+            TeslaSource(builder);
+
             Shared(builder);
             builder.RegisterInstance(new ZoneProvider(Configuration.GetValue<string>("Timezone")) as IZoneProvider).SingleInstance();
             builder.RegisterInstance(new RepoConfig() as IRepoConfig);
         }
+
+        private bool IsSenecAvailable => !string.IsNullOrWhiteSpace(Configuration.GetValue<string?>("SenecIP"));
+        private bool IsFroniusAvailable => !string.IsNullOrWhiteSpace(Configuration.GetValue<string?>("FroniusIP"));
+        private bool IsTeslaPowerwall2Available => !string.IsNullOrWhiteSpace(Configuration.GetValue<string?>("TeslaPowerwall2IP"));
 
 
         private void Repository(ContainerBuilder builder)
@@ -55,6 +60,8 @@ namespace Domain
 
         private void FroniusSource(ContainerBuilder builder)
         {
+            if (!IsFroniusAvailable) return;
+
             var assembly = typeof(GetPowerFlowRealtimeDataRequest).Assembly;
             builder.RegisterAssemblyTypes(assembly)
                 .Where(a => a != typeof(FroniusSettings))
@@ -70,6 +77,8 @@ namespace Domain
 
         private void SenecSource(ContainerBuilder builder)
         {
+            if (!IsSenecAvailable) return;
+
             var assembly = typeof(ILalaRequest).Assembly;
             builder.RegisterAssemblyTypes(assembly)
                 .Where(a => a != typeof(SenecSettings))
@@ -80,6 +89,27 @@ namespace Domain
                 {
                     IP = Configuration.GetValue<string?>("SenecIP")
                 } as ISenecSettings;
+            }).SingleInstance();
+
+            builder.RegisterAssemblyTypes(typeof(IAdapter).Assembly).AsImplementedInterfaces();
+        }
+
+        private void TeslaSource(ContainerBuilder builder)
+        {
+            if (!IsTeslaPowerwall2Available) return;
+
+            var assembly = typeof(ITeslaPowerwallSettings).Assembly;
+            builder.RegisterAssemblyTypes(assembly)
+                .Where(a => a != typeof(TeslaPowerwallSettings))
+                // temporary
+                .Where(a => a != typeof(ApiRequest))
+                .AsImplementedInterfaces();
+            builder.Register((context) =>
+            {
+                return new TeslaPowerwallSettings
+                {
+                    IP = Configuration.GetValue<string?>("TeslaPowerwallIP")
+                } as ITeslaPowerwallSettings;
             }).SingleInstance();
         }
 
@@ -92,10 +122,41 @@ namespace Domain
                 typeof(IRequestHandler<>),
                 typeof(INotificationHandler<>),
             };
-            var assembly = typeof(SenecPollCommand).Assembly;
+
+            var assembly = this.GetType().Assembly;
             builder.RegisterAssemblyTypes(assembly)
                 .Where(t => mediatrInterfaces.All(m => !t.IsClosedTypeOf(m)))
                 .AsImplementedInterfaces();
+
+            Senec(builder);
+            Fronius(builder);
+            Tesla(builder);
+        }
+
+        private void Tesla(ContainerBuilder builder)
+        {
+            if (!IsTeslaPowerwall2Available) return;
+
+            builder.Register((context) =>
+            {
+                var result = Configuration.GetSection("EnergySummary").Get<SenecCompressConfig>();
+                return result as ITeslaEnergyCompressConfig;
+            });
+            builder.RegisterType<TeslaPowerwall2PollCommand>().AsSelf();
+            builder.RegisterType<TeslaEnergySummaryCommand>().AsSelf();
+        }
+
+        private void Fronius(ContainerBuilder builder)
+        {
+            if (!IsFroniusAvailable) return;
+
+            builder.RegisterType<FroniusPollCommand>().AsSelf();
+            builder.RegisterType<FroniusClearCommand>().AsSelf();
+        }
+
+        private void Senec(ContainerBuilder builder)
+        {
+            if (!IsSenecAvailable) return;
 
             builder.Register((context) =>
             {
@@ -116,9 +177,6 @@ namespace Domain
             builder.RegisterType<SenecGridMeterSummaryCommand>().AsSelf();
             builder.RegisterType<SenecEnergySummaryCommand>().AsSelf();
             builder.RegisterType<SenecBatteryInverterSummaryCommand>().AsSelf();
-
-            builder.RegisterType<FroniusPollCommand>().AsSelf();
-            builder.RegisterType<FroniusClearCommand>().AsSelf();
         }
     }
 }

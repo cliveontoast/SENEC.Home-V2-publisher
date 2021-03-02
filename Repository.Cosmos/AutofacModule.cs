@@ -37,7 +37,7 @@ namespace Repository.Cosmos
             builder.RegisterType<BatteryInverterTemperatureSummaryRepository>().AsImplementedInterfaces();
             builder.RegisterType<EquipmentStatesSummaryRepository>().AsImplementedInterfaces();
             builder.RegisterType<PublisherRepository>().AsImplementedInterfaces();
-            builder.RegisterType<VoltageMomentRepository>().AsImplementedInterfaces();
+            //builder.RegisterType<VoltageMomentRepository>().AsImplementedInterfaces();
         }
     }
 }

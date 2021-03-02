@@ -26,6 +26,7 @@
     <ProjectReference Include="..\SenecEntitesAdapter\SenecEntitesAdapter.csproj" />
     <ProjectReference Include="..\SenecEntities\SenecEntities.csproj" />
     <ProjectReference Include="..\SenecSource\SenecSource.csproj" />
+    <ProjectReference Include="..\TeslaPowerwallSource\TeslaPowerwallSource.csproj" />
   </ItemGroup>
 
 </Project>

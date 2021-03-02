@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using ReadRepository.Cosmos;
 using Repository;
 using Repository.Cosmos;
+using Repository.Cosmos.Repositories;
 using SenecEntitesAdapter;
 using SenecEntities;
 using SenecEntitiesAdapter;

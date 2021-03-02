@@ -28,7 +28,7 @@ namespace Entities
             this.IsValid = true;
         }
 
-        public decimal BatteryPercentageFull { get; }
+        public decimal? BatteryPercentageFull { get; }
         public string SystemState { get; }
         public decimal GridExportWatts { get; }
         public decimal GridImportWatts { get; }

@@ -8,6 +8,7 @@ using Repository;
 using Repository.Cosmos.Repositories;
 using Serilog;
 using Shared;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,17 +30,18 @@ namespace Domain
             IVoltageMomentReadRepository voltageSummaryReadRepository,
             IVoltageMomentRepository voltageSummaryRepository)
         {
-            _persistFunctions = new PersistToRepositoryFunctions<IntervalOfMoments<MomentVoltage>, VoltageMomentReadModel>(
-                voltageSummaryReadRepository,
-                voltageSummaryRepository,
-                versionConfig,
-                logger,
-                config,
-                cache,
-                "persistVoltageMomentList",
-                mediator,
-                GetKeyExtensions.GetKey,
-                GetKeyExtensions.GetKeyVersion2);
+            throw new Exception("Uses too much data");
+            //_persistFunctions = new PersistToRepositoryFunctions<IntervalOfMoments<MomentVoltage>, VoltageMomentReadModel>(
+            //    voltageSummaryReadRepository,
+            //    voltageSummaryRepository,
+            //    versionConfig,
+            //    logger,
+            //    config,
+            //    cache,
+            //    "persistVoltageMomentList",
+            //    mediator,
+            //    GetKeyExtensions.GetKey,
+            //    GetKeyExtensions.GetKeyVersion2);
         }
 
         public async Task Handle(PersistenceInfo<IntervalOfMoments<MomentVoltage>> notification, CancellationToken cancellationToken)

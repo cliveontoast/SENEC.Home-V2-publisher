@@ -51,7 +51,8 @@ namespace Domain
             _logger.Information("Init timed host service");
             await Initialise(cancellationToken);
 
-            foreach (var item in _services)
+            var registeredServices = _services.Where(a => _scope.IsRegistered(a.Command));
+            foreach (var item in registeredServices)
             {
                 _logger.Information("Timed Background Service {Name} is starting.", item.Command.Name);
                 Type command = item.Command;
