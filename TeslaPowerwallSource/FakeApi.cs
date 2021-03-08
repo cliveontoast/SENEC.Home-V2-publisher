@@ -8,110 +8,11 @@ using TeslaEntities;
 
 namespace TeslaPowerwallSource
 {
-    public class FakeApi : IApiRequest
+    internal class FakeApi : IApiRequest
     {
         public async Task<MetersAggregates> GetMetersAggregatesAsync(CancellationToken token)
         {
-            var result = await Task.FromResult(JsonConvert.DeserializeObject<MetersAggregates>(@"{
-   ""site"":{
-      ""last_communication_time"":""2018-04-02T16:11:41.885377469-07:00"",
-      ""instant_power"":-21.449996948242188,
-      ""instant_reactive_power"":-138.8300018310547,
-      ""instant_apparent_power"":140.47729986545957,
-      ""frequency"":60.060001373291016,
-      ""energy_exported"":1136916.6875890202,
-      ""energy_imported"":3276432.6625890196,
-      ""instant_average_voltage"":239.81999969482422,
-      ""instant_total_current"":0,
-      ""i_a_current"":0,
-      ""i_b_current"":0,
-      ""i_c_current"":0
-   },
-   ""battery"":{
-      ""last_communication_time"":""2018-04-02T16:11:41.89022247-07:00"",
-      ""instant_power"":-2350,
-      ""instant_reactive_power"":0,
-      ""instant_apparent_power"":2350,
-      ""frequency"":60.033,
-      ""energy_exported"":1169030,
-      ""energy_imported"":1638140,
-      ""instant_average_voltage"":239.10000000000002,
-      ""instant_total_current"":45.8,
-      ""i_a_current"":0,
-      ""i_b_current"":0,
-      ""i_c_current"":0
-   },
-   ""load"":{
-      ""last_communication_time"":""2018-04-02T16:11:41.885377469-07:00"",
-      ""instant_power"":1546.2712597712405,
-      ""instant_reactive_power"":-71.43153973801415,
-      ""instant_apparent_power"":1547.920305979569,
-      ""frequency"":60.060001373291016,
-      ""energy_exported"":0,
-      ""energy_imported"":7191016.994444443,
-      ""instant_average_voltage"":239.81999969482422,
-      ""instant_total_current"":6.44763264839839,
-      ""i_a_current"":0,
-      ""i_b_current"":0,
-      ""i_c_current"":0
-   },
-   ""solar"":{
-      ""last_communication_time"":""2018-04-02T16:11:41.885541803-07:00"",
-      ""instant_power"":3906.1700439453125,
-      ""instant_reactive_power"":53.26999855041504,
-      ""instant_apparent_power"":3906.533259164868,
-      ""frequency"":60.060001373291016,
-      ""energy_exported"":5534272.949724403,
-      ""energy_imported"":13661.930279959455,
-      ""instant_average_voltage"":239.8699951171875,
-      ""instant_total_current"":0,
-      ""i_a_current"":0,
-      ""i_b_current"":0,
-      ""i_c_current"":0
-   },
-   ""busway"":{
-      ""last_communication_time"":""0001-01-01T00:00:00Z"",
-      ""instant_power"":0,
-      ""instant_reactive_power"":0,
-      ""instant_apparent_power"":0,
-      ""frequency"":0,
-      ""energy_exported"":0,
-      ""energy_imported"":0,
-      ""instant_average_voltage"":0,
-      ""instant_total_current"":0,
-      ""i_a_current"":0,
-      ""i_b_current"":0,
-      ""i_c_current"":0
-   },
-   ""frequency"":{
-      ""last_communication_time"":""0001-01-01T00:00:00Z"",
-      ""instant_power"":0,
-      ""instant_reactive_power"":0,
-      ""instant_apparent_power"":0,
-      ""frequency"":0,
-      ""energy_exported"":0,
-      ""energy_imported"":0,
-      ""instant_average_voltage"":0,
-      ""instant_total_current"":0,
-      ""i_a_current"":0,
-      ""i_b_current"":0,
-      ""i_c_current"":0
-   },
-   ""generator"":{
-      ""last_communication_time"":""0001-01-01T00:00:00Z"",
-      ""instant_power"":0,
-      ""instant_reactive_power"":0,
-      ""instant_apparent_power"":0,
-      ""frequency"":0,
-      ""energy_exported"":0,
-      ""energy_imported"":0,
-      ""instant_average_voltage"":0,
-      ""instant_total_current"":0,
-      ""i_a_current"":0,
-      ""i_b_current"":0,
-      ""i_c_current"":0
-   }
-}"));
+            var result = await Task.FromResult(JsonConvert.DeserializeObject<MetersAggregates>(@"{""site"":{""last_communication_time"":""2021-03-08T13:41:14.690589661+08:00"",""instant_power"":-1826,""instant_reactive_power"":-734,""instant_apparent_power"":1968.0020325192756,""frequency"":0,""energy_exported"":27775.719544001044,""energy_imported"":1602.4129477757488,""instant_average_voltage"":428.8211389379026,""instant_total_current"":8.167,""i_a_current"":0,""i_b_current"":0,""i_c_current"":0,""last_phase_voltage_communication_time"":""0001-01-01T00:00:00Z"",""last_phase_power_communication_time"":""0001-01-01T00:00:00Z"",""timeout"":1500000000},""battery"":{""last_communication_time"":""2021-03-08T13:41:14.690466542+08:00"",""instant_power"":0,""instant_reactive_power"":360,""instant_apparent_power"":360,""frequency"":49.998,""energy_exported"":41490,""energy_imported"":60110,""instant_average_voltage"":248,""instant_total_current"":-0.7000000000000001,""i_a_current"":0,""i_b_current"":0,""i_c_current"":0,""last_phase_voltage_communication_time"":""0001-01-01T00:00:00Z"",""last_phase_power_communication_time"":""0001-01-01T00:00:00Z"",""timeout"":1500000000},""load"":{""last_communication_time"":""2021-03-08T13:41:14.690308175+08:00"",""instant_power"":99.75,""instant_reactive_power"":-366,""instant_apparent_power"":379.3495255038551,""frequency"":0,""energy_exported"":0,""energy_imported"":69784.23164509439,""instant_average_voltage"":428.8211389379026,""instant_total_current"":0.23261446543204287,""i_a_current"":0,""i_b_current"":0,""i_c_current"":0,""last_phase_voltage_communication_time"":""0001-01-01T00:00:00Z"",""last_phase_power_communication_time"":""0001-01-01T00:00:00Z"",""timeout"":1500000000},""solar"":{""last_communication_time"":""2021-03-08T13:41:14.690308175+08:00"",""instant_power"":1934,""instant_reactive_power"":7,""instant_apparent_power"":1934.0126680040128,""frequency"":0,""energy_exported"":114798.02275267852,""energy_imported"":220.48451135883533,""instant_average_voltage"":427.6260238806801,""instant_total_current"":7.9505,""i_a_current"":0,""i_b_current"":0,""i_c_current"":0,""last_phase_voltage_communication_time"":""0001-01-01T00:00:00Z"",""last_phase_power_communication_time"":""0001-01-01T00:00:00Z"",""timeout"":1500000000}}"));
             result.ReceivedMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             result.SentMilliseconds = result.ReceivedMilliseconds;
             return result;

@@ -7,5 +7,7 @@ namespace TeslaPowerwallSource
     public interface ITeslaPowerwallSettings
     {
         string? IP { get; set; }
+        string Password { get; set; }
+        string Email { get; set; }
     }
 }

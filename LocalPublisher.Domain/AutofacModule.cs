@@ -102,13 +102,13 @@ namespace Domain
             builder.RegisterAssemblyTypes(assembly)
                 .Where(a => a != typeof(TeslaPowerwallSettings))
                 // temporary
-                .Where(a => a != typeof(ApiRequest))
+                //.Where(a => a != typeof(ApiRequest))
                 .AsImplementedInterfaces();
             builder.Register((context) =>
             {
                 return new TeslaPowerwallSettings
                 {
-                    IP = Configuration.GetValue<string?>("TeslaPowerwallIP")
+                    IP = Configuration.GetValue<string?>("TeslaPowerwall2IP")
                 } as ITeslaPowerwallSettings;
             }).SingleInstance();
         }

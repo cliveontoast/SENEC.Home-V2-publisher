@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LazyCache;
+using Newtonsoft.Json;
 using Serilog;
 using Shared;
 using System;
@@ -17,15 +18,19 @@ namespace TeslaPowerwallSource
         private readonly ITimeProvider _time;
         private readonly ILogger _logger;
         private readonly ITeslaPowerwallSettings _settings;
+        private readonly IAppCache _appCache;
 
         public ApiRequest(
             ITimeProvider time,
             ILogger logger,
+            IAppCache appCache,
             ITeslaPowerwallSettings settings)
         {
             _time = time;
             _logger = logger;
             _settings = settings;
+            _appCache = appCache;
+            System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
         }
 
         public async Task<MetersAggregates> GetMetersAggregatesAsync(CancellationToken token)
@@ -51,6 +56,8 @@ namespace TeslaPowerwallSource
                 return "/api/meters/aggregates";
             else if (type.Equals(typeof(StateOfEnergy)))
                 return "/api/system_status/soe";
+            else if (type.Equals(typeof(BasicAuthResponse)))
+                return "/api/login/Basic";
             throw new NotImplementedException(type.FullName);
         }
 
@@ -112,13 +119,55 @@ namespace TeslaPowerwallSource
         private async Task<ResponseTime> GetResponse(HttpClient client, string endPoint, CancellationToken token)
         {
             client.DefaultRequestHeaders.Clear();
-            //client.DefaultRequestHeaders.Add("Accept", "application/json, text/javascript, */*; q=0.01");
-            //client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
-            //client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9,de;q=0.8");
-            //client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
+            client.DefaultRequestHeaders.Add("Accept", "*/*");
+            client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+            client.DefaultRequestHeaders.Add("Accept-Language", "en-GB,en;q=0.5");
+            client.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
+            client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            client.DefaultRequestHeaders.Add("DNT", "1");
+            client.DefaultRequestHeaders.Add("Host", "192.168.20.13");
+            client.DefaultRequestHeaders.Add("Referer", "https://192.168.20.13/");
+            client.DefaultRequestHeaders.Add("Sec-GPC", "1");
+            client.DefaultRequestHeaders.Add("TE", "Trailers");
+            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0");
+            var authToken = await GetAuth(client, token);
+            client.DefaultRequestHeaders.Add("Cookie", $"AuthCookie={authToken}"); // ; UserRecord={userRecord}");
+
             var start = _time.Now;
             var lalaResponse = await TryGet(client, endPoint, token);
             return (lalaResponse.value, start, lalaResponse.end);
+        }
+
+        private async Task<string> GetAuth(HttpClient client, CancellationToken token)
+        {
+            var result = await _appCache.GetOrAddAsync("teslaAuth", async () =>
+            {
+                if (string.IsNullOrWhiteSpace(_settings.IP))
+                {
+                    var txt = $"Setting is unspecified '{_settings.IP}'";
+                    _logger.Fatal(txt);
+                    throw new Exception(txt);
+                }
+                if (string.IsNullOrWhiteSpace(_settings.Password))
+                {
+                    var txt = $"Setting is unspecified '{_settings.Password}'";
+                    _logger.Fatal(txt);
+                    throw new Exception(txt);
+                }
+                var requestContent = JsonConvert.SerializeObject(new BasicAuthRequestContent { email = _settings.Email, password = _settings.Password });
+                var httpContent = new StringContent(requestContent, Encoding.UTF8, "application/json");
+                var endPoint = GetEndPoint<BasicAuthResponse>();
+                var response = await client.PostAsync($"https://{_settings.IP}{endPoint}", httpContent, token);
+                if (!IsOk(response))
+                    throw new InvalidOperationException($"Not ok {response.StatusCode}");
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (responseContent == null) throw new NullReferenceException("Null dude");
+                _logger.Information($"Received auth response {responseContent}");
+                var responseObject = JsonConvert.DeserializeObject<BasicAuthResponse>(responseContent);
+                return responseObject.token;
+            }, TimeSpan.FromHours(2));
+            return result;
         }
 
         private async Task<(HttpResponseMessage value, DateTimeOffset end)> TryGet(HttpClient client, string endPoint, CancellationToken token)

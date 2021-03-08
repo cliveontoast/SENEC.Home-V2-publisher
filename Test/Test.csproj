@@ -48,6 +48,7 @@
     <ProjectReference Include="..\ReadRepository.Cosmos\ReadRepository.Cosmos.csproj" />
     <ProjectReference Include="..\SenecEntitesAdapter\SenecEntitesAdapter.csproj" />
     <ProjectReference Include="..\SenecSource\SenecSource.csproj" />
+    <ProjectReference Include="..\TeslaPowerwallSource\TeslaPowerwallSource.csproj" />
   </ItemGroup>
 
 </Project>
