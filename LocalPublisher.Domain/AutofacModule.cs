@@ -108,7 +108,8 @@ namespace Domain
             {
                 return new TeslaPowerwallSettings
                 {
-                    IP = Configuration.GetValue<string?>("TeslaPowerwall2IP")
+                    IP = Configuration.GetValue<string?>("TeslaPowerwall2IP"),
+                    Password = Configuration.GetValue<string>("TeslaPowerwall2Password"),
                 } as ITeslaPowerwallSettings;
             }).SingleInstance();
         }

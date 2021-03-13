@@ -5,6 +5,7 @@ using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -125,23 +126,30 @@ namespace TeslaPowerwallSource
             client.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
             client.DefaultRequestHeaders.Add("Connection", "keep-alive");
             client.DefaultRequestHeaders.Add("DNT", "1");
-            client.DefaultRequestHeaders.Add("Host", "192.168.20.13");
-            client.DefaultRequestHeaders.Add("Referer", "https://192.168.20.13/");
+            client.DefaultRequestHeaders.Add("Host", _settings.IP);
+            client.DefaultRequestHeaders.Add("Referer", $"https://{_settings.IP}/");
             client.DefaultRequestHeaders.Add("Sec-GPC", "1");
             client.DefaultRequestHeaders.Add("TE", "Trailers");
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0");
-            var authToken = await GetAuth(client, token);
-            client.DefaultRequestHeaders.Add("Cookie", $"AuthCookie={authToken}"); // ; UserRecord={userRecord}");
-
+            client.DefaultRequestHeaders.Add("Cookie", await GetAuthCookies(client, token));
             var start = _time.Now;
             var lalaResponse = await TryGet(client, endPoint, token);
             return (lalaResponse.value, start, lalaResponse.end);
         }
 
-        private async Task<string> GetAuth(HttpClient client, CancellationToken token)
+        private async Task<string> GetAuthCookies(HttpClient client, CancellationToken token)
+        {
+            var authToken = await GetAuthHeaders(client, token);
+            var result = string.Join("; ", authToken);
+            _logger.Information("auth cookie text {CookieContent}", result);
+            return result;
+        }
+
+        private async Task<string[]> GetAuthHeaders(HttpClient client, CancellationToken token)
         {
             var result = await _appCache.GetOrAddAsync("teslaAuth", async () =>
             {
+                _logger.Information("Fetching auth cookies");
                 if (string.IsNullOrWhiteSpace(_settings.IP))
                 {
                     var txt = $"Setting is unspecified '{_settings.IP}'";
@@ -154,18 +162,26 @@ namespace TeslaPowerwallSource
                     _logger.Fatal(txt);
                     throw new Exception(txt);
                 }
-                var requestContent = JsonConvert.SerializeObject(new BasicAuthRequestContent { email = _settings.Email, password = _settings.Password });
-                var httpContent = new StringContent(requestContent, Encoding.UTF8, "application/json");
-                var endPoint = GetEndPoint<BasicAuthResponse>();
-                var response = await client.PostAsync($"https://{_settings.IP}{endPoint}", httpContent, token);
-                if (!IsOk(response))
-                    throw new InvalidOperationException($"Not ok {response.StatusCode}");
-
-                var responseContent = await response.Content.ReadAsStringAsync();
-                if (responseContent == null) throw new NullReferenceException("Null dude");
-                _logger.Information($"Received auth response {responseContent}");
-                var responseObject = JsonConvert.DeserializeObject<BasicAuthResponse>(responseContent);
-                return responseObject.token;
+                try
+                {
+                    var requestContent = JsonConvert.SerializeObject(new BasicAuthRequestContent { email = _settings.Email, password = _settings.Password });
+                    var httpContent = new StringContent(requestContent, Encoding.UTF8, "application/json");
+                    var endPoint = GetEndPoint<BasicAuthResponse>();
+                    string requestUri = $"https://{_settings.IP}{endPoint}";
+                    _logger.Information("Auth sending to {Http} Content: {Content}", requestUri, requestContent);
+                    var response = await client.PostAsync(requestUri, httpContent, token);
+                    if (!IsOk(response))
+                        throw new InvalidOperationException($"Not ok {response.StatusCode}");
+                    //var responseContent = await response.Content.ReadAsStreamAsync();
+                    if (!response.Headers.TryGetValues("Set-Cookie", out var authCookies))
+                        throw new KeyNotFoundException("Set-Cookie");
+                    _logger.Information("Auth response ok {@Cookie}", authCookies);
+                    return authCookies.Select(a => a.Replace("; Path=/", "")).ToArray();
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
             }, TimeSpan.FromHours(2));
             return result;
         }
@@ -174,12 +190,6 @@ namespace TeslaPowerwallSource
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(_settings.IP))
-                {
-                    var txt = $"Setting is unspecified '{_settings.IP}'";
-                    _logger.Fatal(txt);
-                    throw new Exception(txt);
-                }
                 return (await client.GetAsync($"https://{_settings.IP}{endPoint}", token), _time.Now);
             }
             catch (HttpRequestException e)
