@@ -63,3 +63,11 @@ Run the cloud.webapp from visual studio in IIS express
 ## Senec ?
 Senec https://senec.com/au is a company that built a battery for home storage of solar power generation. It might have trademarks for the word Senec too.
 
+
+
+## Tesla
+todo more instructions
+
+```
+certmgr -ssl -v https://192.168.91.1
+```

@@ -13,7 +13,7 @@ export class InitialDateService {
   }
 
   public get refresh$(): Observable<any> {
-    return timer(1000 * 60 * 5, 1000 * 60 * 5);
+    return timer(1000 * 60 * 60, 1000 * 60 * 60);
   }
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {

@@ -9,13 +9,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
 #nullable enable
 namespace LocalPublisherMono
 {
-    class Program
+    class Program : ICertificatePolicy
     {
         static void Main(string[] args)
         {
@@ -33,7 +36,7 @@ namespace LocalPublisherMono
                 var startup = new Startup();
                 startup.ConfigureServices(services);
                 startup.ConfigureContainer(cb);
-
+                ServicePointManager.CertificatePolicy = new Program();
                 Go(cb.Build());
             }
             catch (Exception ex)
@@ -45,6 +48,13 @@ namespace LocalPublisherMono
                 Log.Information("Toilets flush when they are finished");
                 Log.CloseAndFlush();
             }
+        }
+
+        public bool CheckValidationResult(ServicePoint sp,
+    X509Certificate certificate, WebRequest request, int error)
+        {
+            Log.Debug("yep.");
+            return true;
         }
 
         private static void Go(IContainer container)

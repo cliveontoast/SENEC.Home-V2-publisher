@@ -31,7 +31,6 @@ namespace TeslaPowerwallSource
             _logger = logger;
             _settings = settings;
             _appCache = appCache;
-            System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
         }
 
         public async Task<MetersAggregates> GetMetersAggregatesAsync(CancellationToken token)
@@ -70,6 +69,7 @@ namespace TeslaPowerwallSource
             if (IsOk(response.response))
             {
                 var result = await response.response.Content.ReadAsStringAsync();
+                _logger.Debug(result);
                 if (string.IsNullOrWhiteSpace(result))
                     _logger.Error("Tesla powerwall returned success status code. Result was {IsNull} value of '{Result}'", result == null ? "null" : "not null", result);
                 return (result, response.start, response.end);
@@ -98,7 +98,7 @@ namespace TeslaPowerwallSource
             }
             result.SentMilliseconds = response.start.ToUnixTimeMilliseconds();
             result.ReceivedMilliseconds = response.end.ToUnixTimeMilliseconds();
-            LocalStore(result);
+            //LocalStore(result);
             return result;
         }
 
@@ -141,7 +141,7 @@ namespace TeslaPowerwallSource
         {
             var authToken = await GetAuthHeaders(client, token);
             var result = string.Join("; ", authToken);
-            _logger.Information("auth cookie text {CookieContent}", result);
+            _logger.Debug("auth cookie text {CookieContent}", result);
             return result;
         }
 
