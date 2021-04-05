@@ -9,5 +9,6 @@ namespace TeslaPowerwallSource
         string? IP { get; set; }
         string Password { get; set; }
         string Email { get; set; }
+        double CredentialCacheSeconds { get; set; }
     }
 }

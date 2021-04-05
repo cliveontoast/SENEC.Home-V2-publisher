@@ -147,6 +147,8 @@ namespace TeslaPowerwallSource
 
         private async Task<string[]> GetAuthHeaders(HttpClient client, CancellationToken token)
         {
+            var seconds = Math.Abs(_settings.CredentialCacheSeconds);
+            var cache = TimeSpan.FromSeconds(Math.Max(60, seconds));
             var result = await _appCache.GetOrAddAsync("teslaAuth", async () =>
             {
                 _logger.Information("Fetching auth cookies");
@@ -182,7 +184,7 @@ namespace TeslaPowerwallSource
                 {
                     throw;
                 }
-            }, TimeSpan.FromHours(2));
+            }, cache);
             return result;
         }
 

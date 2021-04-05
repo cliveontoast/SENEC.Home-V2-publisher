@@ -110,6 +110,7 @@ namespace Domain
                 {
                     IP = Configuration.GetValue<string?>("TeslaPowerwall2IP"),
                     Password = Configuration.GetValue<string>("TeslaPowerwall2Password"),
+                    CredentialCacheSeconds = Configuration.GetValue<double>("CredentialCacheSeconds"),
                 } as ITeslaPowerwallSettings;
             }).SingleInstance();
         }
