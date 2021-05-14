@@ -42,6 +42,7 @@ namespace LocalPublisher.Domain.Functions
 
     public class SummaryFunctions : ISummaryFunctions
     {
+        public const string summaryIssue = "Summary:: ";
         // TODO make a DI singleton
         private static object _lock = new object();
 
@@ -89,9 +90,9 @@ namespace LocalPublisher.Domain.Functions
         {
             _logger = logger;
             _minutesPerSummaryConfig = minutesPerSummaryConfig;
-            _cache.GetOrAdd(cacheKey, () => new ConcurrentDictionary<long, string>());
-            _buildSummary = buildSummaries;
             _cacheKey = cacheKey;
+            _cache.GetOrAdd(_cacheKey, () => new ConcurrentDictionary<long, string>(), DateTimeOffset.MaxValue);
+            _buildSummary = buildSummaries;
             _summaryType = summaryType;
         }
 
@@ -199,10 +200,19 @@ namespace LocalPublisher.Domain.Functions
             lowerUpperBoundExtras?.Invoke(lowerBound, upperBound);
             for (long instant = lowerBound; instant < upperBound; instant++)
             {
-                if (!collection.TryRemove(instant, out string textValue)) continue;
+                var asDateTime = DateTimeOffset.FromUnixTimeSeconds(instant).LocalDateTime;
+                if (!collection.TryRemove(instant, out string textValue))
+                {
+                    _logger.Verbose(summaryIssue + $"Missing {asDateTime}");
+                    continue;
+                }
                 removedTexts.Add(textValue);
                 var original = JsonConvert.DeserializeObject<TSerialisedInput>(textValue);
-                if (original == null) continue; // no way the programmer serialised nothing
+                if (original == null)
+                {
+                    _logger.Verbose(summaryIssue + $"Deserialisation failure {asDateTime}");
+                    continue; // no way the programmer serialised nothing
+                }
                 var moment = instant.ToEquipmentLocalTime(_zoneProvider);
                 var entity = converter(moment, original);
                 if (entity.IsValid)
@@ -210,7 +220,12 @@ namespace LocalPublisher.Domain.Functions
                     list.Add(entity);
                     postConvertAction?.Invoke(entity, instant);
                 }
+                else
+                {
+                    _logger.Verbose(summaryIssue + $"Invalid {asDateTime}");
+                }
             }
+            _logger.Verbose(summaryIssue + $"Publishing {nameof(TSummaryEntity)} count {list.Count}");
             _mediator.Publish(new IntervalOfMoments<TSummaryEntity>(intervalStart, intervalEnd, list), cancellationToken);
             return list;
         }

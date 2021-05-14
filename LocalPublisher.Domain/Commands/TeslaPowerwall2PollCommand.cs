@@ -42,6 +42,9 @@ namespace Domain
 
                 if (!energy.IsFaulted)
                 {
+                    var start = DateTimeOffset.FromUnixTimeMilliseconds(energy.Result.SentMilliseconds).LocalDateTime;
+                    var end = DateTimeOffset.FromUnixTimeMilliseconds(energy.Result.ReceivedMilliseconds).LocalDateTime;
+                    _logger.Information(Client.LOGGING + $"Received energy ${energy.Result.site?.last_communication_time} r: {end} s: {start}");
                     await _mediator.Publish(new MetersAggregatesItem(energy.Result), cancellationToken);
                 }
                 if (!charge.IsFaulted)

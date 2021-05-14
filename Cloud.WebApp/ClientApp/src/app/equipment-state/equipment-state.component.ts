@@ -35,8 +35,8 @@ export class EquipmentStateComponent implements OnInit {
     },
     plotOptions: {
       area: {
-          stacking: 'normal',
-          //stacking: 'percent',
+          //stacking: 'normal',
+          stacking: 'percent',
           lineColor: '#ffffff',
           lineWidth: 1,
           marker: {

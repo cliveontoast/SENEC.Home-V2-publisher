@@ -19,18 +19,21 @@ namespace TeslaPowerwallSource
         private readonly ITimeProvider _time;
         private readonly ILogger _logger;
         private readonly ITeslaPowerwallSettings _settings;
-        private readonly IAppCache _appCache;
+        private readonly IClient _client;
+        private readonly IEndPoint _endPoint;
 
         public ApiRequest(
             ITimeProvider time,
             ILogger logger,
-            IAppCache appCache,
+            IClient client,
+            IEndPoint endPoint,
             ITeslaPowerwallSettings settings)
         {
             _time = time;
             _logger = logger;
             _settings = settings;
-            _appCache = appCache;
+            _client = client;
+            _endPoint = endPoint;
         }
 
         public async Task<MetersAggregates> GetMetersAggregatesAsync(CancellationToken token)
@@ -43,38 +46,10 @@ namespace TeslaPowerwallSource
             return await Request<StateOfEnergy>(token);
         }
 
-        public async Task<TResponse> Request<TResponse>(CancellationToken token) where TResponse : WebResponse
+        private async Task<TResponse> Request<TResponse>(CancellationToken token) where TResponse : WebResponse
         {
-            var endpoint = GetEndPoint<TResponse>();
+            var endpoint = _endPoint.GetEndPoint<TResponse>();
             return await RequestObject<TResponse>(endpoint, token);
-        }
-
-        private string GetEndPoint<TResponse>() where TResponse : WebResponse
-        {
-            var type = typeof(TResponse);
-            if (type.Equals(typeof(MetersAggregates)))
-                return "/api/meters/aggregates";
-            else if (type.Equals(typeof(StateOfEnergy)))
-                return "/api/system_status/soe";
-            else if (type.Equals(typeof(BasicAuthResponse)))
-                return "/api/login/Basic";
-            throw new NotImplementedException(type.FullName);
-        }
-
-        private async Task<(string? response, DateTimeOffset start, DateTimeOffset end)> Request(string endPoint, CancellationToken token)
-        {
-            using var client = new HttpClient();
-            using var response = await GetResponse(client, endPoint, token);
-                
-            if (IsOk(response.response))
-            {
-                var result = await response.response.Content.ReadAsStringAsync();
-                _logger.Debug(result);
-                if (string.IsNullOrWhiteSpace(result))
-                    _logger.Error("Tesla powerwall returned success status code. Result was {IsNull} value of '{Result}'", result == null ? "null" : "not null", result);
-                return (result, response.start, response.end);
-            }
-            return (null, response.start, response.end);
         }
 
         private async Task<TResponse> RequestObject<TResponse>(string endPoint, CancellationToken token) where TResponse : WebResponse
@@ -83,7 +58,7 @@ namespace TeslaPowerwallSource
             var result = Activator.CreateInstance<TResponse>();
             if (response.response == null || string.IsNullOrWhiteSpace(response.response))
             {
-                _logger.Warning("tesla powerwall bad response {Response} {Start} {End}", response.response ?? "<nulL>", response.start, response.end);
+                _logger.Warning(Client.LOGGING + "tesla powerwall bad response {Response} {Start} {End}", response.response ?? "<nulL>", response.start, response.end);
             }
             else
             {
@@ -93,99 +68,44 @@ namespace TeslaPowerwallSource
                 }
                 catch (Exception e)
                 {
-                    _logger.Error(e, "Cannot deserialise {Content} {Start} {End}", response.response, response.start, response.end);
+                    _logger.Error(e, Client.LOGGING + "Cannot deserialise {Content} {Start} {End}", response.response, response.start, response.end);
                 }
             }
             result.SentMilliseconds = response.start.ToUnixTimeMilliseconds();
             result.ReceivedMilliseconds = response.end.ToUnixTimeMilliseconds();
-            //LocalStore(result);
+            LocalStore(result);
             return result;
+        }
+
+        private async Task<(string? response, DateTimeOffset start, DateTimeOffset end)> Request(string endPoint, CancellationToken token)
+        {
+            var client = _client.Build(token);
+            using var response = await GetResponse(client, endPoint, token);
+            var isOk = _endPoint.IsOk(response.response);
+            _logger.Information(Client.LOGGING + $"Client {client.GetHashCode()} response is {response.response.StatusCode}");
+            if (!isOk)
+                return (null, response.start, response.end);
+
+            var result = await response.response.Content.ReadAsStringAsync();
+            _logger.Debug(result);
+            if (string.IsNullOrWhiteSpace(result))
+                _logger.Error(Client.LOGGING + "Tesla powerwall returned success status code. Result was {IsNull} value of '{Result}'", result == null ? "null" : "not null", result);
+            return (result, response.start, response.end);
         }
 
         private void LocalStore<TResponse>(TResponse response) where TResponse : WebResponse
         {
+            if (_settings.WriteFolder.Length == 0) return;
+
             var text = JsonConvert.SerializeObject(response, Formatting.Indented);
-            File.WriteAllText($@"C:\temp\localpublisher\teg\{response.ReceivedMilliseconds}.json", text);
-        }
-
-        private bool IsOk(HttpResponseMessage response)
-        {
-            if (response.Content != null && response.IsSuccessStatusCode)
-                return true;
-
-            _logger.Warning("tesla powerwall response was not ok {StatusCode} {@Response}", response.StatusCode, response);
-            return false;
+            File.WriteAllText(Path.Combine(".", _settings.WriteFolder, $"{response.ReceivedMilliseconds}.json"), text);
         }
 
         private async Task<ResponseTime> GetResponse(HttpClient client, string endPoint, CancellationToken token)
         {
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Accept", "*/*");
-            client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
-            client.DefaultRequestHeaders.Add("Accept-Language", "en-GB,en;q=0.5");
-            client.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
-            client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-            client.DefaultRequestHeaders.Add("DNT", "1");
-            client.DefaultRequestHeaders.Add("Host", _settings.IP);
-            client.DefaultRequestHeaders.Add("Referer", $"https://{_settings.IP}/");
-            client.DefaultRequestHeaders.Add("Sec-GPC", "1");
-            client.DefaultRequestHeaders.Add("TE", "Trailers");
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0");
-            client.DefaultRequestHeaders.Add("Cookie", await GetAuthCookies(client, token));
             var start = _time.Now;
-            var lalaResponse = await TryGet(client, endPoint, token);
-            return (lalaResponse.value, start, lalaResponse.end);
-        }
-
-        private async Task<string> GetAuthCookies(HttpClient client, CancellationToken token)
-        {
-            var authToken = await GetAuthHeaders(client, token);
-            var result = string.Join("; ", authToken);
-            _logger.Debug("auth cookie text {CookieContent}", result);
-            return result;
-        }
-
-        private async Task<string[]> GetAuthHeaders(HttpClient client, CancellationToken token)
-        {
-            var seconds = Math.Abs(_settings.CredentialCacheSeconds);
-            var cache = TimeSpan.FromSeconds(Math.Max(60, seconds));
-            var result = await _appCache.GetOrAddAsync("teslaAuth", async () =>
-            {
-                _logger.Information("Fetching auth cookies");
-                if (string.IsNullOrWhiteSpace(_settings.IP))
-                {
-                    var txt = $"Setting is unspecified '{_settings.IP}'";
-                    _logger.Fatal(txt);
-                    throw new Exception(txt);
-                }
-                if (string.IsNullOrWhiteSpace(_settings.Password))
-                {
-                    var txt = $"Setting is unspecified '{_settings.Password}'";
-                    _logger.Fatal(txt);
-                    throw new Exception(txt);
-                }
-                try
-                {
-                    var requestContent = JsonConvert.SerializeObject(new BasicAuthRequestContent { email = _settings.Email, password = _settings.Password });
-                    var httpContent = new StringContent(requestContent, Encoding.UTF8, "application/json");
-                    var endPoint = GetEndPoint<BasicAuthResponse>();
-                    string requestUri = $"https://{_settings.IP}{endPoint}";
-                    _logger.Information("Auth sending to {Http} Content: {Content}", requestUri, requestContent);
-                    var response = await client.PostAsync(requestUri, httpContent, token);
-                    if (!IsOk(response))
-                        throw new InvalidOperationException($"Not ok {response.StatusCode}");
-                    //var responseContent = await response.Content.ReadAsStreamAsync();
-                    if (!response.Headers.TryGetValues("Set-Cookie", out var authCookies))
-                        throw new KeyNotFoundException("Set-Cookie");
-                    _logger.Information("Auth response ok {@Cookie}", authCookies);
-                    return authCookies.Select(a => a.Replace("; Path=/", "")).ToArray();
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
-            }, cache);
-            return result;
+            var response = await TryGet(client, endPoint, token);
+            return (response.value, start, response.end);
         }
 
         private async Task<(HttpResponseMessage value, DateTimeOffset end)> TryGet(HttpClient client, string endPoint, CancellationToken token)
