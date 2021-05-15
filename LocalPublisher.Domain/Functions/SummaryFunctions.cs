@@ -115,10 +115,10 @@ namespace LocalPublisher.Domain.Functions
             try
             {
                 List<IIntervalEntity> tasks = GetSummaries(cancellationToken);
-                if (tasks.Any())
-                {
-                    await PersistPublisherStatus(tasks.First().IntervalEndExcluded);
-                }
+                //if (tasks.Any())
+                //{
+                //    await PersistPublisherStatus(tasks.First().IntervalEndExcluded);
+                //}
                 foreach (var summaries in tasks)
                 {
                     _logger.Verbose("Publishing {Type} {StartTime}", summaries.GetType(), summaries.IntervalStartIncluded);

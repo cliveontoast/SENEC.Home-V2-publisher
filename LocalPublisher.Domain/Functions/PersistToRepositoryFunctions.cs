@@ -201,31 +201,31 @@ namespace LocalPublisher.Domain.Functions
                 item.IsProcessing = true;
                 await FetchPersistedVersionAsync(item.Summary, cancellationToken);
 
-                if (_versionConfig.PersistedNumber == _versionConfig.Number && _versionConfig.ThisProcessWrittenRecord)
+                //if (_versionConfig.PersistedNumber == _versionConfig.Number && _versionConfig.ThisProcessWrittenRecord)
                     await WriteAndVerifyAsync(item.Summary, cancellationToken);
-                else
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(_repoConfig.DelaySecondsBeforePersisting), cancellationToken);
-                    if (cancellationToken.IsCancellationRequested) return;
-                    var verifyResult = await VerifyAsync(item.Summary, cancellationToken);
-                    if (verifyResult.isPersisted)
-                    {
-                        await FetchPersistedVersionAsync(item.Summary, cancellationToken);
-                        if (_versionConfig.PersistedNumber == _versionConfig.Number)
-                        {
-                            _logger.Warning("Persisted number is equal, however another process has persisted this record {Type} {Key}. Item removed {Removed}", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
-                        }
-                        else
-                        {
-                            _logger.Information("Previous version is running and has persisted this record {Type} {Key}. Item removed {Removed}", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
-                        }
-                    }
-                    else
-                    {
-                        _logger.Information("This record {Type} {Key} has not been persisted. Attempting to write.", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
-                        await WriteAndVerifyAsync(item.Summary, cancellationToken);
-                    }
-                }
+                //else
+                //{
+                //    await Task.Delay(TimeSpan.FromSeconds(_repoConfig.DelaySecondsBeforePersisting), cancellationToken);
+                //    if (cancellationToken.IsCancellationRequested) return;
+                //    var verifyResult = await VerifyAsync(item.Summary, cancellationToken);
+                //    if (verifyResult.isPersisted)
+                //    {
+                //        await FetchPersistedVersionAsync(item.Summary, cancellationToken);
+                //        if (_versionConfig.PersistedNumber == _versionConfig.Number)
+                //        {
+                //            _logger.Warning("Persisted number is equal, however another process has persisted this record {Type} {Key}. Item removed {Removed}", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
+                //        }
+                //        else
+                //        {
+                //            _logger.Information("Previous version is running and has persisted this record {Type} {Key}. Item removed {Removed}", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        _logger.Information("This record {Type} {Key} has not been persisted. Attempting to write.", typeof(TPersistedType).Name, key, verifyResult.isRemoved);
+                //        await WriteAndVerifyAsync(item.Summary, cancellationToken);
+                //    }
+                //}
             }
             catch (Microsoft.Azure.Cosmos.CosmosException e) when (e.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
