@@ -25,8 +25,37 @@ namespace Repository.Cosmos.Repositories
 
         public async Task<bool> AddAsync(EquipmentStatesSummary notification, CancellationToken cancellationToken)
         {
-            var result = await _context.CreateItemAsync(notification)(cancellationToken);
-            return result.StatusCode == HttpStatusCode.Created;
+            if (await ReplaceItem(notification, cancellationToken))
+                return true;
+            return await CreateItem(notification, cancellationToken);
+        }
+
+        private async Task<bool> CreateItem(EquipmentStatesSummary notification, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var createResult = await _context.CreateItemAsync(notification)(cancellationToken);
+                if (createResult.StatusCode == HttpStatusCode.Created)
+                    return true;
+            }
+            catch (Microsoft.Azure.Cosmos.CosmosException)
+            {
+            }
+            return false;
+        }
+
+        private async Task<bool> ReplaceItem(EquipmentStatesSummary notification, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var replaceResult = await _context.ReplaceItemAsync(notification)(cancellationToken);
+                if (replaceResult.StatusCode == HttpStatusCode.OK)
+                    return true;
+            }
+            catch (Microsoft.Azure.Cosmos.CosmosException)
+            {
+            }
+            return false;
         }
     }
 }

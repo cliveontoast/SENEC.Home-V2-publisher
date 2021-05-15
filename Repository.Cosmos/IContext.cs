@@ -14,8 +14,10 @@ namespace Repository.Cosmos
     public interface IContext
     {
         Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> CreateItemAsync(EnergySummary energySummary);
+        Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> ReplaceItemAsync(EnergySummary energySummary);
         Func<CancellationToken, Task<ItemResponse<BatteryInverterTemperatureSummaryEntity>>> CreateItemAsync(InverterTemperatureSummary energySummary);
         Func<CancellationToken, Task<ItemResponse<EquipmentStatesSummaryEntity>>> CreateItemAsync(EquipmentStatesSummary energySummary);
+        Func<CancellationToken, Task<ItemResponse<EquipmentStatesSummaryEntity>>> ReplaceItemAsync(EquipmentStatesSummary energySummary);
         Func<CancellationToken, Task<ItemResponse<PublisherEntity>>> CreateItemAsync(Publisher energySummary);
         Func<CancellationToken, Task<ItemResponse<PublisherEntity>>> ReplaceItemAsync(Publisher publisher);
         Func<CancellationToken, Task<ItemResponse<IntervalOfMomentsEntity<VoltageMomentEntity>>>> CreateItemAsync(IntervalOfMoments<MomentVoltage> energySummary);
@@ -44,6 +46,15 @@ namespace Repository.Cosmos
             return obj;
         }
 
+        public Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> ReplaceItemAsync(EnergySummary publisher)
+        {
+            var persistedValue = new EnergySummaryEntity(publisher, _version.Number);
+            Func<CancellationToken, Task<ItemResponse<EnergySummaryEntity>>> obj = (CancellationToken c) =>
+                _container.ReplaceItemAsync(persistedValue, persistedValue.Id,
+                    cancellationToken: c);
+            return obj;
+        }
+
         public Func<CancellationToken, Task<ItemResponse<BatteryInverterTemperatureSummaryEntity>>> CreateItemAsync(InverterTemperatureSummary energySummary)
         {
             var persistedValue = new BatteryInverterTemperatureSummaryEntity(energySummary, _version.Number);
@@ -58,6 +69,15 @@ namespace Repository.Cosmos
             var persistedValue = new EquipmentStatesSummaryEntity(energySummary, _version.Number);
             Func<CancellationToken, Task<ItemResponse<EquipmentStatesSummaryEntity>>> obj = (CancellationToken c) => 
                 _container.CreateItemAsync(persistedValue,
+                    cancellationToken: c);
+            return obj;
+        }
+
+        public Func<CancellationToken, Task<ItemResponse<EquipmentStatesSummaryEntity>>> ReplaceItemAsync(EquipmentStatesSummary publisher)
+        {
+            var persistedValue = new EquipmentStatesSummaryEntity(publisher, _version.Number);
+            Func<CancellationToken, Task<ItemResponse<EquipmentStatesSummaryEntity>>> obj = (CancellationToken c) =>
+                _container.ReplaceItemAsync(persistedValue, persistedValue.Id,
                     cancellationToken: c);
             return obj;
         }
