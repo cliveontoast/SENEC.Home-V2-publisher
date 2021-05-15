@@ -10,5 +10,6 @@ namespace TeslaPowerwallSource
     {
         Task<MetersAggregates> GetMetersAggregatesAsync(CancellationToken token);
         Task<StateOfEnergy> GetStateOfEnergyAsync(CancellationToken token);
+        void Destroy(CancellationToken cancellationToken);
     }
 }

@@ -120,6 +120,11 @@ namespace TeslaPowerwallSource
                 return (new HttpResponseMessage(), _time.Now);
             }
         }
+
+        public void Destroy(CancellationToken cancellationToken)
+        {
+            _client.Destroy(cancellationToken);
+        }
     }
 
     public struct ResponseTime : IDisposable

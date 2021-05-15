@@ -14,6 +14,7 @@ namespace TeslaPowerwallSource
     public class Client : IClient
     {
         public const string LOGGING = "TeslaClient: ";
+        private const string CACHE_KEY = "telsaClient";
         private static readonly object __lock = new object();
         private readonly IAppCache _appCache;
         private readonly ILogger _logger;
@@ -32,10 +33,15 @@ namespace TeslaPowerwallSource
         {
             lock (__lock)
             {
-                var clientTask = _appCache.GetOrAddAsync("telsaClient", async () => await GetHttpClient(token));
+                var clientTask = _appCache.GetOrAddAsync(CACHE_KEY, async () => await GetHttpClient(token));
                 var client = RunWait(clientTask);
                 return client;
             }
+        }
+
+        public void Destroy(CancellationToken token)
+        {
+            _appCache.Remove(CACHE_KEY);
         }
 
         public static TResult RunWait<TResult>(Task<TResult> asyncTask)
@@ -48,6 +54,7 @@ namespace TeslaPowerwallSource
         private async Task<HttpClient> GetHttpClient(CancellationToken token)
         {
             var client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(5);
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Accept", "*/*");
             client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
@@ -118,5 +125,6 @@ namespace TeslaPowerwallSource
     public interface IClient
     {
         HttpClient Build(CancellationToken token);
+        void Destroy(CancellationToken token);
     }
 }

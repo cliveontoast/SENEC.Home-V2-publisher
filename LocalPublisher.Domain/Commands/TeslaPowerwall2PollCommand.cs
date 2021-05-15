@@ -33,6 +33,8 @@ namespace Domain
 
         public async Task<Unit> Handle(TeslaPowerwall2PollCommand request, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+                _logger.Information("Cancellation requested and acknowledged. not fetching");
             try
             {
                 var energy = _apiRequest.GetMetersAggregatesAsync(cancellationToken);
@@ -51,6 +53,11 @@ namespace Domain
                 {
                     await _mediator.Publish(new StateOfEnergyItem(charge.Result), cancellationToken);
                 }
+            }
+            catch (TaskCanceledException e)
+            {
+                _apiRequest.Destroy(cancellationToken);
+                _logger.Error(e, "Cancelled task");
             }
             catch (Exception e)
             {

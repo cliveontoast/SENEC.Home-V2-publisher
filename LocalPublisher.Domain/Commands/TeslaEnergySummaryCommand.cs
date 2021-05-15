@@ -23,18 +23,17 @@ namespace Domain
     public class TeslaEnergySummaryCommandHandler : IRequestHandler<TeslaEnergySummaryCommand, Unit>
     {
         private readonly ISummaryFunctions _summaryFunctions;
-        //private readonly IEnergyAdapter _gridMeterAdapter;
+        private readonly ILogger _logger;
         private readonly IAppCache _cache;
 
         public TeslaEnergySummaryCommandHandler(
             ISummaryFunctions summaryFunctions,
-            //IEnergyAdapter gridMeterAdapter,
             ITeslaEnergyCompressConfig config,
             ILogger logger,
             IAppCache cache)
         {
             _summaryFunctions = summaryFunctions;
-            //_gridMeterAdapter = gridMeterAdapter;
+            _logger = logger;
             _cache = cache;
             _cache.GetOrAdd(TeslaStateOfChargeCache.CacheKey, () => new ConcurrentDictionary<long, string>());
             _summaryFunctions.Initialise(logger, config, TeslaSmartMeterEnergyCache.CacheKey, BuildVoltageSummary, "energy");
@@ -119,7 +118,8 @@ namespace Domain
             var batteryChargeWatts = energy.battery?.instant_power < 0 ? -energy.battery.instant_power : 0;
             var batteryDischargeWatts = energy.battery?.instant_power > 0 ? energy.battery.instant_power : 0;
             var homeConsumedWatts = energy.load?.instant_power > 0 ? energy.load.instant_power : 0;
-            var solarGeneratedWatts = energy.solar?.instant_power > 0 ? energy.solar?.instant_power : 0; // negative is possible.  this should never be higher than 100 Watts. On occasion I see +/- -10 at night.
+            var solarGeneratedWatts = energy.solar?.instant_power > 15 ? energy.solar?.instant_power : 0; // negative is possible.  this should never be higher than 100 Watts. On occasion I see +/- -10 at night.
+            homeConsumedWatts = CalculateConsumption(solarGeneratedWatts, energy.site?.instant_power, energy.battery?.instant_power, homeConsumedWatts);
             var result = new MomentEnergy(
                 moment,
                 stateOfCharge ?? -1,
@@ -129,10 +129,18 @@ namespace Domain
                 batteryDischargeWatts,
                 batteryChargeWatts,
                 batteryChargeWatts > 0,
-                batteryDischargeWatts < 0,
+                batteryDischargeWatts > 0,
                 homeConsumedWatts,
                 solarGeneratedWatts);
             return result;
+        }
+
+        private decimal CalculateConsumption(decimal? solar, decimal? grid, decimal? battery, decimal? home)
+        {
+            var calculated = grid.GetValueOrDefault() + battery.GetValueOrDefault() + solar.GetValueOrDefault();
+            if (Math.Abs(calculated - home.GetValueOrDefault()) > 30)
+                _logger.Warning("Reported home is way out man solar: {Solar} {Grid} {Battery} {Home} {Calculated}", solar, grid, battery, home, calculated);
+            return calculated;
         }
 
         private PowerMovementSummary CreatePowerSummary(List<MomentEnergy> list, DateTimeOffset intervalStart, DateTimeOffset intervalEnd)
