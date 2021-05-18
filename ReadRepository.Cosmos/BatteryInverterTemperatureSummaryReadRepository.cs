@@ -29,7 +29,7 @@ namespace ReadRepository.Cosmos
         {
             var discriminator = PartitionText.ITS_.ToString();
             var queryable = _readContext.GetQueryable<BatteryInverterTemperatureSummaryEntity>();
-            var iterator = queryable.Where(p => p.Partition == discriminator + key).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key == discriminator + key).ToFeedIterator();
             var result = await iterator.ReadNextAsync();
             var response = ToReadModel(result);
             return response.FirstOrDefault();
@@ -39,7 +39,7 @@ namespace ReadRepository.Cosmos
         {
             var dateText = PartitionText.ITS_.ToString() + date.ToString("yyyy-MM-dd");
             var queryable = _readContext.GetQueryable<BatteryInverterTemperatureSummaryEntity>();
-            var iterator = queryable.Where(p => p.Partition.StartsWith(dateText) && p.Discriminator == BatteryInverterTemperatureSummaryEntity.DISCRIMINATOR).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key.StartsWith(dateText) && p.Discriminator == BatteryInverterTemperatureSummaryEntity.DISCRIMINATOR).ToFeedIterator();
             // should convert to cosmos-sql 
             // SELECT * FROM c
             // where startswith(c.id, '2020-11-14')

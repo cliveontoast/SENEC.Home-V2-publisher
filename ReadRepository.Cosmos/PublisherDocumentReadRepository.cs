@@ -29,7 +29,7 @@ namespace ReadRepository.Cosmos
         public async Task<IEnumerable<PublisherReadModel>> Fetch(CancellationToken cancellationToken)
         {
             var queryable = _readContext.GetQueryable<PublisherEntity>();
-            var iterator = queryable.Where(p => p.Partition == PartitionText.PU_.ToString() && p.Discriminator == PublisherEntity.DISCRIMINATOR).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key == PartitionText.PU_.ToString() && p.Discriminator == PublisherEntity.DISCRIMINATOR).ToFeedIterator();
             // SELECT* FROM c
             // where 1 = 1
             // and startswith(c.Partition, 'PU')

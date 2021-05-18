@@ -29,7 +29,7 @@ namespace ReadRepository.Cosmos
         {
             var partitionTxt = PartitionText.EQ_;
             var queryable = _readContext.GetQueryable<EquipmentStatesSummaryEntity>();
-            var iterator = queryable.Where(p => p.Partition == partitionTxt + key).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key == partitionTxt + key).ToFeedIterator();
             var result = await iterator.ReadNextAsync();
             var response = ToReadModel(result);
             return response.FirstOrDefault();
@@ -39,7 +39,7 @@ namespace ReadRepository.Cosmos
         {
             var dateText = PartitionText.EQ_ + date.ToString("yyyy-MM-dd");
             var queryable = _readContext.GetQueryable<EquipmentStatesSummaryEntity>();
-            var iterator = queryable.Where(p => p.Partition.StartsWith(dateText) && p.Discriminator == EquipmentStatesSummaryEntity.DISCRIMINATOR).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key.StartsWith(dateText) && p.Discriminator == EquipmentStatesSummaryEntity.DISCRIMINATOR).ToFeedIterator();
             // SELECT* FROM c
             // where 1 = 1
             // and startswith(c.Partition, 'EQ_2020-12-14')

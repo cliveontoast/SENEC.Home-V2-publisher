@@ -23,7 +23,7 @@ namespace ReadRepository.Cosmos
         public async Task<EnergySummaryReadModel?> Get(string key, CancellationToken cancellationToken)
         {
             var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
-            var iterator = queryable.Where(p => p.Partition == "ES_" + key).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key == "ES_" + key).ToFeedIterator();
             var result = await iterator.ReadNextAsync();
             var response = ToReadModel(result);
             return response.FirstOrDefault();
@@ -32,7 +32,7 @@ namespace ReadRepository.Cosmos
         public async Task<PowerMovementSummaryReadModel> GetPowerMovement(string key, CancellationToken cancellationToken)
         {
             var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
-            var iterator = queryable.Where(p => p.Partition == "ES_" + key).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key == "ES_" + key).ToFeedIterator();
             var result = await iterator.ReadNextAsync();
             var response = ToMovementReadModel(result);
             return response.FirstOrDefault();
@@ -85,7 +85,7 @@ namespace ReadRepository.Cosmos
         {
             var dateText = "ES_" + date.ToString("yyyy-MM-dd");
             var queryable = _readContext.GetQueryable<EnergySummaryEntity>();
-            var iterator = queryable.Where(p => p.Partition.StartsWith(dateText) && p.Discriminator == EnergySummaryEntity.DISCRIMINATOR).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key.StartsWith(dateText) && p.Discriminator == EnergySummaryEntity.DISCRIMINATOR).ToFeedIterator();
             var results = await iterator.ReadNextAsync();
             return results;
         }

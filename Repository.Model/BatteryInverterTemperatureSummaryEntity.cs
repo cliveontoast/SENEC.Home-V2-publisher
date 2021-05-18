@@ -29,6 +29,7 @@ namespace Repository.Model
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
         public string Partition { get; set; }
+        public string Key { get => Partition; set { ; } }
         public string Discriminator { get => DISCRIMINATOR; }
         public int Version { get; set; }
         string IRepositoryEntity.Key { get => Id; set => Id = value; }

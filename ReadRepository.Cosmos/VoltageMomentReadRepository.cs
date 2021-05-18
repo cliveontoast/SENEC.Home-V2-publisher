@@ -33,7 +33,7 @@ namespace ReadRepository.Cosmos
             key = IntervalOfMomentsEntity<MomentVoltage>.GetRepositoryKey(date);
             var partitionTxt = PartitionText.MV_;
             var queryable = _readContext.GetQueryable<IntervalOfMomentsEntity<VoltageMomentEntity>>();
-            var iterator = queryable.Where(p => p.Partition == partitionTxt + key).ToFeedIterator();
+            var iterator = queryable.Where(p => p.Key == partitionTxt + key).ToFeedIterator();
             var result = await iterator.ReadNextAsync();
             var response = ToReadModel(result);
             var readModel = response.FirstOrDefault();
@@ -48,7 +48,7 @@ namespace ReadRepository.Cosmos
         {
             var dateText = PartitionText.MV_ + date.DayOfWeek.ToString();
             var queryable = _readContext.GetQueryable<IntervalOfMomentsEntity<VoltageMomentEntity>>();
-            var iterator = queryable.Where(p => p.Partition.StartsWith(dateText)
+            var iterator = queryable.Where(p => p.Key.StartsWith(dateText)
             //&& p.Discriminator == IntervalOfMomentsEntity<VoltageMomentEntity>.DISCRIMINATOR
             ).ToFeedIterator();
             // SELECT* FROM c
