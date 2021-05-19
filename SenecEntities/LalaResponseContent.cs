@@ -25,6 +25,7 @@ namespace SenecEntities
         public Bms? BMS { get; set; }
         public SysUpdate? SYS_UPDATE { get; set; }
         public BatteryObject1? BAT1OBJ1 { get; set; }
+        public TemperatureMeasure? TEMPMEASURE { get; set; }
     }
 
     public class BatteryObject1
@@ -41,6 +42,12 @@ namespace SenecEntities
         public string? SW_VERSION2 { get; set; }
         public string? SW_VERSION3 { get; set; }
         public string? I_DC { get; set; }
+    }
+
+    public class TemperatureMeasure
+    {
+        public string? BATTERY_TEMP { get; set; }
+        public string? CASE_TEMP { get; set; }
     }
 
     public class Meter

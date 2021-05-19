@@ -41,6 +41,7 @@ namespace Domain
                     .AddEnergy()
                     .AddTime()
                     .AddInverterTemperature()
+                    .AddTemperatureMeasure()
                     .Build();
 
                 var response = await lalaRequest.Request<LalaResponseContent>(cancellationToken);
@@ -71,6 +72,7 @@ namespace Domain
                     await _mediator.Publish(
                         new BatteryInverterTemperature(
                             inverter: response.BAT1OBJ1,
+                            other: response.TEMPMEASURE,
                             sourceTimestamp: response.RTC,
                             sentMilliseconds: response.SentMilliseconds,
                             receivedMilliseconds: response.ReceivedMilliseconds),

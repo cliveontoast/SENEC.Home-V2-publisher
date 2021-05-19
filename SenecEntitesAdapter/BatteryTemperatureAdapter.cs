@@ -1,4 +1,5 @@
 ﻿using Entities;
+using SenecEntities;
 using SenecEntitiesAdapter;
 using System;
 using System.Collections.Generic;
@@ -16,17 +17,19 @@ namespace SenecEntitesAdapter
             _adapter = adapter;
         }
 
-        public InverterTemperatures Convert(DateTimeOffset instant, SenecBatteryObj source)
+        public InverterTemperatures Convert(DateTimeOffset instant, Temperatures source)
         {
             var result = new InverterTemperatures(
                 instant: instant,
+                batteryCelsius: _adapter.GetDecimal(source.TemperatureMeasurements.BATTERY_TEMP),
+                caseCelsius: _adapter.GetDecimal(source.TemperatureMeasurements.CASE_TEMP),
                 temperatures: new List<SenecDecimal>
                 {
-                    _adapter.GetDecimal(source.TEMP1),
-                    _adapter.GetDecimal(source.TEMP2),
-                    _adapter.GetDecimal(source.TEMP3),
-                    _adapter.GetDecimal(source.TEMP4),
-                    _adapter.GetDecimal(source.TEMP5),
+                    _adapter.GetDecimal(source.Inverter.TEMP1),
+                    _adapter.GetDecimal(source.Inverter.TEMP2),
+                    _adapter.GetDecimal(source.Inverter.TEMP3),
+                    _adapter.GetDecimal(source.Inverter.TEMP4),
+                    _adapter.GetDecimal(source.Inverter.TEMP5),
                 });
 
             return result;
@@ -35,6 +38,6 @@ namespace SenecEntitesAdapter
 
     public interface IBatteryTemperatureAdapter
     {
-        InverterTemperatures Convert(DateTimeOffset instant, SenecBatteryObj meter);
+        InverterTemperatures Convert(DateTimeOffset instant, Temperatures meter);
     }
 }

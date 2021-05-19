@@ -226,7 +226,7 @@ namespace LocalPublisher.Domain.Functions
                 }
             }
             _logger.Verbose(summaryIssue + $"Publishing {nameof(TSummaryEntity)} count {list.Count}");
-            _mediator.Publish(new IntervalOfMoments<TSummaryEntity>(intervalStart, intervalEnd, list), cancellationToken);
+            //_mediator.Publish(new IntervalOfMoments<TSummaryEntity>(intervalStart, intervalEnd, list), cancellationToken);
             return list;
         }
     }

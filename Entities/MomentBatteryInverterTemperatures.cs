@@ -8,11 +8,19 @@ namespace Entities
     {
         public List<decimal?> Temperatures { get; }
         public DateTimeOffset Instant { get; }
+        public decimal? BatteryCelsius { get; }
+        public decimal? CaseCelsius { get; }
         public bool IsValid { get; }
 
-        public MomentBatteryInverterTemperatures(DateTimeOffset instant, bool isValid, IEnumerable<decimal?> temperatures)
+        public MomentBatteryInverterTemperatures(
+            DateTimeOffset instant,
+            decimal? batteryCelsius,
+            decimal? caseCelsius,
+            bool isValid, IEnumerable<decimal?> temperatures)
         {
             Instant = instant;
+            BatteryCelsius = batteryCelsius;
+            CaseCelsius = caseCelsius;
             Temperatures = temperatures.ToList();
             IsValid = isValid;
         }

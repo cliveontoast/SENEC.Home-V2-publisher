@@ -77,8 +77,12 @@ namespace SenecSourceWebAppTest
             var result = builder
                 .AddGridMeter()
                 .AddTime()
+                .AddTemperatureMeasure()
                 .Build();
             var response = result.Request<LalaResponseContent>(CancellationToken.None).RunWait();
+            var adapter = new Adapter();
+            var batteryTemp = adapter.GetValue(response.TEMPMEASURE?.BATTERY_TEMP);
+            var caseTemp = adapter.GetValue(response.TEMPMEASURE?.CASE_TEMP);
         }
 
         [TestMethod]
@@ -120,6 +124,9 @@ namespace SenecSourceWebAppTest
         {
             Mock<IConfiguration> mockConfiguration = new Mock<IConfiguration>();
             mockConfiguration.Setup(a => a.GetSection("Timezone").Value).Returns("Australia/Perth");
+            mockConfiguration.Setup(a => a.GetSection("SenecIP").Value).Returns("192.168.0.199");
+            mockConfiguration.Setup(a => a.GetSection("FroniusIP").Value).Returns("");
+            mockConfiguration.Setup(a => a.GetSection("TeslaPowerwall2IP").Value).Returns("");
 
             IServiceCollection services = new ServiceCollection();
             var cb = AssemblySetup.BuildContainer(services);

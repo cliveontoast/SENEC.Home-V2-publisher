@@ -7,6 +7,8 @@ namespace Entities
     public class TemperatureInverterSummaryDaily
     {
         public DateTime Date { get; set; }
+        public DayTemperatureSummary BatteryCelsius { get; }
+        public DayTemperatureSummary CaseCelsius { get; }
         public DayTemperatureSummary T1 { get; set; }
         public DayTemperatureSummary T2 { get; set; }
         public DayTemperatureSummary T3 { get; set; }
@@ -14,6 +16,8 @@ namespace Entities
         public DayTemperatureSummary T5 { get; set; }
 
         public TemperatureInverterSummaryDaily(
+            DayTemperatureSummary batteryCelsius,
+            DayTemperatureSummary caseCelsius,
             DayTemperatureSummary t1,
             DayTemperatureSummary t2,
             DayTemperatureSummary t3,
@@ -26,6 +30,8 @@ namespace Entities
             T3 = t3;
             T2 = t2;
             T1 = t1;
+            BatteryCelsius = batteryCelsius;
+            CaseCelsius = caseCelsius;
             Date = date;
         }
     }

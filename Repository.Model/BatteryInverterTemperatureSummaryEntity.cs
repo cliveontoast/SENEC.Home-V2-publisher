@@ -10,7 +10,7 @@ namespace Repository.Model
         public const string DISCRIMINATOR = "InverterTemperature";
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         // required for documentDB
-        public BatteryInverterTemperatureSummaryEntity() : base(default, default, default, new decimal?[0])
+        public BatteryInverterTemperatureSummaryEntity() : base(default, default, default, default, default, new decimal?[0])
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
         }
@@ -18,6 +18,8 @@ namespace Repository.Model
         public BatteryInverterTemperatureSummaryEntity(InverterTemperatureSummary entity, int version) : base(
             intervalEndExcluded: entity.IntervalEndExcluded,
             intervalStartIncluded: entity.IntervalStartIncluded,
+            caseCelsius: entity.CaseCelsius,
+            batteryCelsius: entity.BatteryCelsius,
             temperatures: entity.Temperatures.ToArray(),
             secondsWithoutData:entity.SecondsWithoutData)
         {

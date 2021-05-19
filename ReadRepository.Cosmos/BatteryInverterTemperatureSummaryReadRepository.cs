@@ -55,6 +55,8 @@ namespace ReadRepository.Cosmos
                 intervalStartIncluded: a.IntervalStartIncluded,
                 key: a.Id,
                 version: a.Version,
+                batteryCelsius: a.BatteryCelsius,
+                caseCelsius: a.CaseCelsius,
                 maximumTemperature: a.Temperatures,
                 secondsWithoutData: a.SecondsWithoutData)
                 ).ToImmutableList();

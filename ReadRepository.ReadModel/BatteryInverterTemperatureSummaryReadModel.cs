@@ -12,10 +12,13 @@ namespace ReadRepository.ReadModel
         public string Key { get; set; }
 
         public List<decimal?> MaximumTemperature { get; set; }
-
+        public decimal? MaximumBatteryCelsius { get; private set; }
+        public decimal? MaximumCaseCelsius { get; private set; }
         public int SecondsWithoutData { get; set; }
 
         public BatteryInverterTemperatureSummaryReadModel(DateTimeOffset intervalEndExcluded, DateTimeOffset intervalStartIncluded, string key, int version,
+            decimal? batteryCelsius,
+            decimal? caseCelsius,
             List<decimal?> maximumTemperature,
             int secondsWithoutData)
         {
@@ -25,7 +28,8 @@ namespace ReadRepository.ReadModel
             Version = version;
 
             MaximumTemperature = maximumTemperature;
-            
+            MaximumBatteryCelsius = batteryCelsius;
+            MaximumCaseCelsius = caseCelsius;
             SecondsWithoutData = secondsWithoutData;
         }
     }

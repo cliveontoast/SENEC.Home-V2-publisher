@@ -59,6 +59,12 @@ namespace SenecSource
             return this;
         }
 
+        public ILalaRequestBuilder AddTemperatureMeasure()
+        {
+            result.Add(nameof(LalaResponseContent.TEMPMEASURE), JObject.FromObject(new TemperatureMeasure()));
+            return this;
+        }
+
         //public async Task<LalaRequestBuilder> AddConsumption()
         //{
         //    return await AddResource("lalaRequest.SmartMeterConsumption.json");

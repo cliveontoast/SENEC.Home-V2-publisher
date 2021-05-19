@@ -94,7 +94,15 @@ export class TemperaturesComponent {
       {
         type: 'spline',
         name: 'T5'
-      }
+      },
+      {
+        type: 'spline',
+        name: 'Battery'
+      },
+      {
+        type: 'spline',
+        name: 'Case'
+      },
     ],
     plotOptions: {
       series: {
@@ -194,7 +202,23 @@ export class TemperaturesComponent {
       {
         type: 'spline',
         name: 'T5 yesterday'
-      }
+      },
+      {
+        type: 'spline',
+        name: 'Base'
+      },
+      {
+        type: 'spline',
+        name: 'Case'
+      },
+      {
+        type: 'spline',
+        name: 'Base yesterday'
+      },
+      {
+        type: 'spline',
+        name: 'Case yesterday'
+      },
     ],
     plotOptions: {
       series: {
@@ -267,12 +291,18 @@ export class TemperaturesComponent {
     this.chartOptions.series[2]['data'] = value.temps[2].data;
     this.chartOptions.series[3]['data'] = value.temps[3].data;
     this.chartOptions.series[4]['data'] = value.temps[4].data;
+    this.chartOptions.series[5]['data'] = value.temps[5].data;
+    this.chartOptions.series[6]['data'] = value.temps[6].data;
 
     this.historyOptions.plotOptions.spline.pointStart = Date.UTC(2019,5,19);
     this.historyOptions.series[0]['data'] = value.temps[3].data;
     this.historyOptions.series[1]['data'] = value.temps[4].data;
     this.historyOptions.series[2]['data'] = yesterday.temps[3].data;
     this.historyOptions.series[3]['data'] = yesterday.temps[4].data;
+    this.historyOptions.series[4]['data'] = value.temps[5].data;
+    this.historyOptions.series[5]['data'] = value.temps[6].data;
+    this.historyOptions.series[6]['data'] = yesterday.temps[5].data;
+    this.historyOptions.series[7]['data'] = yesterday.temps[6].data;
 
     this.updateFlag = true;
   }

@@ -46,7 +46,7 @@ namespace Domain
 
         private InverterTemperatureSummary BuildTemperatureSummary(ConcurrentDictionary<long, string> collection, DateTimeOffset intervalStart, DateTimeOffset intervalEnd, List<string> removedTexts, CancellationToken cancellationToken)
         {
-            var moments = _summaryFunctions.FillSummary<MomentBatteryInverterTemperatures, SenecEntities.BatteryObject1>(
+            var moments = _summaryFunctions.FillSummary<MomentBatteryInverterTemperatures, SenecEntities.Temperatures>(
                 cancellationToken,
                 collection,
                 intervalStart,
@@ -59,11 +59,15 @@ namespace Domain
             var temperatureSensors = moments.Max(a => a.Temperatures.Count);
             Statistic[] statistics = Enumerable.Range(0, temperatureSensors)
                 .Select(i => CreateStatistics(moments, (moment) => moment.Temperatures.Skip(i).First())).ToArray();
-
+            Statistic caseCelsius = CreateStatistics(moments, (moment) => moment.CaseCelsius);
+            Statistic batteryCelsius = CreateStatistics(moments, (moment) => moment.BatteryCelsius);
+            _logger.Information("Summary Battery {Battery} Case {Case}", batteryCelsius.Maximum, caseCelsius.Maximum);
             var stats = new InverterTemperatureSummary(
                 intervalStartIncluded: intervalStart,
                 intervalEndExcluded: intervalEnd,
                 secondsWithoutData: maximumValues - moments.Count,
+                caseCelsius: caseCelsius,
+                batteryCelsius: batteryCelsius,
                 statistics
                 );
             return stats;

@@ -17,6 +17,8 @@ namespace Client.WebApp.Dto
                 new Temperatures("T3", result.T3),
                 new Temperatures("T4", result.T4),
                 new Temperatures("T5", result.T5),
+                new Temperatures("Case", result.CaseCelsius),
+                new Temperatures("Battery", result.BatteryCelsius),
             };
         }
 

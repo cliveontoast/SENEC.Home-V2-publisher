@@ -8,5 +8,6 @@
         ILalaRequestBuilder AddStatistics();
         ILalaRequestBuilder AddEnergy();
         ILalaRequestBuilder AddInverterTemperature();
+        ILalaRequestBuilder AddTemperatureMeasure();
     }
 }

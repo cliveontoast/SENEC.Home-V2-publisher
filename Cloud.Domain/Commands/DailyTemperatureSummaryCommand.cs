@@ -30,6 +30,8 @@ namespace Domain.Commands
             var dayData = await _inverterTemperatureSummaryDocumentReadRepository.Fetch(request.Date);
 
             var results = new TemperatureInverterSummaryDaily(
+                batteryCelsius: GetTemperature(request.Date, dayData, a => a.MaximumBatteryCelsius),
+                caseCelsius: GetTemperature(request.Date, dayData, a => a.MaximumCaseCelsius),
                 t1: GetTemperature(request.Date, dayData, a => a.MaximumTemperature.Skip(0).FirstOrDefault()),
                 t2: GetTemperature(request.Date, dayData, a => a.MaximumTemperature.Skip(1).FirstOrDefault()),
                 t3: GetTemperature(request.Date, dayData, a => a.MaximumTemperature.Skip(2).FirstOrDefault()),

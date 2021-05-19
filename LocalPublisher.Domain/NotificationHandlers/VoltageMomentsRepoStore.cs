@@ -22,13 +22,14 @@ namespace Domain
         private readonly PersistToRepositoryFunctions<IntervalOfMoments<MomentVoltage>, VoltageMomentReadModel> _persistFunctions;
 
         public VoltageMomentsRepoStore(
-            ILogger logger,
-            IMediator mediator,
-            IAppCache cache,
-            IRepoConfig config,
-            IApplicationVersion versionConfig,
-            IVoltageMomentReadRepository voltageSummaryReadRepository,
-            IVoltageMomentRepository voltageSummaryRepository)
+            //ILogger logger,
+            //IMediator mediator,
+            //IAppCache cache,
+            //IRepoConfig config,
+            //IApplicationVersion versionConfig,
+            //IVoltageMomentReadRepository voltageSummaryReadRepository,
+            //IVoltageMomentRepository voltageSummaryRepository
+            )
         {
             throw new Exception("Uses too much data");
             //_persistFunctions = new PersistToRepositoryFunctions<IntervalOfMoments<MomentVoltage>, VoltageMomentReadModel>(
