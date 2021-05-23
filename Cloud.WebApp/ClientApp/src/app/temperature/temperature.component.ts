@@ -205,7 +205,7 @@ export class TemperaturesComponent {
       },
       {
         type: 'spline',
-        name: 'Base'
+        name: 'Battery'
       },
       {
         type: 'spline',
@@ -213,7 +213,7 @@ export class TemperaturesComponent {
       },
       {
         type: 'spline',
-        name: 'Base yesterday'
+        name: 'Battery yesterday'
       },
       {
         type: 'spline',
