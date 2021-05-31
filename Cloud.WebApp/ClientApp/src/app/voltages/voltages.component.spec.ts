@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { VoltagesComponent } from './voltages.component';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
@@ -10,7 +10,7 @@ describe('CounterComponent', () => {
   let fixture: ComponentFixture<VoltagesComponent>;
   let httpMock: HttpTestingController;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [VoltagesComponent],
       imports: [
@@ -40,7 +40,7 @@ describe('CounterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display a match', async(() => {
+  it('should display a match', waitForAsync(() => {
     //const result = {
     //  characterPositions: [0, 1],
     //  error: null,
@@ -58,7 +58,7 @@ describe('CounterComponent', () => {
     //expect(component.matches.errorType).toEqual(result.errorType);
   }));
 
-  it('should display no match', async(() => {
+  it('should display no match', waitForAsync(() => {
     //const nonResult = {
     //  characterPositions: [0, 1],
     //  error: null,

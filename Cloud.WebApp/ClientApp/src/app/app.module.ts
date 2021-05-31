@@ -48,7 +48,7 @@ import { HighPrecisionVoltagesComponent } from './high-precision-voltages/high-p
       { path: 'temperature', component: TemperaturesComponent },
       { path: 'equipment', component: EquipmentStateComponent },
       { path: '**', component: HomeConsumptionComponent }
-    ])
+], { relativeLinkResolution: 'legacy' })
   ],
   providers: [
     VoltageSummaryService,
