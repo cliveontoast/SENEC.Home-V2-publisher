@@ -137,7 +137,6 @@ export class HomeConsumptionComponent implements OnInit {
             enabled: false
         },
         pointInterval: 3600000/12, // one hour / 12 = 5 min
-        pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)
       },
       area: {
         stacking: 'normal',
@@ -148,7 +147,6 @@ export class HomeConsumptionComponent implements OnInit {
             lineColor: '#666666'
         },
         pointInterval: 3600000/12, // one hour / 12 = 5 min
-        pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)
       }
     }
   }; // required
@@ -189,11 +187,12 @@ export class HomeConsumptionComponent implements OnInit {
   }
   
   private applyData(value: DailyHomeConsumptionDto) {
-    this.chartOptions.plotOptions.area.pointStart = new Date(
+    const date = Date.UTC(
       this.displayDate.getFullYear(),
       this.displayDate.getMonth(),
-      this.displayDate.getDate())
-      .valueOf();
+      this.displayDate.getDate());
+    this.chartOptions.plotOptions.area.pointStart = date; 
+    this.chartOptions.plotOptions.spline.pointStart = date;
     this.chartOptions.series[0]['data'] = value.toCommunity.data;
     this.chartOptions.series[1]['data'] = value.toBattery.data;
     this.chartOptions.series[2]['data'] = value.fromBattery.data;
