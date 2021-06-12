@@ -51,7 +51,22 @@ sudo apt install mono-complete
 sudo dpkg-reconfigure tzdata
 
 sudo apt-get install tmux
+
+sudo raspi-config
+sysetm => boot -> desktop
+https://lifehacker.com/how-to-control-a-raspberry-pi-remotely-from-anywhere-in-1792892937
+sudo apt-get install realvnc-vnc-server
+
+https://www.techno.tips/dt_articles/100-headless-raspberry-pi-4-with-working-team-viewer/
+
+interface VNC
+https://www.realvnc.com/en/connect/download/viewer/
+
+run vncserver
+connect, i.e. 192.168.0.131:1
+
 ```
+
 
 https://iotpoint.wordpress.com/2016/11/15/tmux-terminal-multiplexer-for-raspberry-pi/
 
