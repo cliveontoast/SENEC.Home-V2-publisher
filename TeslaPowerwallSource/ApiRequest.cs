@@ -79,7 +79,7 @@ namespace TeslaPowerwallSource
 
         private async Task<(string? response, DateTimeOffset start, DateTimeOffset end)> Request(string endPoint, CancellationToken token)
         {
-            var client = _client.Build(token);
+            var client = await _client.Build(token);
             using var response = await GetResponse(client, endPoint, token);
             var isOk = _endPoint.IsOk(response.response);
             _logger.Information(Client.LOGGING + $"Client {client.GetHashCode()} response is {response.response.StatusCode}");

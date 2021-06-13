@@ -29,32 +29,29 @@ namespace TeslaPowerwallSource
             _endPoint = endPoint;
         }
 
-        public HttpClient Build(CancellationToken token)
+        public async Task<HttpClient> Build(CancellationToken token)
         {
+            Task<HttpClient>? clientTask;
             lock (__lock)
             {
-                var clientTask = _appCache.GetOrAddAsync(CACHE_KEY, async () => await GetHttpClient(token));
-                var client = RunWait(clientTask);
-                return client;
+                clientTask = _appCache.GetOrAddAsync(CACHE_KEY, () => GetHttpClient(token), DateTimeOffset.Now.AddMinutes(10));
             }
+            var client = await clientTask;
+            return client;
         }
 
         public void Destroy(CancellationToken token)
         {
-            _appCache.Remove(CACHE_KEY);
-        }
-
-        public static TResult RunWait<TResult>(Task<TResult> asyncTask)
-        {
-            var task = Task.Run(() => asyncTask);
-            task.Wait();
-            return task.Result;
+            lock (__lock)
+            {
+                _appCache.Remove(CACHE_KEY);
+            }
         }
 
         private async Task<HttpClient> GetHttpClient(CancellationToken token)
         {
             var client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(5);
+            client.Timeout = TimeSpan.FromSeconds(1);
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Accept", "*/*");
             client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
@@ -111,7 +108,7 @@ namespace TeslaPowerwallSource
             }
             catch (Exception e)
             {
-                _logger.Error(e, LOGGING + "Auth exception");
+                _logger.Error(e, LOGGING + $"Auth exception {e.GetType().Name}");
                 throw;
             }
         }
@@ -124,7 +121,7 @@ namespace TeslaPowerwallSource
 
     public interface IClient
     {
-        HttpClient Build(CancellationToken token);
+        Task<HttpClient> Build(CancellationToken token);
         void Destroy(CancellationToken token);
     }
 }
