@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 using System.Threading;
 using Repository.Model;
 
@@ -48,7 +47,7 @@ namespace ReadRepository.Cosmos
             return ToReadModel(results);
         }
 
-        private static ImmutableList<BatteryInverterTemperatureSummaryReadModel> ToReadModel(IEnumerable<BatteryInverterTemperatureSummaryEntity> iterator)
+        private static BatteryInverterTemperatureSummaryReadModel[] ToReadModel(IEnumerable<BatteryInverterTemperatureSummaryEntity> iterator)
         {
             var response = iterator.Select(a => new BatteryInverterTemperatureSummaryReadModel(
                 intervalEndExcluded: a.IntervalEndExcluded,
@@ -59,7 +58,7 @@ namespace ReadRepository.Cosmos
                 caseCelsius: a.CaseCelsius,
                 maximumTemperature: a.Temperatures,
                 secondsWithoutData: a.SecondsWithoutData)
-                ).ToImmutableList();
+                ).ToArray();
             return response;
         }
     }

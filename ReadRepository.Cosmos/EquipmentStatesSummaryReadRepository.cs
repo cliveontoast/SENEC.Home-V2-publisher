@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 using System.Threading;
 using Repository.Model;
 
@@ -48,7 +47,7 @@ namespace ReadRepository.Cosmos
             return ToReadModel(results);
         }
 
-        private static ImmutableList<EquipmentStatesSummaryReadModel> ToReadModel(IEnumerable<EquipmentStatesSummaryEntity> iterator)
+        private static EquipmentStatesSummaryReadModel[] ToReadModel(IEnumerable<EquipmentStatesSummaryEntity> iterator)
         {
             var response = iterator.Select(a => new EquipmentStatesSummaryReadModel(
                 intervalEndExcluded: a.IntervalEndExcluded,
@@ -57,7 +56,7 @@ namespace ReadRepository.Cosmos
                 version: a.Version,
                 states: a.States.ToList(),
                 secondsWithoutData: a.SecondsWithoutData)
-                ).ToImmutableList();
+                ).ToArray();
             return response;
         }
     }

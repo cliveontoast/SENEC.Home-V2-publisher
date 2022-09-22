@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 using System.Threading;
 using Repository.Model;
 
@@ -36,7 +35,7 @@ namespace ReadRepository.Cosmos
             return response;
         }
 
-        private static async Task<ImmutableList<VoltageSummaryReadModel>> ToReadModel(Microsoft.Azure.Cosmos.FeedIterator<VoltageSummary> iterator)
+        private static async Task<VoltageSummaryReadModel[]> ToReadModel(Microsoft.Azure.Cosmos.FeedIterator<VoltageSummary> iterator)
         {
             var results = await iterator.ReadNextAsync();
             var response = results.Select(a => new VoltageSummaryReadModel(
@@ -47,7 +46,7 @@ namespace ReadRepository.Cosmos
                 l2: a.L2,
                 l3: a.L3,
                 version: a.Version ?? 0)
-                ).ToImmutableList();
+                ).ToArray();
             return response;
         }
     }

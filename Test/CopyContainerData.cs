@@ -3,7 +3,6 @@ using Domain;
 using LazyCache;
 using LazyCache.Providers;
 using LocalPublisherWebApp;
-using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

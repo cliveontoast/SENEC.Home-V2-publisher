@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 using System.Threading;
 using Repository.Model;
 using Repository;
@@ -38,13 +37,13 @@ namespace ReadRepository.Cosmos
             return ToReadModel(results);
         }
 
-        private static ImmutableList<PublisherReadModel> ToReadModel(IEnumerable<PublisherEntity> iterator)
+        private static PublisherReadModel[] ToReadModel(IEnumerable<PublisherEntity> iterator)
         {
             var response = iterator.Select(a => new PublisherReadModel(
                 key: a.GetKey(),
                 name: a.Name,
                 lastActive: a.LastActive)
-                ).ToImmutableList();
+                ).ToArray();
             return response;
         }
     }

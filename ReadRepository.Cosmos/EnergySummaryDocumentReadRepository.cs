@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 using System.Threading;
 using Repository.Model;
 
@@ -71,7 +70,7 @@ namespace ReadRepository.Cosmos
                     secondsBatteryCharging: a.SecondsBatteryCharging,
                     secondsBatteryDischarging: a.SecondsBatteryDischarging,
                     secondsWithoutData: a.SecondsWithoutData)
-            ).ToImmutableList();
+            ).ToList();
             return response;
         }
 
@@ -90,7 +89,7 @@ namespace ReadRepository.Cosmos
             return results;
         }
 
-        private static ImmutableList<EnergySummaryReadModel> ToReadModel(IEnumerable<EnergySummaryEntity> iterator)
+        private static EnergySummaryReadModel[] ToReadModel(IEnumerable<EnergySummaryEntity> iterator)
         {
             var response = iterator.Select(a => new EnergySummaryReadModel(
                 intervalEndExcluded: a.IntervalEndExcluded,
@@ -116,7 +115,7 @@ namespace ReadRepository.Cosmos
                 secondsBatteryCharging: a.SecondsBatteryCharging,
                 secondsBatteryDischarging: a.SecondsBatteryDischarging,
                 secondsWithoutData: a.SecondsWithoutData)
-                ).ToImmutableList();
+                ).ToArray();
             return response;
         }
     }

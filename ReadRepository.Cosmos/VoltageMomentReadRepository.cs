@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 using System.Threading;
 using Repository.Model;
 using Entities;
@@ -59,7 +58,7 @@ namespace ReadRepository.Cosmos
             return ToReadModel(results);
         }
 
-        private static ImmutableList<VoltageMomentReadModel> ToReadModel(IEnumerable<IntervalOfMomentsEntity<VoltageMomentEntity>> iterator)
+        private static VoltageMomentReadModel[] ToReadModel(IEnumerable<IntervalOfMomentsEntity<VoltageMomentEntity>> iterator)
         {
             var response = iterator.Select(a => new VoltageMomentReadModel(
                 intervalEndExcluded: a.IntervalEndExcluded,
@@ -67,7 +66,7 @@ namespace ReadRepository.Cosmos
                 key: a.Id, 
                 version: a.Version,
                 moments: a.Moments.Select(a => (MomentVoltage)a))
-                ).ToImmutableList();
+                ).ToArray();
             return response;
         }
     }
