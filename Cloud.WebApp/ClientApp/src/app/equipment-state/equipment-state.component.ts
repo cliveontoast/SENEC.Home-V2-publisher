@@ -20,7 +20,9 @@ export class EquipmentStateComponent implements OnInit {
     title: { text: 'States of the battery' },
     chart: {
       type: 'area',
-      zoomType: 'x',
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',
@@ -44,7 +46,8 @@ export class EquipmentStateComponent implements OnInit {
               lineColor: '#ffffff'
           },
           accessibility: {
-              pointDescriptionFormatter: function (point) {
+            point: {
+              descriptionFormatter:  function (point) {
                   function round(x) {
                       return Math.round(x * 100) / 100;
                   }
@@ -52,6 +55,7 @@ export class EquipmentStateComponent implements OnInit {
                       point.y + ' seconds, ' + round(point.percentage) + '%, ' +
                       point.series.name;
               }
+            },
           },
           pointStart: Date.UTC(2018,1,1),
           pointInterval: 3600000/12, // one hour / 12 = 5 min

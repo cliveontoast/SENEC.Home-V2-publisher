@@ -17,7 +17,9 @@ export class HighPrecisionVoltagesComponent {
   chartOptions: Highcharts.Options = {
     title: { text: 'HP voltages of each phase over the day' },
     chart: {
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',

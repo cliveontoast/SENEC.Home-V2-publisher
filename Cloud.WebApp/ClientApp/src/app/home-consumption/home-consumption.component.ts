@@ -18,7 +18,9 @@ export class HomeConsumptionComponent implements OnInit {
     title: { text: 'Energy use by source' },
     chart: {
       // type: 'area',
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',
