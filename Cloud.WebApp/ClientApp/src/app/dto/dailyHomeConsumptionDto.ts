@@ -2,6 +2,7 @@ export interface DailyHomeConsumptionDto {
   date: number;
   toHome: HomeConsumptionDto;
   fromGrid: HomeConsumptionDto;
+  fromGridToBattery: HomeConsumptionDto;
   fromSolar: HomeConsumptionDto;
   fromBattery: HomeConsumptionDto;
   toBattery: HomeConsumptionDto;

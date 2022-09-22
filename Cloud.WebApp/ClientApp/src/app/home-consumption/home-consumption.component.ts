@@ -77,10 +77,10 @@ export class HomeConsumptionComponent implements OnInit {
     series: [
       {
         type: 'area',
-        color: '#C2E0A1',
-        lineColor: '#47A530',
+        color: '#DCE072',
+        lineColor: 'black',
         lineWidth: 1,
-        name: 'Sun to community'
+        name: 'Grid to battery'
       },
       {
         type: 'area',
@@ -88,6 +88,13 @@ export class HomeConsumptionComponent implements OnInit {
         lineColor: '#C4A136',
         lineWidth: 1,
         name: 'Sun to battery'
+      },
+      {
+        type: 'area',
+        color: '#C2E0A1',
+        lineColor: '#47A530',
+        lineWidth: 1,
+        name: 'Sun to community'
       },
       {
         type: 'area',
@@ -193,12 +200,13 @@ export class HomeConsumptionComponent implements OnInit {
       this.displayDate.getDate());
     this.chartOptions.plotOptions.area.pointStart = date; 
     this.chartOptions.plotOptions.spline.pointStart = date;
-    this.chartOptions.series[0]['data'] = value.toCommunity.data;
+    this.chartOptions.series[0]['data'] = value.fromGridToBattery.data;
     this.chartOptions.series[1]['data'] = value.toBattery.data;
-    this.chartOptions.series[2]['data'] = value.fromBattery.data;
-    this.chartOptions.series[3]['data'] = value.fromSolar.data;
-    this.chartOptions.series[4]['data'] = value.fromGrid.data;
-    this.chartOptions.series[5]['data'] = value.toHome.data;
+    this.chartOptions.series[2]['data'] = value.toCommunity.data;
+    this.chartOptions.series[3]['data'] = value.fromBattery.data;
+    this.chartOptions.series[4]['data'] = value.fromSolar.data;
+    this.chartOptions.series[5]['data'] = value.fromGrid.data;
+    this.chartOptions.series[6]['data'] = value.toHome.data;
     this.updateFlag = true;
   }
 

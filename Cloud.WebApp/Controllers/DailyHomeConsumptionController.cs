@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Domain.Commands;
+using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NuanceWebApp.Dto;
@@ -49,11 +50,25 @@ namespace NuanceWebApp.Controllers
                     nameof(DailyHomeConsumptionController),
                     nameof(Get),
                     date);
-                var result = await _mediator.Send(new DailyHomeConsumptionCommand
+                var homeResult = await _mediator.Send(new DailyHomeConsumptionCommand
                 {
                     Date = DateTime.Parse(date)
                 });
-                var response = new DailyHomeConsumptionDto(result);
+                PowerMovementDaily powerFlowResult = null;
+                try
+                {
+                    powerFlowResult = await _mediator.Send(new DailyPowerMovementCommand
+                    {
+                        Date = DateTime.Parse(date)
+                    });
+                }
+                catch (Exception)
+                {
+                }
+                
+                var response = powerFlowResult == null 
+                    ? new DailyHomeConsumptionDto(homeResult)
+                    : new DailyHomeConsumptionDto(homeResult, powerFlowResult);
                 return Ok(response);
             }
             catch (Exception e)

@@ -18,12 +18,25 @@ namespace NuanceWebApp.Dto
             ToCommunity = new HomeConsumptionDto("Solar to community", result.SolarExported.UsageSummary.Select(a => a.WattHours));
         }
 
+        public DailyHomeConsumptionDto(HomeConsumptionDaily result, PowerMovementDaily powerFlowResult)
+        {
+            Date = new DateTimeOffset(result.Date, TimeSpan.Zero).ToUnixTimeMilliseconds();
+            ToHome = new HomeConsumptionDto("Home consumption", result.Consumption.UsageSummary.Select(a => a.WattHours));
+            FromGridToBattery = new HomeConsumptionDto("Grid to Battery", powerFlowResult.GridToBattery.UsageSummary.Select(a => a.WattHours));
+            FromGrid = new HomeConsumptionDto("Grid to Home", powerFlowResult.GridToHome.UsageSummary.Select(a => a.WattHours == null ? (decimal?)null : Math.Max(0, a.WattHours.Value)));
+            FromSolar = new HomeConsumptionDto("From sun", result.Solar.UsageSummary.Select(a => a.WattHours));
+            FromBattery = new HomeConsumptionDto("From battery", result.Battery.UsageSummary.Select(a => a.WattHours));
+            ToBattery = new HomeConsumptionDto("To battery", powerFlowResult.SolarToBattery.UsageSummary.Select(a => a.WattHours));
+            ToCommunity = new HomeConsumptionDto("Solar to community", result.SolarExported.UsageSummary.Select(a => a.WattHours));
+        }
+
         public long Date { get; private set; }
         public HomeConsumptionDto ToHome { get; }
-        public HomeConsumptionDto FromGrid { get; }
+        public HomeConsumptionDto FromGrid { get; } // to home
+        public HomeConsumptionDto FromGridToBattery { get; }
         public HomeConsumptionDto FromSolar { get; }
         public HomeConsumptionDto FromBattery { get; }
-        public HomeConsumptionDto ToBattery { get; }
+        public HomeConsumptionDto ToBattery { get; } // solar to battery
         public HomeConsumptionDto ToCommunity { get; }
         public IEnumerable<string> XLabels { get; }
     }

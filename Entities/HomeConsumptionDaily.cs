@@ -7,7 +7,6 @@ namespace Entities
     public class HomeConsumptionDaily
     {
         public DateTime Date { get; set; }
-        public DayConsumptionSource BatteryEstimate { get; }
         public DayConsumptionSource BatteryCharge { get; }
         public DayConsumptionSource SolarExported { get; }
         public DayConsumptionSource Grid { get; set; }
@@ -29,27 +28,9 @@ namespace Entities
             Solar = solarConsumption;
             Grid = grid;
             Date = date;
-            BatteryEstimate = GetEstimate();
             BatteryCharge = batteryCharge;
             SolarExported = solarExported;
             // missing battery exported
-        }
-
-        private DayConsumptionSource GetEstimate()
-        {
-            var batteryValues = new List<(TimeSpan, decimal?)>();
-            for (int i = 0; i < Consumption.UsageSummary.Count(); i++)
-            {
-                var consumptionItem = Consumption.UsageSummary.Skip(i).First();
-                var consumptionValue = consumptionItem.WattHours;
-                var solar = Solar.UsageSummary.Skip(i).First().WattHours;
-                var grid = Grid.UsageSummary.Skip(i).First().WattHours;
-                // not a great way. but the only way given the summary data as it is currently stored
-                var batteryEstimate = consumptionValue.GetValueOrDefault() - grid.GetValueOrDefault() - solar.GetValueOrDefault();
-
-                batteryValues.Add((consumptionItem.TimeOfDay, consumptionValue.HasValue ? batteryEstimate : (decimal?)null));
-            }
-            return new DayConsumptionSource(batteryValues);
         }
     }
 
