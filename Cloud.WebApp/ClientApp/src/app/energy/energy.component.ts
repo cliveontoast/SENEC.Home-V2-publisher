@@ -17,7 +17,9 @@ export class EnergyComponent implements OnInit {
   chartOptions: Highcharts.Options = {
     title: { text: 'Battery capacity over the day' },
     chart: {
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',

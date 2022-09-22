@@ -20,7 +20,9 @@ export class PowerMovementComponent implements OnInit {
     title: { text: 'Solar production' },
     chart: {
       // type: 'area',
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',
@@ -141,7 +143,9 @@ export class PowerMovementComponent implements OnInit {
     title: { text: 'Battery charge and discharge' },
     chart: {
       // type: 'area',
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',
@@ -274,7 +278,9 @@ export class PowerMovementComponent implements OnInit {
     title: { text: 'Home consumption' },
     chart: {
       // type: 'area',
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',

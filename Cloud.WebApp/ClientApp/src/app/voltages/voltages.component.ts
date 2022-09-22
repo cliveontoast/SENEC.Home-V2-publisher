@@ -17,7 +17,9 @@ export class VoltagesComponent {
   chartOptions: Highcharts.Options = {
     title: { text: 'Voltages of each phase over the day' },
     chart: {
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',

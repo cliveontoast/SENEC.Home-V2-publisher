@@ -18,7 +18,9 @@ export class TemperaturesComponent {
   chartOptions: Highcharts.Options = {
     title: { text: 'Temperatures of each sensor over the day' },
     chart: {
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',
@@ -130,7 +132,9 @@ export class TemperaturesComponent {
   historyOptions: Highcharts.Options = {
     title: { text: 'Temperatures T4 and T5 compared to yesterday' },
     chart: {
-      zoomType: 'x'
+      zooming: {
+        type: 'x',
+      },
     },
     xAxis: {
       type: 'datetime',
