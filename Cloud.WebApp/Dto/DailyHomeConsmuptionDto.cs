@@ -25,7 +25,7 @@ namespace NuanceWebApp.Dto
             FromGridToBattery = new HomeConsumptionDto("Grid to Battery", powerFlowResult.GridToBattery.UsageSummary.Select(a => a.WattHours));
             FromGrid = new HomeConsumptionDto("Grid to Home", powerFlowResult.GridToHome.UsageSummary.Select(a => a.WattHours == null ? (decimal?)null : Math.Max(0, a.WattHours.Value)));
             FromSolar = new HomeConsumptionDto("From sun", result.Solar.UsageSummary.Select(a => a.WattHours));
-            FromBattery = new HomeConsumptionDto("From battery", result.Battery.UsageSummary.Select(a => a.WattHours));
+            FromBattery = new HomeConsumptionDto("From battery", powerFlowResult.BatteryToHome.UsageSummary.Select(a => a.WattHours));
             ToBattery = new HomeConsumptionDto("To battery", powerFlowResult.SolarToBattery.UsageSummary.Select(a => a.WattHours));
             ToCommunity = new HomeConsumptionDto("Solar to community", result.SolarExported.UsageSummary.Select(a => a.WattHours));
         }
