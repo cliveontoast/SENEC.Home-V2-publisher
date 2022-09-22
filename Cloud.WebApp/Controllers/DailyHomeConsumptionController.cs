@@ -50,25 +50,20 @@ namespace NuanceWebApp.Controllers
                     nameof(DailyHomeConsumptionController),
                     nameof(Get),
                     date);
-                var homeResult = await _mediator.Send(new DailyHomeConsumptionCommand
+                var home = _mediator.Send(new DailyHomeConsumptionCommand
                 {
                     Date = DateTime.Parse(date)
                 });
-                PowerMovementDaily powerFlowResult = null;
-                try
+                var powerFlow = _mediator.Send(new DailyPowerMovementCommand
                 {
-                    powerFlowResult = await _mediator.Send(new DailyPowerMovementCommand
-                    {
-                        Date = DateTime.Parse(date)
-                    });
-                }
-                catch (Exception)
-                {
-                }
-                
-                var response = powerFlowResult == null 
-                    ? new DailyHomeConsumptionDto(homeResult)
-                    : new DailyHomeConsumptionDto(homeResult, powerFlowResult);
+                    Date = DateTime.Parse(date)
+                });
+                await Task.WhenAll(home, powerFlow);
+                if (home.IsFaulted)
+                    throw home.Exception;
+                var response = powerFlow.IsFaulted 
+                    ? new DailyHomeConsumptionDto(home.Result)
+                    : new DailyHomeConsumptionDto(home.Result, powerFlow.Result);
                 return Ok(response);
             }
             catch (Exception e)
