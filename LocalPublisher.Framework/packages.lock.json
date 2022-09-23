@@ -14,6 +14,12 @@
         "resolved": "8.0.0",
         "contentHash": "nGrXNpQX2FiZpIBydK9cxZnnoqP/cUd3k/53uRERYEqLtWzKtE15R6L+j5q5ax5Rv/+3wAIkOaPePkahfqrwjg=="
       },
+      "Azure.Core": {
+        "type": "Direct",
+        "requested": "[1.19.0, 1.19.0]",
+        "resolved": "1.19.0",
+        "contentHash": "lcDjG635DPE4fU5tqSueVMmzrx0QrIfPuY0+y6evHN5GanQ0GB+/4nuMHMmoNPwEow6OUPkJu4cZQxfHJQXPdA=="
+      },
       "LazyCache": {
         "type": "Direct",
         "requested": "[2.4.0, 2.4.0]",
@@ -40,9 +46,9 @@
       },
       "Microsoft.Azure.Cosmos": {
         "type": "Direct",
-        "requested": "[3.8.0, 3.8.0]",
-        "resolved": "3.8.0",
-        "contentHash": "nmF9HTlRuLNDWaTyRR/GudqOUbrFQoMNuCxpdCxU7BCQJ3qzV5tHS9vKeX9Zg/SmFXKgjjO5NaE6AltvGuiaRQ=="
+        "requested": "[3.30.1, 3.30.1]",
+        "resolved": "3.30.1",
+        "contentHash": "8q0qZiji27JMZ8zDbW7ZUPomNnUhRHJr17aZpXhuZYxMGQicRpxPgC6xUduh8c76kkyPrK4LpQ64khUXgjvOAA=="
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Direct",
@@ -337,6 +343,12 @@
         "requested": "[4.5.5, 4.5.5]",
         "resolved": "4.5.5",
         "contentHash": "XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw=="
+      },
+      "System.Memory.Data": {
+        "type": "Direct",
+        "requested": "[6.0.0, 6.0.0]",
+        "resolved": "6.0.0",
+        "contentHash": "ntFHArH3I4Lpjf5m4DCXQHJuGwWPNVJPaAvM95Jy/u+2Yzt2ryiyIN04LAogkjP9DeRcEOiviAjQotfmPq/FrQ=="
       },
       "System.Numerics.Vectors": {
         "type": "Direct",
