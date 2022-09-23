@@ -488,8 +488,8 @@
       },
       "NodaTime": {
         "type": "Transitive",
-        "resolved": "3.0.0",
-        "contentHash": "ZauY6Ihs+abkPCpgIafCj92sl+cDqFbvwrJj9Ga0dteWIYg+A5FeoteBzgzez/cyBeukl2kbDTt4qtpTbHvqOw==",
+        "resolved": "3.1.2",
+        "contentHash": "KAlnzQ2EtrrRhFoVePf2kMc24CXX3mAslfp+LmVQnk6HSZ8whgsHNpfUfO+jWCdMgGKQQKMjNCDgmTopjTPFFA==",
         "dependencies": {
           "System.Runtime.CompilerServices.Unsafe": "4.7.1"
         }
@@ -1692,7 +1692,7 @@
           "MediatR": "[9.0.0, )",
           "Microsoft.Extensions.Logging.Abstractions": "[6.0.2, )",
           "Newtonsoft.Json": "[13.0.1, )",
-          "NodaTime": "[3.0.0, )",
+          "NodaTime": "[3.1.2, )",
           "ReadRepository.Cosmos": "[1.0.0, )",
           "Repository.Cosmos": "[1.0.0, )",
           "Repository.EFCore": "[1.0.0, )",
@@ -1789,7 +1789,7 @@
       "shared": {
         "type": "Project",
         "dependencies": {
-          "NodaTime": "[3.0.0, )"
+          "NodaTime": "[3.1.2, )"
         }
       },
       "teslaentities": {
