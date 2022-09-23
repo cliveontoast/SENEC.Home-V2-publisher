@@ -14,11 +14,11 @@
       },
       "LazyCache.AspNetCore": {
         "type": "Direct",
-        "requested": "[2.0.4, )",
-        "resolved": "2.0.4",
-        "contentHash": "Z9oht99+kZYfLONgUQPcRrlKVkrl7p9b+Lz62v9aKeyJV/XePkGbTzGY+wbNNNtJoG2CjAzUbrsMqjz74vu91w==",
+        "requested": "[2.4.0, )",
+        "resolved": "2.4.0",
+        "contentHash": "5IFbG/IEcPTufNW67UwxCIbkUPHMLt7Pj995OO1EOEt6GP3PfrlwS3QnG7II92EYXcy0Gifm+DD+RvNoJyayaA==",
         "dependencies": {
-          "LazyCache": "2.0.4",
+          "LazyCache": "2.4.0",
           "microsoft.extensions.caching.abstractions": "2.1.0",
           "microsoft.extensions.caching.memory": "2.1.0",
           "microsoft.extensions.dependencyinjection.abstractions": "2.1.0"
@@ -94,11 +94,11 @@
       },
       "LazyCache": {
         "type": "Transitive",
-        "resolved": "2.0.4",
-        "contentHash": "fJBvpCVtwJOVBtiaN2cbIzSzz8wlZkyMWWQC0p31nqv/5mG4B4072s4qK6fdg6ZFMK4qzSeofwx+ya3gHThwNQ==",
+        "resolved": "2.4.0",
+        "contentHash": "THig17vqe5PEs3wvTqFrNzorz2nD4Qz9F9C3YlAydU673CogAO8z1u8NNJD6x52I7oDCQ/N/HwJIZMBH8Y/Qiw==",
         "dependencies": {
-          "microsoft.extensions.caching.abstractions": "2.1.0",
-          "microsoft.extensions.caching.memory": "2.1.0"
+          "Microsoft.Extensions.Caching.Abstractions": "2.1.0",
+          "Microsoft.Extensions.Caching.Memory": "2.1.0"
         }
       },
       "MediatR": {
@@ -919,7 +919,7 @@
           "Autofac": "[6.4.0, )",
           "FroniusEntities": "[1.0.0, )",
           "FroniusSource": "[1.0.0, )",
-          "LazyCache": "[2.0.4, )",
+          "LazyCache": "[2.4.0, )",
           "MediatR": "[8.0.0, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[3.1.3, )",
           "Microsoft.Extensions.Logging.Abstractions": "[3.1.3, )",
@@ -1019,7 +1019,7 @@
       "teslapowerwallsource": {
         "type": "Project",
         "dependencies": {
-          "LazyCache": "[2.0.4, )",
+          "LazyCache": "[2.4.0, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "Serilog": "[2.9.0, )",
           "Shared": "[1.0.0, )",

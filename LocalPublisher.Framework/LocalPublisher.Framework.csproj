@@ -43,11 +43,11 @@
     <Reference Include="Autofac.Extensions.DependencyInjection, Version=8.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.Extensions.DependencyInjection.8.0.0\lib\netstandard2.0\Autofac.Extensions.DependencyInjection.dll</HintPath>
     </Reference>
-    <Reference Include="LazyCache, Version=2.0.4.140, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LazyCache.2.0.4\lib\netstandard2.0\LazyCache.dll</HintPath>
+    <Reference Include="LazyCache, Version=2.4.0.174, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LazyCache.2.4.0\lib\netstandard2.0\LazyCache.dll</HintPath>
     </Reference>
-    <Reference Include="LazyCache.AspNetCore, Version=2.0.4.140, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LazyCache.AspNetCore.2.0.4\lib\netstandard2.0\LazyCache.AspNetCore.dll</HintPath>
+    <Reference Include="LazyCache.AspNetCore, Version=2.4.0.174, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LazyCache.AspNetCore.2.4.0\lib\netstandard2.0\LazyCache.AspNetCore.dll</HintPath>
     </Reference>
     <Reference Include="MediatR, Version=8.0.0.0, Culture=neutral, PublicKeyToken=bb9a41a5e8aaa7e2, processorArchitecture=MSIL">
       <HintPath>..\packages\MediatR.8.0.0\lib\net461\MediatR.dll</HintPath>
