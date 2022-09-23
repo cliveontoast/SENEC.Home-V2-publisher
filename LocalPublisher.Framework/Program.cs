@@ -61,7 +61,7 @@ namespace LocalPublisherMono
             using var scope = container.BeginLifetimeScope();
             using var tokenSource = new CancellationTokenSource();
 
-            var service = scope.Resolve<TimedHostedService>();
+            var service = scope.Resolve<TimedHostedSvc>();
             service.StartAsync(tokenSource.Token).Wait();
             var cancelTask = Task.Factory.StartNew(() =>
             {

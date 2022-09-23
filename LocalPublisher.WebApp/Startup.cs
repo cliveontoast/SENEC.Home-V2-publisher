@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Domain;
-using MediatR;
 using MediatR.Extensions.Autofac.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,7 +29,7 @@ namespace LocalPublisherWebApp
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterInstance(Log.Logger).As<ILogger>();
-            builder.AddMediatR(typeof(GridMeterCache).Assembly);
+            builder.RegisterMediatR(typeof(GridMeterCache).Assembly);
             builder.RegisterModule(new AutofacModule(Configuration));
             builder.RegisterModule(new ReadRepository.Cosmos.AutofacModule(Configuration));
             builder.RegisterModule(new Repository.Cosmos.AutofacModule(Configuration));
