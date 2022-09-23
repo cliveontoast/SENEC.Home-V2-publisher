@@ -230,11 +230,11 @@
       },
       "Microsoft.EntityFrameworkCore.Cosmos": {
         "type": "Transitive",
-        "resolved": "3.1.3",
-        "contentHash": "azdMZSAxBOKo3XMm4zz40CxIrUbXo2OG285JRZITZZD7vhu5rd0zn1G+ZAwfj1yvYTucbfH2qTrRU4tHGiwVdw==",
+        "resolved": "3.1.29",
+        "contentHash": "ePS5NhviBvQV0rKniecaGCRnxBuYQuqPPA9n+g9Sid3ffp3u1rMvgvPjTa5J6Uw3NVKEhOY+6EI6WFYQqsF5WA==",
         "dependencies": {
           "Microsoft.Azure.Cosmos": "3.3.3",
-          "Microsoft.EntityFrameworkCore": "3.1.3"
+          "Microsoft.EntityFrameworkCore": "3.1.29"
         }
       },
       "Microsoft.Extensions.Caching.Abstractions": {
@@ -1710,7 +1710,7 @@
           "LazyCache.AspNetCore": "[2.4.0, )",
           "LocalPublisher.Domain": "[1.0.0, )",
           "MediatR.Extensions.Autofac.DependencyInjection": "[7.4.0, )",
-          "Microsoft.EntityFrameworkCore.Cosmos": "[3.1.3, )",
+          "Microsoft.EntityFrameworkCore.Cosmos": "[3.1.29, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "Repository.EFCore": "[1.0.0, )",
           "SenecEntities": "[1.0.0, )",
@@ -1751,7 +1751,7 @@
         "dependencies": {
           "Entities": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[3.1.29, )",
-          "Microsoft.EntityFrameworkCore.Cosmos": "[3.1.3, )",
+          "Microsoft.EntityFrameworkCore.Cosmos": "[3.1.29, )",
           "Repository.Model": "[1.0.0, )",
           "Shared": "[1.0.0, )"
         }
