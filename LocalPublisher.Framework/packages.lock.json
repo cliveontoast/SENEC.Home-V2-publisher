@@ -58,9 +58,9 @@
       },
       "Microsoft.DotNet.PlatformAbstractions": {
         "type": "Direct",
-        "requested": "[2.0.4, 2.0.4]",
-        "resolved": "2.0.4",
-        "contentHash": "2HjSGp63VCLQaeGadrLYR868g25mJHr+TFF81yWCaClzjUbU2vNDx6km7SUgPnoLVksE/1e7in88eh+oPtc4aQ=="
+        "requested": "[3.1.6, 3.1.6]",
+        "resolved": "3.1.6",
+        "contentHash": "jek4XYaQ/PGUwDKKhwR8K47Uh1189PFzMeLqO83mXrXQVIpARZCcfuDedH50YDTepBkfijCZN5U/vZi++erxtg=="
       },
       "Microsoft.EntityFrameworkCore": {
         "type": "Direct",
@@ -346,9 +346,9 @@
       },
       "System.Runtime": {
         "type": "Direct",
-        "requested": "[4.3.0, 4.3.0]",
-        "resolved": "4.3.0",
-        "contentHash": "JufQi0vPQ0xGnAczR13AUFglDyVYt4Kqnz1AZaiKZ5+GICq0/1MH/mO/eAJHt/mHW1zjKBJd7kV26SrxddAhiw=="
+        "requested": "[4.3.1, 4.3.1]",
+        "resolved": "4.3.1",
+        "contentHash": "abhfv1dTK6NXOmu4bgHIONxHyEqFjW8HwXPmpY9gmll+ix9UNo4XDcmzJn6oLooftxNssVHdJC1pGT9jkSynQg=="
       },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Direct",
