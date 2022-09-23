@@ -52,9 +52,9 @@
       },
       "Serilog": {
         "type": "Direct",
-        "requested": "[2.9.0, )",
-        "resolved": "2.9.0",
-        "contentHash": "QzcrD33A3+CsVvwi1I5CSei67ikQnkGrw7SscgL+vZTghaC2aNYg8fiUcedXHzKJFNjgje9rBjzwYGQTKEaXaA=="
+        "requested": "[2.12.0, )",
+        "resolved": "2.12.0",
+        "contentHash": "xaiJLIdu6rYMKfQMYUZgTy8YK7SMZjB4Yk50C/u//Z4OsvxkUfSPJy4nknfvwAC34yr13q7kcyh4grbwhSxyZg=="
       },
       "Serilog.AspNetCore": {
         "type": "Direct",
@@ -899,7 +899,7 @@
           "Newtonsoft.Json": "[13.0.1, )",
           "SenecEntities": "[1.0.0, )",
           "SenecSource": "[1.0.0, )",
-          "Serilog": "[2.9.0, )",
+          "Serilog": "[2.12.0, )",
           "Shared": "[1.0.0, )"
         }
       },
@@ -921,7 +921,7 @@
           "SenecEntitesAdapter": "[1.0.0, )",
           "SenecEntities": "[1.0.0, )",
           "SenecSource": "[1.0.0, )",
-          "Serilog": "[2.9.0, )",
+          "Serilog": "[2.12.0, )",
           "TeslaPowerwallSource": "[1.0.0, )"
         }
       },
@@ -989,7 +989,7 @@
         "dependencies": {
           "Newtonsoft.Json": "[13.0.1, )",
           "SenecEntities": "[1.0.0, )",
-          "Serilog": "[2.9.0, )",
+          "Serilog": "[2.12.0, )",
           "Shared": "[1.0.0, )"
         }
       },
@@ -1011,7 +1011,7 @@
         "dependencies": {
           "LazyCache": "[2.4.0, )",
           "Newtonsoft.Json": "[13.0.1, )",
-          "Serilog": "[2.9.0, )",
+          "Serilog": "[2.12.0, )",
           "Shared": "[1.0.0, )",
           "TeslaEntities": "[1.0.0, )"
         }

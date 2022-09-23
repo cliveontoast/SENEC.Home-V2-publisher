@@ -168,15 +168,6 @@
         "resolved": "9.0.0",
         "contentHash": "8b3UYNxegHVYcJMG2zH8wn+YqxLvXG+eMfj0cMCq/jTW72p6O3PCKMkrIv0mqyxdW7bA4gblsocw7n+/9Akg5g=="
       },
-      "MediatR.Extensions.Microsoft.DependencyInjection": {
-        "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "qGa+dbfrpk6y01swgc0uM+jG5tkb5xVeY1P4iByd3NQCDO7nmrMBnBRoMGhKlSigQ6iWXDiwOpzC01W4xrJxLg==",
-        "dependencies": {
-          "MediatR": "8.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0"
-        }
-      },
       "Microsoft.AspNetCore.Hosting.Abstractions": {
         "type": "Transitive",
         "resolved": "2.0.0",
@@ -1784,7 +1775,6 @@
           "LazyCache.AspNetCore": "[2.4.0, )",
           "LocalPublisher.Domain": "[1.0.0, )",
           "MediatR.Extensions.Autofac.DependencyInjection": "[7.4.0, )",
-          "MediatR.Extensions.Microsoft.DependencyInjection": "[8.0.0, )",
           "Microsoft.EntityFrameworkCore.Cosmos": "[3.1.3, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "Repository.EFCore": "[1.0.0, )",
