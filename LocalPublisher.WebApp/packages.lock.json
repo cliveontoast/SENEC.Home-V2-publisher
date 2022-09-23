@@ -34,16 +34,6 @@
           "MediatR": "9.0.0"
         }
       },
-      "MediatR.Extensions.Microsoft.DependencyInjection": {
-        "type": "Direct",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "qGa+dbfrpk6y01swgc0uM+jG5tkb5xVeY1P4iByd3NQCDO7nmrMBnBRoMGhKlSigQ6iWXDiwOpzC01W4xrJxLg==",
-        "dependencies": {
-          "MediatR": "8.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0"
-        }
-      },
       "Microsoft.EntityFrameworkCore.Cosmos": {
         "type": "Direct",
         "requested": "[3.1.3, )",
