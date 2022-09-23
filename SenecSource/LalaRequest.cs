@@ -61,7 +61,7 @@ namespace SenecSource
             {
                 try
                 {    
-                    result = JsonConvert.DeserializeObject<TResponse>(response.response);
+                    result = JsonConvert.DeserializeObject<TResponse>(response.response) ?? result;
                 }
                 catch (Exception e)
                 {

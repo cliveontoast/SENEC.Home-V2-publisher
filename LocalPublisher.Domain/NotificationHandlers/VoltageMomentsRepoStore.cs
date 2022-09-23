@@ -1,15 +1,7 @@
 ﻿using Entities;
-using LazyCache;
 using LocalPublisher.Domain.Functions;
 using MediatR;
-using ReadRepository.Cosmos;
-using ReadRepository.ReadModel;
-using Repository;
-using Repository.Cosmos.Repositories;
-using Serilog;
-using Shared;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +11,7 @@ namespace Domain
         INotificationHandler<PersistenceInfo<IntervalOfMoments<MomentVoltage>>>, // TODO this should be a command, not publish
         INotificationHandler<IntervalOfMoments<MomentVoltage>>
     {
-        private readonly PersistToRepositoryFunctions<IntervalOfMoments<MomentVoltage>, VoltageMomentReadModel> _persistFunctions;
+        //private readonly PersistToRepositoryFunctions<IntervalOfMoments<MomentVoltage>, VoltageMomentReadModel> _persistFunctions;
 
         public VoltageMomentsRepoStore(
             //ILogger logger,
@@ -47,12 +39,14 @@ namespace Domain
 
         public async Task Handle(PersistenceInfo<IntervalOfMoments<MomentVoltage>> notification, CancellationToken cancellationToken)
         {
-            await _persistFunctions.Handle(notification, cancellationToken);
+            await Task.CompletedTask;
+            //await _persistFunctions.Handle(notification, cancellationToken);
         }
 
         public async Task Handle(IntervalOfMoments<MomentVoltage> notification, CancellationToken cancellationToken)
         {
-            await _persistFunctions.Handle(notification, cancellationToken);
+            await Task.CompletedTask;
+            //await _persistFunctions.Handle(notification, cancellationToken);
         }
     }
 }
