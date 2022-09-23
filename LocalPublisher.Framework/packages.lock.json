@@ -16,9 +16,9 @@
       },
       "Azure.Core": {
         "type": "Direct",
-        "requested": "[1.19.0, 1.19.0]",
-        "resolved": "1.19.0",
-        "contentHash": "lcDjG635DPE4fU5tqSueVMmzrx0QrIfPuY0+y6evHN5GanQ0GB+/4nuMHMmoNPwEow6OUPkJu4cZQxfHJQXPdA=="
+        "requested": "[1.25.0, 1.25.0]",
+        "resolved": "1.25.0",
+        "contentHash": "X8Dd4sAggS84KScWIjEbFAdt2U1KDolQopTPoHVubG2y3CM54f9l6asVrP5Uy384NWXjsspPYaJgz5xHc+KvTA=="
       },
       "LazyCache": {
         "type": "Direct",
@@ -350,6 +350,12 @@
         "resolved": "6.0.0",
         "contentHash": "ntFHArH3I4Lpjf5m4DCXQHJuGwWPNVJPaAvM95Jy/u+2Yzt2ryiyIN04LAogkjP9DeRcEOiviAjQotfmPq/FrQ=="
       },
+      "System.Net.Http": {
+        "type": "Direct",
+        "requested": "[4.3.4, 4.3.4]",
+        "resolved": "4.3.4",
+        "contentHash": "aOa2d51SEbmM+H+Csw7yJOuNZoHkrP2XnAurye5HWYgGVVU54YZDvsLUYRv6h18X3sPnjNCANmN7ZhIPiqMcjA=="
+      },
       "System.Numerics.Vectors": {
         "type": "Direct",
         "requested": "[4.5.0, 4.5.0]",
@@ -397,6 +403,12 @@
         "requested": "[4.3.0, 4.3.0]",
         "resolved": "4.3.0",
         "contentHash": "7bDIyVFNL/xKeFHjhobUAQqSpJq9YTOpbEs6mR233Et01STBMXNAc/V+BM6dwYGc95gVh/Zf+iVXWzj3mE8DWg=="
+      },
+      "System.Security.Cryptography.X509Certificates": {
+        "type": "Direct",
+        "requested": "[4.3.0, 4.3.0]",
+        "resolved": "4.3.0",
+        "contentHash": "t2Tmu6Y2NtJ2um0RtcuhP7ZdNNxXEgUm2JeoA/0NvlMjAhKCnM1NX07TDl3244mVp3QU6LPEhT3HTtH1uF7IYw=="
       },
       "System.Security.Permissions": {
         "type": "Direct",
