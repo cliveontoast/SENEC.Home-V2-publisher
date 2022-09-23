@@ -28,15 +28,15 @@
       },
       "MediatR": {
         "type": "Direct",
-        "requested": "[8.0.0, 8.0.0]",
-        "resolved": "8.0.0",
-        "contentHash": "cYSDJ2b/dIiwTLW/ZW/SQcXq9I3WF6KR4D0KN4hxWR08tZqcvcVS1bQXZbsANdQdTQfxx+ZFp5WkHLMyeoR5Zw=="
+        "requested": "[9.0.0, 9.0.0]",
+        "resolved": "9.0.0",
+        "contentHash": "8b3UYNxegHVYcJMG2zH8wn+YqxLvXG+eMfj0cMCq/jTW72p6O3PCKMkrIv0mqyxdW7bA4gblsocw7n+/9Akg5g=="
       },
       "MediatR.Extensions.Autofac.DependencyInjection": {
         "type": "Direct",
-        "requested": "[5.1.0, 5.1.0]",
-        "resolved": "5.1.0",
-        "contentHash": "IhprvW2/6l+nP9b50e+1vC0uSG7owXzPdA7mJRMyag/Apg4ZhoycpL9mQfK/f9KJWG0udRUl8X/Zo/jwYNgt6g=="
+        "requested": "[7.4.0, 7.4.0]",
+        "resolved": "7.4.0",
+        "contentHash": "rEEgfJLvJcDTVpBNJb9IlByIprUBZhVlT7ku0MdnEgZok+fWYgVw/IDDqigk+NYPBWY4/u4mg6Xdp8Syh7XWBw=="
       },
       "Microsoft.Azure.Cosmos": {
         "type": "Direct",
