@@ -204,20 +204,6 @@ export class PowerMovementComponent implements OnInit {
     series: [
       {
         type: 'area',
-        color: 'lightblue',
-        lineColor: '#006AFF',
-        lineWidth: 1,
-        name: 'Battery to home'
-      },
-      {
-        type: 'area',
-        color: '#5DDD40',
-        lineColor: '#47B72C',
-        lineWidth: 1,
-        name: 'Battery to grid'
-      },
-      {
-        type: 'area',
         color: '#FFD145',
         lineColor: '#C4A136',
         lineWidth: 1,
@@ -229,6 +215,27 @@ export class PowerMovementComponent implements OnInit {
         lineColor: 'black',
         lineWidth: 1,
         name: 'Grid to battery'
+      },
+      {
+        type: 'area',
+        color: 'gray',
+        lineColor: '#006AFF',
+        lineWidth: 1,
+        name: 'zero'
+      },
+      {
+        type: 'area',
+        color: 'lightblue',
+        lineColor: '#006AFF',
+        lineWidth: 1,
+        name: 'Battery to home'
+      },
+      {
+        type: 'area',
+        color: '#5DDD40',
+        lineColor: '#47B72C',
+        lineWidth: 1,
+        name: 'Battery to grid'
       },
       // {
       //   type: 'spline',
@@ -446,10 +453,11 @@ export class PowerMovementComponent implements OnInit {
     this.solarChartOptions.series[1]['data'] = value.fromSunToBattery.data;
     this.solarChartOptions.series[2]['data'] = value.fromSunToHome.data;
 
-    this.batteryChartOptions.series[0]['data'] = value.fromBatteryToHomeNeg.data;
-    this.batteryChartOptions.series[1]['data'] = value.fromBatteryToCommunityNeg.data;
-    this.batteryChartOptions.series[2]['data'] = value.fromSunToBattery.data;
-    this.batteryChartOptions.series[3]['data'] = value.fromGridToBattery.data;
+    this.batteryChartOptions.series[0]['data'] = value.fromSunToBattery.data;
+    this.batteryChartOptions.series[1]['data'] = value.fromGridToBattery.data;
+    this.batteryChartOptions.series[2]['data'] = value.fromBatteryToHome.data; // get to zero again
+    this.batteryChartOptions.series[3]['data'] = value.fromBatteryToHomeNeg.data;
+    this.batteryChartOptions.series[4]['data'] = value.fromBatteryToCommunityNeg.data;
 
     this.homeChartOptions.series[0]['data'] = value.fromSunToHome.data;
     this.homeChartOptions.series[1]['data'] = value.fromBatteryToHome.data;
