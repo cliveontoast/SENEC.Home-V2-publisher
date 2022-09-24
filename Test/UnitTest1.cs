@@ -277,6 +277,7 @@ namespace SenecSourceWebAppTest
   ""SecondsBatteryDischarging"": 48,
   ""SecondsWithoutData"": 12
 }");
+            if (obj == null) throw new NullReferenceException();
             var createItemFunc = repo.CreateItemAsync(obj);
             var result = createItemFunc(CancellationToken.None).RunWait();
         }

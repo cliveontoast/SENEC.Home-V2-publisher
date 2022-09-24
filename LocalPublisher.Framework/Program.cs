@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 #nullable enable
 namespace LocalPublisherMono
 {
-    class Program : ICertificatePolicy
+    class Program
     {
         static void Main(string[] args)
         {
@@ -36,7 +36,7 @@ namespace LocalPublisherMono
                 var startup = new Startup();
                 startup.ConfigureServices(services);
                 startup.ConfigureContainer(cb);
-                ServicePointManager.CertificatePolicy = new Program();
+                ServicePointManager.ServerCertificateValidationCallback = CheckValidationCallback;
                 Go(cb.Build());
             }
             catch (Exception ex)
@@ -50,8 +50,7 @@ namespace LocalPublisherMono
             }
         }
 
-        public bool CheckValidationResult(ServicePoint sp,
-    X509Certificate certificate, WebRequest request, int error)
+        private static bool CheckValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             Log.Debug("yep.");
             return true;
@@ -62,7 +61,7 @@ namespace LocalPublisherMono
             using var scope = container.BeginLifetimeScope();
             using var tokenSource = new CancellationTokenSource();
 
-            var service = scope.Resolve<TimedHostedService>();
+            var service = scope.Resolve<TimedHostedSvc>();
             service.StartAsync(tokenSource.Token).Wait();
             var cancelTask = Task.Factory.StartNew(() =>
             {

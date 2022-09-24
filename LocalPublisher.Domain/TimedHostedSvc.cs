@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using MediatR;
-using Microsoft.Extensions.Hosting;
 using Repository;
 using Serilog;
 using System;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class TimedHostedService : IHostedService, IDisposable
+    public class TimedHostedSvc : IDisposable
     {
         private readonly ILogger _logger;
         private readonly ILifetimeScope _scope;
@@ -35,7 +34,7 @@ namespace Domain
             }
         }
 
-        public TimedHostedService(
+        public TimedHostedSvc(
             ILogger logger,
             IEnumerable<ITimedService> services,
             ILifetimeScope scope)

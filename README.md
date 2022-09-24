@@ -86,3 +86,14 @@ todo more instructions
 ```
 certmgr -ssl -v https://192.168.91.1
 ```
+
+## Nuget rebuild lock files
+http://blog.ctaggart.com/2019/03/using-nuget-lock-file-for-reproducible.html
+```
+dotnet nuget locals all --clear
+git clean -xfd
+git rm **/packages.lock.json -f
+dotnet restore LocalPublisher.sln
+or
+dotnet restore LocalPublisher.sln --force-evaluate
+```

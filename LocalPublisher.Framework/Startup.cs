@@ -33,14 +33,14 @@ namespace LocalPublisherMono
         public void ConfigureContainer(ContainerBuilder builder)
         {
             // lives in configure services - as asp host
-            builder.RegisterType<TimedHostedService>().AsSelf();
+            builder.RegisterType<TimedHostedSvc>().AsSelf();
             builder.RegisterInstance(BuildAppCache());
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
             builder.RegisterInstance(Log.Logger).As<ILogger>();
-            builder.AddMediatR(typeof(GridMeterCache).Assembly);
+            builder.RegisterMediatR(typeof(GridMeterCache).Assembly);
             builder.RegisterModule(new AutofacModule(Configuration));
             builder.RegisterModule(new ReadRepository.Cosmos.AutofacModule(Configuration));
             builder.RegisterModule(new Repository.Cosmos.AutofacModule(Configuration));

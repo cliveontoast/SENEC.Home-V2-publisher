@@ -52,7 +52,7 @@ namespace Domain
             {
                 if (!cache.TryRemove(i, out var value)) continue;
                 var obj = JsonConvert.DeserializeObject<StateOfEnergy>(value);
-                if (obj.percentage != null)
+                if (obj?.percentage != null)
                     newCache.Add(i, obj.percentage.Value);
             }
             return newCache;
