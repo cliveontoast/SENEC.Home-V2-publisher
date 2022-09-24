@@ -30,7 +30,7 @@ namespace Cloud.WebApp
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.AddMediatR(typeof(DailyVoltageSummaryCommand).Assembly);
+            builder.RegisterMediatR(typeof(DailyVoltageSummaryCommand).Assembly);
             builder.RegisterInstance(Serilog.Log.Logger).As<Serilog.ILogger>();
             builder.RegisterModule(new Domain.AutofacModule(Configuration));
             builder.RegisterModule(new ReadRepository.Cosmos.AutofacModule(Configuration));
