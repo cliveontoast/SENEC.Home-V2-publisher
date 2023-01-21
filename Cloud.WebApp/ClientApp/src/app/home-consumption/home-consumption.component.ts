@@ -3,7 +3,7 @@ import * as Highcharts from 'highcharts';
 import { HomeConsumptionService } from '../services/home-consumption.service';
 import { InitialDateService } from '../services/initial-date.service';
 import { take, tap, switchMap } from 'rxjs/operators';
-import { DailyHomeConsumptionDto } from '../dto/dailyHomeConsumptionDto';
+import { DailyHomeConsumptionDto, MoneyPlanDto } from '../dto/dailyHomeConsumptionDto';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -165,6 +165,7 @@ export class HomeConsumptionComponent implements OnInit {
   runOutsideAngularFlag: boolean = false; // optional boolean, defaults to false
 
   displayDate: Date = new Date();
+  moneyPlans: MoneyPlanDto[];
 
 
   constructor(private homeConsumptionService: HomeConsumptionService,
@@ -209,6 +210,7 @@ export class HomeConsumptionComponent implements OnInit {
     this.chartOptions.series[4]['data'] = value.fromSolar.data;
     this.chartOptions.series[5]['data'] = value.fromGrid.data;
     this.chartOptions.series[6]['data'] = value.toHome.data;
+    this.moneyPlans = value.moneyPlans;
     this.updateFlag = true;
   }
 

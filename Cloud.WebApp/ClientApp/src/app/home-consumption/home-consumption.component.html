@@ -1,3 +1,14 @@
+<table>
+  <td>
+    <tr>Plan</tr>
+    <tr>Cost</tr>
+  </td>
+  <td *ngFor="let plan of moneyPlans" style="padding-left: 1rem;" >
+    <tr>{{plan.name}}</tr>
+    <tr>{{plan.cost}}</tr>
+  </td>
+</table>
+
 <div style="display: block;" >
     <!--
       When can I use the Non-Commercial License?

@@ -39,6 +39,19 @@ namespace NuanceWebApp.Dto
         public HomeConsumptionDto ToBattery { get; } // solar to battery
         public HomeConsumptionDto ToCommunity { get; }
         public IEnumerable<string> XLabels { get; }
+        public MoneyPlan[] MoneyPlans { get; internal set; }
+    }
+
+    public class MoneyPlan
+    {
+        public string Name { get; }
+        public decimal Cost { get; }
+
+        public MoneyPlan(string name, decimal cost)
+        {
+            Name = name;
+            Cost = cost;
+        }
     }
 
     public class HomeConsumptionDto

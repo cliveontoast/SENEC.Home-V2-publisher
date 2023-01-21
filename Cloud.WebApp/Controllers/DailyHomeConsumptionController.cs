@@ -64,6 +64,19 @@ namespace NuanceWebApp.Controllers
                 var response = powerFlow.IsFaulted 
                     ? new DailyHomeConsumptionDto(home.Result)
                     : new DailyHomeConsumptionDto(home.Result, powerFlow.Result);
+                var planCommand = new A1PowerPlanCommand(home.Result, powerFlow.IsFaulted ? null : powerFlow.Result);
+                var a1 = _mediator.Send(planCommand);
+                var a1LegacySolar = _mediator.Send(new A1LegacySolarPowerPlanCommand(planCommand.HomeConsumption, planCommand.PowerMovements));
+                var a1LegacySolarBattery = _mediator.Send(new A1LegacySolarWithBatteryPowerPlanCommand(planCommand.HomeConsumption, planCommand.PowerMovements));
+                var middaySaver = _mediator.Send(new MiddaySaverSolarWithBatteryPowerPlanCommand(planCommand.HomeConsumption, planCommand.PowerMovements));
+                await Task.WhenAll(a1, a1LegacySolar, a1LegacySolarBattery, middaySaver);
+                response.MoneyPlans = new[]
+                {
+                    new MoneyPlan("A1", a1.IsFaulted ? -1 : a1.Result.Dollars),
+                    new MoneyPlan("A1 7c solar", a1LegacySolar.IsFaulted ? -1 : a1LegacySolar.Result.Dollars),
+                    new MoneyPlan("A1 7c solar battery", a1LegacySolarBattery.IsFaulted ? -1 : a1LegacySolarBattery.Result.Dollars),
+                    new MoneyPlan("Midday saver", middaySaver.IsFaulted ? -1 : middaySaver.Result.Dollars),
+                };
                 return Ok(response);
             }
             catch (Exception e)
