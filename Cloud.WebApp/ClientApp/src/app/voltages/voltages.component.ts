@@ -1,17 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { VoltageSummaryService } from '../services/voltageSummary.service';
 import * as Highcharts from 'highcharts';
 import { InitialDateService } from '../services/initial-date.service';
-import { take, tap, switchMap } from 'rxjs/operators';
+import { take, tap, switchMap, takeUntil } from 'rxjs/operators';
 import { DailyVoltageSummaryDto } from '../dto/dailyVoltageSummaryDto';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-voltages',
   templateUrl: './voltages.component.html'
 })
-export class VoltagesComponent {
-
+export class VoltagesComponent implements OnInit, OnDestroy {
+  cancel$ = new Subject<void>();
   Highcharts: typeof Highcharts = Highcharts; // required
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
   chartOptions: Highcharts.Options = {
@@ -121,6 +121,11 @@ export class VoltagesComponent {
   constructor(private voltageSummaryService: VoltageSummaryService,
     private initialDateService: InitialDateService) { }
 
+  ngOnDestroy(): void {
+    this.cancel$.next();
+    this.cancel$.complete();
+  }
+
   ngOnInit() {
     this.initialDateService.today.pipe(
       take(1),
@@ -133,7 +138,9 @@ export class VoltagesComponent {
   }
 
   get refresh$(): Observable<any> {
+    this.cancel$.next();
     return this.getData().pipe(
+      takeUntil(this.cancel$),
       tap(a => this.applyData(a))
     );
   }

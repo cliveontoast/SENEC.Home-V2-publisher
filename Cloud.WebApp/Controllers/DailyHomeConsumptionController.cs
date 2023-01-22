@@ -73,9 +73,9 @@ namespace NuanceWebApp.Controllers
                 response.MoneyPlans = new[]
                 {
                     new MoneyPlan("A1", a1.IsFaulted ? -1 : a1.Result.Dollars),
-                    new MoneyPlan("A1 7c solar", a1LegacySolar.IsFaulted ? -1 : a1LegacySolar.Result.Dollars),
-                    new MoneyPlan("A1 7c solar battery", a1LegacySolarBattery.IsFaulted ? -1 : a1LegacySolarBattery.Result.Dollars),
-                    new MoneyPlan("Midday saver", middaySaver.IsFaulted ? -1 : middaySaver.Result.Dollars),
+                    new MoneyPlan("Solar", a1LegacySolar.IsFaulted ? -1 : a1LegacySolar.Result.Dollars),
+                    //new MoneyPlan("Solar+Battery", a1LegacySolarBattery.IsFaulted ? -1 : a1LegacySolarBattery.Result.Dollars),
+                    new MoneyPlan("and Battery", middaySaver.IsFaulted ? -1 : middaySaver.Result.Dollars),
                 };
                 return Ok(response);
             }

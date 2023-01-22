@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { HomeConsumptionService } from '../services/home-consumption.service';
 import { InitialDateService } from '../services/initial-date.service';
-import { take, tap, switchMap } from 'rxjs/operators';
+import { take, tap, switchMap, takeUntil } from 'rxjs/operators';
 import { DailyHomeConsumptionDto, MoneyPlanDto } from '../dto/dailyHomeConsumptionDto';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-home-consumption',
   templateUrl: './home-consumption.component.html'
 })
-export class HomeConsumptionComponent implements OnInit {
-
+export class HomeConsumptionComponent implements OnInit, OnDestroy {
+  cancel$ = new Subject<void>();
   Highcharts: typeof Highcharts = Highcharts; // required
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
   chartOptions: Highcharts.Options = {
@@ -171,6 +171,11 @@ export class HomeConsumptionComponent implements OnInit {
   constructor(private homeConsumptionService: HomeConsumptionService,
     private initialDateService: InitialDateService) { }
 
+  ngOnDestroy(): void {
+    this.cancel$.next();
+    this.cancel$.complete();
+  }
+
   ngOnInit() {
     this.initialDateService.today.pipe(
       take(1),
@@ -183,7 +188,9 @@ export class HomeConsumptionComponent implements OnInit {
   }
 
   get refresh$(): Observable<any> {
+    this.cancel$.next();
     return this.getData().pipe(
+      takeUntil(this.cancel$),
       tap(a => this.applyData(a))
     );
   }

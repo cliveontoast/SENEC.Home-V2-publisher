@@ -25,23 +25,12 @@ namespace Domain.Commands
         private const decimal GridWattHourSuperOffPeak2022 = 8m;
         private const decimal GridWattHourPeak2022 = 50m;
         private const decimal GridWattHourOffPeak2022 = 22m;
-        private const decimal SupplyCharge2022 = 120m;
-        private const decimal SolarToGrid2022 = -7.135m;
-        private const decimal SolarToBattery2022 = -SolarToGrid2022;
-        private const decimal BatteryToGrid2022 = SolarToGrid2022;
-
-        private decimal SolarToHome2022(decimal GridWattHour)
-        {
-            return -GridWattHour - SolarToGrid2022;
-        }
-        private decimal BatteryToHome2022(decimal GridWattHour)
-        {
-            return -GridWattHour;
-        }
-
-        public MiddaySaverSolarWithBatteryPowerPlanCommandHandler()
-        {
-        }
+        private decimal SolarToGrid2022 => -7.135m;
+        private decimal SolarToHome2022 => 0;
+        private decimal SolarToBattery2022 => 0;
+        private decimal BatteryToHome2022 => 0;
+        private decimal BatteryToGrid2022 => SolarToGrid2022;
+        private decimal SupplyCharge2022 => 120m;
 
         public async Task<PowerPlanReadModel> Handle(MiddaySaverSolarWithBatteryPowerPlanCommand request, CancellationToken cancellationToken)
         {
@@ -51,27 +40,9 @@ namespace Domain.Commands
                     a => a.power?.BatteryToHome ?? a.home.Battery,
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(0),
-                        To = new TimeSpan(9),
-                        Rate = BatteryToHome2022(GridWattHourOffPeak2022),
-                    },
-                    new ElectricalCharge
-                    {
-                        From = new TimeSpan(9),
-                        To = new TimeSpan(15),
-                        Rate = BatteryToHome2022(GridWattHourSuperOffPeak2022),
-                    },
-                    new ElectricalCharge
-                    {
-                        From = new TimeSpan(15),
-                        To = new TimeSpan(21),
-                        Rate = BatteryToHome2022(GridWattHourPeak2022),
-                    },
-                    new ElectricalCharge
-                    {
-                        From = new TimeSpan(21),
-                        To = new TimeSpan(24),
-                        Rate = BatteryToHome2022(GridWattHourOffPeak2022),
+                        From = new TimeSpan(0, 0, 0),
+                        To = new TimeSpan(24, 0, 0),
+                        KiloWattRate = BatteryToHome2022,
                     })
                 {
                     From = new DateTime(2022, 7, 1),
@@ -85,9 +56,9 @@ namespace Domain.Commands
                     a => a.power?.BatteryToGrid ?? new DayConsumptionSource(Enumerable.Empty<(TimeSpan, decimal?)>()),
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(0),
-                        To = new TimeSpan(24,0,0),
-                        Rate = BatteryToGrid2022,
+                        From = new TimeSpan(0, 0, 0),
+                        To = new TimeSpan(24, 0, 0),
+                        KiloWattRate = BatteryToGrid2022,
                     })
                 {
                     From = new DateTime(2022, 7, 1),
@@ -102,27 +73,27 @@ namespace Domain.Commands
                     a => a.power?.GridToBattery ?? new DayConsumptionSource(Enumerable.Empty<(TimeSpan, decimal?)>()),
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(0),
-                        To = new TimeSpan(9),
-                        Rate = GridWattHourOffPeak2022,
+                        From = new TimeSpan(0, 0, 0),
+                        To = new TimeSpan(9, 0, 0),
+                        KiloWattRate = GridWattHourOffPeak2022,
                     },
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(9),
-                        To = new TimeSpan(15),
-                        Rate = GridWattHourSuperOffPeak2022,
+                        From = new TimeSpan(9, 0, 0),
+                        To = new TimeSpan(15, 0, 0),
+                        KiloWattRate = GridWattHourSuperOffPeak2022,
                     },
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(15),
-                        To = new TimeSpan(21),
-                        Rate = GridWattHourPeak2022,
+                        From = new TimeSpan(15, 0, 0),
+                        To = new TimeSpan(21, 0, 0),
+                        KiloWattRate = GridWattHourPeak2022,
                     },
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(21),
-                        To = new TimeSpan(24),
-                        Rate = GridWattHourOffPeak2022,
+                        From = new TimeSpan(21, 0, 0),
+                        To = new TimeSpan(24, 0, 0),
+                        KiloWattRate = GridWattHourOffPeak2022,
                     })
                 {
                     From = new DateTime(2022, 7, 1),
@@ -137,27 +108,27 @@ namespace Domain.Commands
                     a => a.power?.GridToHome ?? a.home.Grid,
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(0),
-                        To = new TimeSpan(9),
-                        Rate = GridWattHourOffPeak2022,
+                        From = new TimeSpan(0, 0, 0),
+                        To = new TimeSpan(9, 0, 0),
+                        KiloWattRate = GridWattHourOffPeak2022,
                     },
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(9),
-                        To = new TimeSpan(15),
-                        Rate = GridWattHourSuperOffPeak2022,
+                        From = new TimeSpan(9, 0, 0),
+                        To = new TimeSpan(15, 0, 0),
+                        KiloWattRate = GridWattHourSuperOffPeak2022,
                     },
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(15),
-                        To = new TimeSpan(21),
-                        Rate = GridWattHourPeak2022,
+                        From = new TimeSpan(15, 0, 0),
+                        To = new TimeSpan(21, 0, 0),
+                        KiloWattRate = GridWattHourPeak2022,
                     },
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(21),
-                        To = new TimeSpan(24),
-                        Rate = GridWattHourOffPeak2022,
+                        From = new TimeSpan(21, 0, 0),
+                        To = new TimeSpan(24, 0, 0),
+                        KiloWattRate = GridWattHourOffPeak2022,
                     })
                 {
                     From = new DateTime(2022, 7, 1),
@@ -172,9 +143,9 @@ namespace Domain.Commands
                     a => a.power?.SolarToBattery ?? a.home.BatteryCharge,
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(0),
-                        To = new TimeSpan(24,0,0),
-                        Rate = SolarToBattery2022,
+                        From = new TimeSpan(0, 0, 0),
+                        To = new TimeSpan(24, 0, 0),
+                        KiloWattRate = SolarToBattery2022,
                     })
                 {
                     From = new DateTime(2022, 7, 1),
@@ -189,9 +160,9 @@ namespace Domain.Commands
                     a => a.power?.SolarToGrid ?? a.home.SolarExported,
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(0),
-                        To = new TimeSpan(24,0,0),
-                        Rate = SolarToGrid2022,
+                        From = new TimeSpan(0, 0, 0),
+                        To = new TimeSpan(24, 0, 0),
+                        KiloWattRate = SolarToGrid2022,
                     })
                 {
                     From = new DateTime(2022, 7, 1),
@@ -206,27 +177,9 @@ namespace Domain.Commands
                     a => a.power?.SolarToHome ?? a.home.Solar,
                     new ElectricalCharge
                     {
-                        From = new TimeSpan(0),
-                        To = new TimeSpan(9),
-                        Rate = SolarToHome2022(GridWattHourOffPeak2022),
-                    },
-                    new ElectricalCharge
-                    {
-                        From = new TimeSpan(9),
-                        To = new TimeSpan(15),
-                        Rate = SolarToHome2022(GridWattHourSuperOffPeak2022),
-                    },
-                    new ElectricalCharge
-                    {
-                        From = new TimeSpan(15),
-                        To = new TimeSpan(21),
-                        Rate = SolarToHome2022(GridWattHourPeak2022),
-                    },
-                    new ElectricalCharge
-                    {
-                        From = new TimeSpan(21),
-                        To = new TimeSpan(24),
-                        Rate = SolarToHome2022(GridWattHourOffPeak2022),
+                        From = new TimeSpan(0, 0, 0),
+                        To = new TimeSpan(24, 0, 0),
+                        KiloWattRate = SolarToHome2022,
                     })
                 {
                     From = new DateTime(2022, 7, 1),
@@ -236,19 +189,17 @@ namespace Domain.Commands
             });
 
             await Task.FromResult(0);
+            var cents = batteryToGrid.Sum()
+                + batteryToHome.Sum()
+                + gridToBattery.Sum()
+                + gridToHome.Sum()
+                + solarToBattery.Sum()
+                + solarToGrid.Sum()
+                + solarToHome.Sum();
             return new PowerPlanReadModel
             {
-                Dollars = Math.Round(
-                    batteryToGrid
-                    .Union(batteryToHome)
-                    .Union(gridToBattery)
-                    .Union(gridToHome)
-                    .Union(solarToBattery)
-                    .Union(solarToGrid)
-                    .Union(solarToHome)
-                    .Sum() / 100, 2)
+                Dollars = Math.Round(cents / 100, 2)
             };
         }
-
     }
 }

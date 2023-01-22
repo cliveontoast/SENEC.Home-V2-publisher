@@ -22,9 +22,8 @@ namespace Domain.Commands
 
     public class A1PowerPlanCommandHandler : IRequestHandler<A1PowerPlanCommand, PowerPlanReadModel>
     {
-        public A1PowerPlanCommandHandler()
-        {
-        }
+        private decimal SupplyCharge2022 => 107.7685m;
+        private decimal GridWattHour2022 => 30.0605m;
 
         public async Task<PowerPlanReadModel> Handle(A1PowerPlanCommand request, CancellationToken cancellationToken)
         {
@@ -36,12 +35,12 @@ namespace Domain.Commands
                     {
                         From = new TimeSpan(0),
                         To = new TimeSpan(24,0,0),
-                        Rate = 30.0605m,
+                        KiloWattRate = GridWattHour2022,
                     })
                 {
                     From = new DateTime(2022, 7, 1),
                     To = new DateTime(3000,1,1),
-                    SupplyChargePerDay = 107.7685m,
+                    SupplyChargePerDay = SupplyCharge2022,
                 }
             };
             var costs = GetCents(request.HomeConsumption, request.PowerMovements, costModel);
@@ -62,13 +61,17 @@ namespace Domain.Commands
                    from slot in model.ElectricalCharges
                    where slot.From <= usage.TimeOfDay
                    where slot.To > usage.TimeOfDay
-                   select (model.SupplyChargePer1Minute + slot.Rate * Math.Max(0, usage.WattHours ?? 0) / 60) * 5;
+                   select
+                    (model.SupplyChargePer1Minute + slot.WattRate * Math.Max(0, usage.WattHours ?? 0)  / 60) // per minute
+                     * 5 // per five minutes
+                     ;
         }
     }
 
     internal class ElectricalCharge
     {
-        public decimal Rate { get; internal set; }
+        public decimal KiloWattRate { get; internal set; }
+        public decimal WattRate => KiloWattRate * 0.001m;
         public TimeSpan To { get; internal set; }
         public TimeSpan From { get; internal set; }
     }

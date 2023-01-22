@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EnergySummaryService } from '../services/energySummary.service';
 import * as Highcharts from 'highcharts';
 import { InitialDateService } from '../services/initial-date.service';
-import { take, tap, switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { take, tap, switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 import { DailyEnergySummaryDto } from '../dto/dailyEnergySummaryDto';
 
 @Component({
@@ -11,7 +11,8 @@ import { DailyEnergySummaryDto } from '../dto/dailyEnergySummaryDto';
   templateUrl: './energy.component.html',
   styleUrls: ['./energy.component.css']
 })
-export class EnergyComponent implements OnInit {
+export class EnergyComponent implements OnInit, OnDestroy {
+  cancel$ = new Subject<void>();
   Highcharts: typeof Highcharts = Highcharts; // required
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
   chartOptions: Highcharts.Options = {
@@ -138,6 +139,11 @@ export class EnergyComponent implements OnInit {
   constructor(private energySummaryService: EnergySummaryService,
     private initialDateService: InitialDateService) { }
 
+  ngOnDestroy(): void {
+    this.cancel$.next();
+    this.cancel$.complete();
+  }
+
   ngOnInit() {
     this.initialDateService.today.pipe(
       take(1),
@@ -150,7 +156,9 @@ export class EnergyComponent implements OnInit {
   }
 
   get refresh$(): Observable<any> {
+    this.cancel$.next();
     return this.getData().pipe(
+      takeUntil(this.cancel$),
       tap(a => this.applyData(a))
     );
   }

@@ -1,11 +1,19 @@
 <table>
   <td>
-    <tr>Plan</tr>
-    <tr>Cost</tr>
+    <tr style="font-weight: bolder;">Plan</tr>
+    <tr style="font-weight: bolder;">Outgoings</tr>
+    <tr style="font-weight: bolder;">Savings ratio</tr>
+    <tr style="font-weight: bolder;">Savings cash</tr>
   </td>
   <td *ngFor="let plan of moneyPlans" style="padding-left: 1rem;" >
-    <tr>{{plan.name}}</tr>
-    <tr>{{plan.cost}}</tr>
+    <tr style="font-weight: bolder;">{{plan.name}}</tr>
+    <tr>{{plan.cost | currency}}</tr>
+    <tr><span *ngIf="plan != moneyPlans[0]">
+      {{(1 - (plan.cost / moneyPlans[0].cost) | percent)}}
+    </span></tr> 
+    <tr><span *ngIf="plan != moneyPlans[0]">
+      {{ moneyPlans[0].cost - plan.cost | currency}}
+    </span></tr>
   </td>
 </table>
 

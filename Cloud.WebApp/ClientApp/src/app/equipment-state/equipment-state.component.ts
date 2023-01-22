@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { TemperatureSummaryService } from '../services/temperatureSummary.service';
 import { InitialDateService } from '../services/initial-date.service';
-import { take, tap, switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { take, tap, switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 import { DailyEquipmentStatesSummaryDto } from '../dto/dailyEquipmentStatesSummaryDto';
 import { EquipmentStateService } from '../services/equipment-state.service';
 
@@ -12,8 +12,8 @@ import { EquipmentStateService } from '../services/equipment-state.service';
   templateUrl: './equipment-state.component.html',
   styleUrls: ['./equipment-state.component.css']
 })
-export class EquipmentStateComponent implements OnInit {
-
+export class EquipmentStateComponent implements OnInit, OnDestroy {
+  cancel$ = new Subject<void>();
   Highcharts: typeof Highcharts = Highcharts; // required
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
   chartOptions: Highcharts.Options = {
@@ -73,6 +73,11 @@ export class EquipmentStateComponent implements OnInit {
   constructor(private equipmentStateService: EquipmentStateService,
     private initialDateService: InitialDateService) { }
 
+  ngOnDestroy(): void {
+    this.cancel$.next();
+    this.cancel$.complete();
+  }
+
   ngOnInit() {
     this.initialDateService.today.pipe(
       take(1),
@@ -85,7 +90,9 @@ export class EquipmentStateComponent implements OnInit {
   }
 
   get refresh$(): Observable<any> {
+    this.cancel$.next();
     return this.getData().pipe(
+      takeUntil(this.cancel$),
       tap(a => this.applyData(a))
     );
   }

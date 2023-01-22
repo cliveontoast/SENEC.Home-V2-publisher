@@ -1,17 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TemperatureSummaryService } from '../services/temperatureSummary.service';
 import * as Highcharts from 'highcharts';
 import { InitialDateService } from '../services/initial-date.service';
-import { take, tap, switchMap } from 'rxjs/operators';
+import { take, tap, switchMap, takeUntil } from 'rxjs/operators';
 import { DailyTemperatureSummaryDto } from '../dto/dailyTemperatureSummaryDto';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-temperatures',
   templateUrl: './temperature.component.html'
 })
-export class TemperaturesComponent {
-
+export class TemperaturesComponent implements OnInit, OnDestroy {
+  cancel$ = new Subject<void>();
   Highcharts: typeof Highcharts = Highcharts; // required
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
 
@@ -258,6 +258,11 @@ export class TemperaturesComponent {
   constructor(private temperatureSummaryService: TemperatureSummaryService,
     private initialDateService: InitialDateService) { }
 
+  ngOnDestroy(): void {
+    this.cancel$.next();
+    this.cancel$.complete();
+  }
+
   ngOnInit() {
     this.initialDateService.today.pipe(
       take(1),
@@ -270,7 +275,9 @@ export class TemperaturesComponent {
   }
 
   get refresh$(): Observable<any> {
+    this.cancel$.next();
     return this.getData().pipe(
+      takeUntil(this.cancel$),
       tap(a => this.applyData(a))
     );
   }
